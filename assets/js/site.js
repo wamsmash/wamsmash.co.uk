@@ -1,6 +1,8 @@
 (function () {
   const STORAGE_KEY = "wamsmash_player_state_v1";
 
+  const FEATURED_COUNT = 6;
+
   const TRACKS = [
     {
       id: "chaos",
@@ -140,7 +142,7 @@
       lane: "green",
       year: "2026",
       audio: "/assets/audio/green-machine.mp3",
-      cover: "/assets/img/covers/green-machine.jpg",
+      cover: "/assets/img/covers/greenmachine.jpg",
       note: "Propulsion",
       blurb: "Green lane engine. Structured drive, mechanical intent, forward push.",
       tags: "green lane, propulsion, engine, drive, industrial",
@@ -162,7 +164,7 @@
       lane: "pink",
       year: "2026",
       audio: "/assets/audio/jazz-baby.mp3",
-      cover: "/assets/img/covers/jazz-baby.jpg",
+      cover: "/assets/img/covers/jazzbaby.jpg",
       note: "Flirt",
       blurb: "Pink lane play. Smooth edges, bright accents, controlled heat.",
       tags: "pink lane, flirt, groove, smooth, neon noir",
@@ -173,7 +175,7 @@
       lane: "yellow",
       year: "2026",
       audio: "/assets/audio/dance-floor-saviour.mp3",
-      cover: "/assets/img/covers/dance-floor-saviour.jpg",
+      cover: "/assets/img/covers/dancefloorsaviour.jpg",
       note: "Lift",
       blurb: "Yellow lane release. Hands up moment, warmth and movement.",
       tags: "yellow lane, lift, release, warmth, movement",
@@ -184,7 +186,7 @@
       lane: "blue",
       year: "2026",
       audio: "/assets/audio/my-love.mp3",
-      cover: "/assets/img/covers/my-love.jpg",
+      cover: "/assets/img/covers/mylove.jpg",
       note: "Pop",
       blurb: "Blue lane pop. Clean hook energy, sentimental but disciplined.",
       tags: "blue lane, pop, hook, sweet, clean",
@@ -195,34 +197,19 @@
       lane: "red",
       year: "2026",
       audio: "/assets/audio/monkey-man.mp3",
-      cover: "/assets/img/covers/monkey-man.jpg",
+      cover: "/assets/img/covers/monkeyman.jpg",
       note: "Impact",
       blurb: "Red lane chaos engine. Instinct, punch, playful menace.",
       tags: "red lane, impact, chaos, instinct, punch",
     }
-    
   ];
 
   function $(sel, root = document) {
     return root.querySelector(sel);
   }
 
-  function createPlayerBar() {
-    const bar = document.createElement("div");
-    bar.className = "playerBar";
-    bar.innerHTML = `
-      <div class="playerInner">
-        <div class="playerNow">
-          <div class="playerNowTitle" id="wmNowTitle">WAMSMASH</div>
-          <div class="playerNowSub" id="wmNowSub">Select a track</div>
-        </div>
-        <div class="playerControls">
-          <audio id="wmAudio" controls preload="none"></audio>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(bar);
-    return bar;
+  function $all(sel, root = document) {
+    return Array.from(root.querySelectorAll(sel));
   }
 
   function loadState() {
@@ -243,6 +230,24 @@
 
   function findTrackById(id) {
     return TRACKS.find(t => t.id === id) || null;
+  }
+
+  function createPlayerBar() {
+    const bar = document.createElement("div");
+    bar.className = "playerBar";
+    bar.innerHTML = `
+      <div class="playerInner">
+        <div class="playerNow">
+          <div class="playerNowTitle" id="wmNowTitle">WAMSMASH</div>
+          <div class="playerNowSub" id="wmNowSub">Select a track</div>
+        </div>
+        <div class="playerControls">
+          <audio id="wmAudio" controls preload="none"></audio>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(bar);
+    return bar;
   }
 
   function setNowPlayingUI(track) {
@@ -313,59 +318,61 @@
     });
   }
 
+  function imgTag(track, eager) {
+    const loading = eager ? "eager" : "lazy";
+    const decoding = "async";
+    return `<img src="${track.cover}" alt="${track.title} cover" loading="${loading}" decoding="${decoding}">`;
+  }
+
+  function cardMarkup(track, opts) {
+    const showDetails = opts && opts.showDetails;
+
+    return `
+      <div class="cardImg">
+        ${imgTag(track, !!(opts && opts.eagerImage))}
+        <div class="cardInfo">
+          <div class="cardInfoInner">
+            <div class="cardInfoTitle">${track.title}</div>
+            <div class="cardInfoMeta">${track.lane} lane, ${track.note}</div>
+            ${track.blurb ? `<div class="cardInfoBlurb">${track.blurb}</div>` : ``}
+            ${track.tags ? `<div class="cardInfoTags">${track.tags}</div>` : ``}
+          </div>
+        </div>
+      </div>
+
+      <div class="cardTop">
+        <div>
+          <h3 class="cardTitle" ${opts && opts.anchorId ? `id="${track.id}"` : ``}>${track.title}</h3>
+          <div class="cardMeta">${track.lane} lane, ${track.note}</div>
+        </div>
+        <div class="badge">${track.year}</div>
+      </div>
+
+      <div class="cardActions">
+        <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
+        ${showDetails ? `<button class="btn" type="button" data-view="music" data-scroll="${track.id}">Details</button>` : ``}
+      </div>
+    `;
+  }
+
   function renderFeaturedGrid() {
     const mount = document.getElementById("wmFeatured");
     if (!mount) return;
 
     mount.innerHTML = "";
 
-    for (const track of TRACKS) {
+    const featured = TRACKS.slice(0, FEATURED_COUNT);
+    for (let i = 0; i < featured.length; i++) {
+      const track = featured[i];
       const card = document.createElement("div");
       card.className = "card";
-card.innerHTML = `
-  <div class="cardImg">
-    <img src="${track.cover}" alt="${track.title} cover">
-    <div class="cardInfo">
-      <div class="cardInfoInner">
-        <div class="cardInfoTitle">${track.title}</div>
-        <div class="cardInfoMeta">${track.lane} lane, ${track.note}</div>
-        ${track.blurb ? `<div class="cardInfoBlurb">${track.blurb}</div>` : ``}
-        ${track.tags ? `<div class="cardInfoTags">${track.tags}</div>` : ``}
-      </div>
-    </div>
-  </div>
-
-  <div class="cardTop">
-    <div>
-      <h3 class="cardTitle">${track.title}</h3>
-      <div class="cardMeta">${track.lane} lane, ${track.note}</div>
-    </div>
-    <div class="badge">${track.year}</div>
-  </div>
-
-  <div class="cardActions">
-    <button class="btn btnPrimary" data-play="${track.id}">Play</button>
-  <button class="btn" data-view="music" data-scroll="${track.id}">Details</button>
-  </div>
-`;
+      card.innerHTML = cardMarkup(track, {
+        showDetails: true,
+        eagerImage: i < 3,
+        anchorId: false
+      });
       mount.appendChild(card);
     }
-  }
-
-  function wirePlayButtons(audioEl) {
-    document.addEventListener("click", function (e) {
-      const btn = e.target.closest("[data-play]");
-      if (!btn) return;
-
-      const id = btn.getAttribute("data-play");
-      const track = findTrackById(id);
-      if (!track) return;
-
-      setNowPlayingUI(track);
-      setAudioSource(audioEl, track);
-
-      audioEl.play().catch(() => {});
-    });
   }
 
   function renderMusicList() {
@@ -374,93 +381,111 @@ card.innerHTML = `
 
     mount.innerHTML = "";
 
-    for (const track of TRACKS) {
+    for (let i = 0; i < TRACKS.length; i++) {
+      const track = TRACKS[i];
       const row = document.createElement("div");
       row.className = "card";
-row.innerHTML = `
-  <div class="cardImg">
-    <img src="${track.cover}" alt="${track.title} cover">
-    <div class="cardInfo">
-      <div class="cardInfoInner">
-        <div class="cardInfoTitle">${track.title}</div>
-        <div class="cardInfoMeta">${track.lane} lane, ${track.note}</div>
-        ${track.blurb ? `<div class="cardInfoBlurb">${track.blurb}</div>` : ``}
-        ${track.tags ? `<div class="cardInfoTags">${track.tags}</div>` : ``}
-      </div>
-    </div>
-  </div>
-
-  <div class="cardTop">
-    <div>
-      <h3 class="cardTitle" id="${track.id}">${track.title}</h3>
-      <div class="cardMeta">${track.lane} lane, ${track.note}</div>
-    </div>
-    <div class="badge">${track.year}</div>
-  </div>
-
-  <div class="cardActions">
-    <button class="btn btnPrimary" data-play="${track.id}">Play</button>
-  </div>
-`;
+      row.innerHTML = cardMarkup(track, {
+        showDetails: false,
+        eagerImage: i < 3,
+        anchorId: true
+      });
       mount.appendChild(row);
     }
   }
-function switchView(view){
-  const home = document.getElementById("homeView");
-  const music = document.getElementById("musicView");
 
-  if(view === "music"){
-    home.style.display = "none";
-    music.style.display = "block";
-  } else {
-    home.style.display = "block";
-    music.style.display = "none";
+  function playTrack(audioEl, trackId) {
+    const track = findTrackById(trackId);
+    if (!track) return;
+
+    setNowPlayingUI(track);
+    setAudioSource(audioEl, track);
+
+    audioEl.play().catch(() => {});
   }
-}
-function parseHash(){
-  const raw = (location.hash || "").replace(/^#/, "");
-  if(!raw) return { view: "home", scrollId: "" };
 
-  const parts = raw.split("#");
-  const viewPart = parts[0];
-  const scrollId = parts[1] || "";
+  function wirePlayButtons(audioEl) {
+    document.addEventListener("click", function (e) {
+      const btn = e.target.closest("[data-play]");
+      if (!btn) return;
 
-  if(viewPart === "music") return { view: "music", scrollId };
-  return { view: "home", scrollId: "" };
-}
-
-function applyRoute(){
-  const route = parseHash();
-  switchView(route.view);
-
-  if(route.view === "music" && route.scrollId){
-    requestAnimationFrame(function(){
-      const target = document.getElementById(route.scrollId);
-      if(target){
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+      const id = btn.getAttribute("data-play");
+      playTrack(audioEl, id);
     });
   }
-}
-function wireNavigation(){
-  document.addEventListener("click", function(e){
-    const btn = e.target.closest("[data-view]");
-    if(!btn) return;
 
-    const view = btn.getAttribute("data-view");
-    const scrollId = btn.getAttribute("data-scroll");
+  function switchView(view) {
+    const home = document.getElementById("homeView");
+    const music = document.getElementById("musicView");
+    if (!home || !music) return;
 
-    if(view === "music"){
-      location.hash = scrollId ? `music#${scrollId}` : "music";
-      return;
+    if (view === "music") {
+      home.style.display = "none";
+      music.style.display = "block";
+    } else {
+      home.style.display = "block";
+      music.style.display = "none";
     }
 
-    location.hash = "";
-  });
-}
+    setActiveNav(view);
+  }
 
-function init() {
-  createPlayerBar();
+  function setActiveNav(view) {
+    const navItems = $all("[data-view]");
+    for (const el of navItems) {
+      const v = el.getAttribute("data-view");
+      const isActive = v === view;
+      el.classList.toggle("isActive", isActive);
+      if (isActive) el.setAttribute("aria-current", "page");
+      else el.removeAttribute("aria-current");
+    }
+  }
+
+  function parseHash() {
+    const raw = (location.hash || "").replace(/^#/, "");
+    if (!raw) return { view: "home", scrollId: "" };
+
+    const parts = raw.split("#");
+    const viewPart = parts[0];
+    const scrollId = parts[1] || "";
+
+    if (viewPart === "music") return { view: "music", scrollId };
+    return { view: "home", scrollId: "" };
+  }
+
+  function applyRoute() {
+    const route = parseHash();
+    switchView(route.view);
+
+    if (route.view === "music" && route.scrollId) {
+      requestAnimationFrame(function () {
+        const target = document.getElementById(route.scrollId);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    }
+  }
+
+  function wireNavigation() {
+    document.addEventListener("click", function (e) {
+      const btn = e.target.closest("[data-view]");
+      if (!btn) return;
+
+      const view = btn.getAttribute("data-view");
+      const scrollId = btn.getAttribute("data-scroll");
+
+      if (view === "music") {
+        location.hash = scrollId ? `music#${scrollId}` : "music";
+        return;
+      }
+
+      location.hash = "";
+    });
+  }
+
+  function init() {
+    createPlayerBar();
 
     const audioEl = $("#wmAudio");
     wireAudioPersistence(audioEl);
@@ -468,10 +493,13 @@ function init() {
 
     renderFeaturedGrid();
     renderMusicList();
+
     wirePlayButtons(audioEl);
     wireNavigation();
+
     window.addEventListener("hashchange", applyRoute);
     applyRoute();
+
     if (!audioEl.getAttribute("data-track-id")) setNowPlayingUI(null);
   }
 
