@@ -1,0 +1,236 @@
+:root{
+  --bg:#07070b;
+  --panel:#0e0f16;
+  --text:#f2f3f7;
+  --muted:#a6a8b3;
+  --edge:#1a1c27;
+  --focus:#ffffff;
+  --accent:#ff2bd6;
+  --accent2:#00e5ff;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:radial-gradient(1200px 700px at 20% 0%, rgba(255,43,214,0.10), transparent 60%),
+             radial-gradient(900px 600px at 85% 15%, rgba(0,229,255,0.10), transparent 55%),
+             var(--bg);
+  color:var(--text);
+}
+
+a{color:inherit;text-decoration:none}
+a:focus{outline:2px solid var(--focus);outline-offset:3px}
+
+.wrap{
+  max-width:1100px;
+  margin:0 auto;
+  padding:28px 18px 110px 18px;
+}
+
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:22px;
+}
+
+.brand{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.brand h1{
+  margin:0;
+  letter-spacing:0.08em;
+  font-size:22px;
+  text-transform:uppercase;
+}
+
+.brand .sub{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.35;
+  max-width:520px;
+}
+
+nav{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.navlink{
+  padding:10px 12px;
+  border:1px solid var(--edge);
+  border-radius:12px;
+  background:rgba(14,15,22,0.65);
+  font-size:13px;
+}
+
+.navlink:hover{
+  border-color:rgba(255,255,255,0.25);
+}
+
+.hero{
+  border:1px solid var(--edge);
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(14,15,22,0.85), rgba(7,7,11,0.65));
+  padding:18px;
+  margin-bottom:18px;
+}
+
+.hero h2{
+  margin:0 0 6px 0;
+  font-size:16px;
+  letter-spacing:0.02em;
+}
+
+.hero p{
+  margin:0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.55;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+
+@media (max-width: 920px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width: 560px){
+  header{flex-direction:column;align-items:flex-start}
+  nav{justify-content:flex-start}
+  .grid{grid-template-columns:1fr}
+}
+
+.card{
+  border:1px solid var(--edge);
+  border-radius:16px;
+  background:rgba(14,15,22,0.60);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height:150px;
+}
+
+.cardTop{
+  padding:14px 14px 10px 14px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.cardTitle{
+  margin:0;
+  font-size:14px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+}
+
+.cardMeta{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+}
+
+.badge{
+  font-size:11px;
+  padding:6px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.18);
+  color:var(--text);
+  background:rgba(0,0,0,0.25);
+  white-space:nowrap;
+}
+
+.cardActions{
+  margin-top:auto;
+  padding:12px 14px 14px 14px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  border:1px solid rgba(255,255,255,0.18);
+  background:rgba(0,0,0,0.20);
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:12px;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.btn:hover{
+  border-color:rgba(255,255,255,0.30);
+}
+
+.btnPrimary{
+  border-color:rgba(255,43,214,0.55);
+  box-shadow:0 0 0 1px rgba(0,229,255,0.15) inset;
+}
+
+.footer{
+  margin-top:22px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.55;
+}
+
+.playerBar{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  border-top:1px solid var(--edge);
+  background:rgba(7,7,11,0.92);
+  backdrop-filter: blur(10px);
+}
+
+.playerInner{
+  max-width:1100px;
+  margin:0 auto;
+  padding:12px 18px;
+  display:flex;
+  gap:14px;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.playerNow{
+  min-width:220px;
+}
+
+.playerNowTitle{
+  font-size:12px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+}
+
+.playerNowSub{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+}
+
+.playerControls{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  width:min(560px, 100%);
+}
+
+.playerControls audio{
+  width:100%;
+}
