@@ -82,16 +82,16 @@
       audio: "/assets/audio/jungle.mp3",
       cover: "/assets/img/covers/jungle.jpg",
       note: "Impact"
-    }
+    },
     {
-  id: "thedeviliswicked",
-  title: "THE DEVIL IS WICKED",
-  lane: "red",
-  year: "2026",
-  audio: "/assets/audio/thedeviliswicked.mp3",
-  cover: "/assets/img/covers/thedeviliswicked.jpg",
-  note: "Judgement"
-},
+      id: "thedeviliswicked",
+      title: "THE DEVIL IS WICKED",
+      lane: "red",
+      year: "2026",
+      audio: "/assets/audio/thedeviliswicked.mp3",
+      cover: "/assets/img/covers/thedeviliswicked.jpg",
+      note: "Judgement"
+    }
   ];
 
   function $(sel, root = document) {
