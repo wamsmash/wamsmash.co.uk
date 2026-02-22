@@ -260,7 +260,7 @@
     for (const track of TRACKS) {
       const row = document.createElement("div");
       row.className = "card";
- row.innerHTML = `
+      row.innerHTML = `
         <div class="cardImg">
           <img src="${track.cover}" alt="${track.title} cover">
         </div>
@@ -274,8 +274,8 @@
         <div class="cardActions">
           <button class="btn btnPrimary" data-play="${track.id}">Play</button>
         </div>
-    `;
-    mount.appendChild(row);
+      `;
+      mount.appendChild(row);
     }
   }
 
