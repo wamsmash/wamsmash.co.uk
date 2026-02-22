@@ -17,6 +17,7 @@
       lane: "blue",
       year: "2026",
       audio: "/assets/audio/bonfire.mp3",
+      cover: "/assets/img/covers/bonfire.jpg",
       note: "High energy"
     },
     {
@@ -25,6 +26,7 @@
       lane: "iridescent",
       year: "2026",
       audio: "/assets/audio/star.mp3",
+      cover: "/assets/img/covers/star.jpg",
       note: "Anthem"
     },
     {
@@ -33,6 +35,7 @@
       lane: "blue",
       year: "2026",
       audio: "/assets/audio/equinox.mp3",
+      cover: "/assets/img/covers/equinox.jpg",
       note: "Lift"
     },
     {
@@ -41,6 +44,7 @@
       lane: "blue",
       year: "2026",
       audio: "/assets/audio/mary.mp3",
+      cover: "/assets/img/covers/mary.jpg",
       note: "Story"
     },
     {
@@ -49,6 +53,7 @@
       lane: "green",
       year: "2026",
       audio: "/assets/audio/arc-raiders.mp3",
+      cover: "/assets/img/covers/arcraiders.jpg",
       note: "Drive"
     },
     {
@@ -57,6 +62,7 @@
       lane: "pink",
       year: "2026",
       audio: "/assets/audio/hold.mp3",
+      cover: "/assets/img/covers/hold.jpg",
       note: "Control"
     },
     {
@@ -65,6 +71,7 @@
       lane: "iridescent",
       year: "2026",
       audio: "/assets/audio/breach.mp3",
+      cover: "/assets/img/covers/breach.jpg",
       note: "Pressure"
     },
     {
@@ -73,6 +80,7 @@
       lane: "red",
       year: "2026",
       audio: "/assets/audio/jungle.mp3",
+      cover: "/assets/img/covers/jungle.jpg",
       note: "Impact"
     }
   ];
