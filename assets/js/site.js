@@ -391,3 +391,4 @@ function init() {
   } else {
     init();
   }
+})();
