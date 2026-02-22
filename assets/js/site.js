@@ -197,7 +197,10 @@
       const card = document.createElement("div");
       card.className = "card";
 
-      card.innerHTML = `
+            card.innerHTML = `
+        <div class="cardImg">
+          <img src="${track.cover}" alt="${track.title} cover">
+        </div>
         <div class="cardTop">
           <div>
             <h3 class="cardTitle">${track.title}</h3>
@@ -241,6 +244,9 @@
       const row = document.createElement("div");
       row.className = "card";
       row.innerHTML = `
+        <div class="cardImg">
+          <img src="${track.cover}" alt="${track.title} cover">
+        </div>
         <div class="cardTop">
           <div>
             <h3 class="cardTitle" id="${track.id}">${track.title}</h3>
@@ -252,7 +258,6 @@
           <button class="btn btnPrimary" data-play="${track.id}">Play</button>
         </div>
       `;
-      mount.appendChild(row);
     }
   }
 
