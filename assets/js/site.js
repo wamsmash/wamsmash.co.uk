@@ -256,7 +256,7 @@ card.innerHTML = `
 
   <div class="cardActions">
     <button class="btn btnPrimary" data-play="${track.id}">Play</button>
-    <a class="btn" href="/music/index.html#${track.id}">Details</a>
+  <button class="btn" data-view="music" data-scroll="${track.id}">Details</button>
   </div>
 `;
       mount.appendChild(card);
@@ -316,9 +316,62 @@ row.innerHTML = `
       mount.appendChild(row);
     }
   }
+function switchView(view){
+  const home = document.getElementById("homeView");
+  const music = document.getElementById("musicView");
 
-  function init() {
-    createPlayerBar();
+  if(view === "music"){
+    home.style.display = "none";
+    music.style.display = "block";
+  } else {
+    home.style.display = "block";
+    music.style.display = "none";
+  }
+}
+function parseHash(){
+  const raw = (location.hash || "").replace(/^#/, "");
+  if(!raw) return { view: "home", scrollId: "" };
+
+  const parts = raw.split("#");
+  const viewPart = parts[0];
+  const scrollId = parts[1] || "";
+
+  if(viewPart === "music") return { view: "music", scrollId };
+  return { view: "home", scrollId: "" };
+}
+
+function applyRoute(){
+  const route = parseHash();
+  switchView(route.view);
+
+  if(route.view === "music" && route.scrollId){
+    requestAnimationFrame(function(){
+      const target = document.getElementById(route.scrollId);
+      if(target){
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  }
+}
+function wireNavigation(){
+  document.addEventListener("click", function(e){
+    const btn = e.target.closest("[data-view]");
+    if(!btn) return;
+
+    const view = btn.getAttribute("data-view");
+    const scrollId = btn.getAttribute("data-scroll");
+
+    if(view === "music"){
+      location.hash = scrollId ? `music#${scrollId}` : "music";
+      return;
+    }
+
+    location.hash = "";
+  });
+}
+
+function init() {
+  createPlayerBar();
 
     const audioEl = $("#wmAudio");
     wireAudioPersistence(audioEl);
@@ -327,7 +380,9 @@ row.innerHTML = `
     renderFeaturedGrid();
     renderMusicList();
     wirePlayButtons(audioEl);
-
+    wireNavigation();
+    window.addEventListener("hashchange", applyRoute);
+    applyRoute();
     if (!audioEl.getAttribute("data-track-id")) setNowPlayingUI(null);
   }
 
@@ -336,4 +391,3 @@ row.innerHTML = `
   } else {
     init();
   }
-})();
