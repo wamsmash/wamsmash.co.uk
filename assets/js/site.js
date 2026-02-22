@@ -11,7 +11,7 @@
       cover: "/assets/img/covers/chaos.jpg",
       note: "Modern Parable",
       blurb: "Red lane flagship. Confrontation, contrast, pressure inside the cockpit.",
-      tags: "red lane, confrontation, pressure, duality, neon noir"
+      tags: "red lane, confrontation, pressure, duality, neon noir",
     },
     {
       id: "bonfire",
@@ -20,9 +20,9 @@
       year: "2026",
       audio: "/assets/audio/bonfire.mp3",
       cover: "/assets/img/covers/bonfire.jpg",
-      note: "High energy"
+      note: "High energy",
       blurb: "Blue lane surge. Heat in the cold, forward momentum without hesitation.",
-      tags: "blue lane, energy, ignition, momentum, night drive"
+      tags: "blue lane, energy, ignition, momentum, night drive",
     },
     {
       id: "star",
@@ -31,9 +31,9 @@
       year: "2026",
       audio: "/assets/audio/star.mp3",
       cover: "/assets/img/covers/star.jpg",
-      note: "Anthem"
+      note: "Anthem",
       blurb: "Iridescent anthem. Spotlight tension between visibility and vulnerability.",
-      tags: "iridescent lane, anthem, spotlight, performance, exposure"
+      tags: "iridescent lane, anthem, spotlight, performance, exposure",
     },
     {
       id: "equinox",
@@ -42,9 +42,9 @@
       year: "2026",
       audio: "/assets/audio/equinox.mp3",
       cover: "/assets/img/covers/equinox.jpg",
-      note: "Lift"
+      note: "Lift",
       blurb: "Blue lane balance. Light and dark split clean down the centre.",
-      tags: "blue lane, balance, duality, eclipse, symmetry"
+      tags: "blue lane, balance, duality, eclipse, symmetry",
     },
     {
       id: "mary",
@@ -53,9 +53,9 @@
       year: "2026",
       audio: "/assets/audio/mary.mp3",
       cover: "/assets/img/covers/mary.jpg",
-      note: "Story"
+      note: "Story",
       blurb: "Blue lane narrative. Intimate story under controlled green glow.",
-      tags: "blue lane, story, intimacy, late night, character study"
+      tags: "blue lane, story, intimacy, late night, character study",
     },
     {
       id: "arcraiders",
@@ -64,9 +64,9 @@
       year: "2026",
       audio: "/assets/audio/arc-raiders.mp3",
       cover: "/assets/img/covers/arcraiders.jpg",
-      note: "Gaming"
+      note: "Gaming",
       blurb: "Green lane propulsion. Tactical movement through structured resistance.",
-      tags: "green lane, drive, tactical, forward motion, industrial"
+      tags: "green lane, drive, tactical, forward motion, industrial",
     },
     {
       id: "hold",
@@ -75,9 +75,9 @@
       year: "2026",
       audio: "/assets/audio/hold.mp3",
       cover: "/assets/img/covers/hold.jpg",
-      note: "Control"
+      note: "Control",
       blurb: "Pink lane restraint. Tension contained without collapse.",
-      tags: "pink lane, control, tension, discipline, restraint"
+      tags: "pink lane, control, tension, discipline, restraint",
     },
     {
       id: "breach",
@@ -86,9 +86,9 @@
       year: "2026",
       audio: "/assets/audio/breach.mp3",
       cover: "/assets/img/covers/breach.jpg",
-      note: "Pressure"
+      note: "Pressure",
       blurb: "Iridescent pressure point. Threshold moment before impact.",
-      tags: "iridescent lane, pressure, threshold, rupture, structural tension"
+      tags: "iridescent lane, pressure, threshold, rupture, structural tension",
     },
     {
       id: "jungle",
@@ -97,9 +97,9 @@
       year: "2026",
       audio: "/assets/audio/jungle.mp3",
       cover: "/assets/img/covers/jungle.jpg",
-      note: "Impact"
+      note: "Impact",
       blurb: "Red lane force. Instinct, rhythm, environment pushing back.",
-      tags: "red lane, impact, instinct, rhythm, primal energy"
+      tags: "red lane, impact, instinct, rhythm, primal energy",
     },
     {
       id: "thedeviliswicked",
@@ -108,9 +108,9 @@
       year: "2026",
       audio: "/assets/audio/thedeviliswicked.mp3",
       cover: "/assets/img/covers/thedeviliswicked.jpg",
-      note: "Judgement"
+      note: "Judgement",
       blurb: "Red lane judgement. Cold authority, weight without spectacle.",
-      tags: "red lane, judgement, authority, underworld, industrial noir"
+      tags: "red lane, judgement, authority, underworld, industrial noir",
     }
   ];
 
