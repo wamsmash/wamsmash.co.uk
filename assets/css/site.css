@@ -234,3 +234,17 @@ nav{
 .playerControls audio{
   width:100%;
 }
+.cardImg{
+  width:100%;
+  aspect-ratio: 1 / 1;
+  background:#0b0c12;
+  border-bottom:1px solid var(--edge);
+  overflow:hidden;
+}
+
+.cardImg img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
