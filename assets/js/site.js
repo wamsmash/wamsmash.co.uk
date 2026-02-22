@@ -233,24 +233,32 @@
     for (const track of TRACKS) {
       const card = document.createElement("div");
       card.className = "card";
+card.innerHTML = `
+  <div class="cardImg">
+    <img src="${track.cover}" alt="${track.title} cover">
+    <div class="cardInfo">
+      <div class="cardInfoInner">
+        <div class="cardInfoTitle">${track.title}</div>
+        <div class="cardInfoMeta">${track.lane} lane, ${track.note}</div>
+        ${track.blurb ? `<div class="cardInfoBlurb">${track.blurb}</div>` : ``}
+        ${track.tags ? `<div class="cardInfoTags">${track.tags}</div>` : ``}
+      </div>
+    </div>
+  </div>
 
-            card.innerHTML = `
-        <div class="cardImg">
-          <img src="${track.cover}" alt="${track.title} cover">
-        </div>
-        <div class="cardTop">
-          <div>
-            <h3 class="cardTitle">${track.title}</h3>
-            <div class="cardMeta">${track.lane} lane, ${track.note}</div>
-          </div>
-          <div class="badge">${track.year}</div>
-        </div>
-        <div class="cardActions">
-          <button class="btn btnPrimary" data-play="${track.id}">Play</button>
-          <a class="btn" href="/music/index.html#${track.id}">Details</a>
-        </div>
-      `;
+  <div class="cardTop">
+    <div>
+      <h3 class="cardTitle">${track.title}</h3>
+      <div class="cardMeta">${track.lane} lane, ${track.note}</div>
+    </div>
+    <div class="badge">${track.year}</div>
+  </div>
 
+  <div class="cardActions">
+    <button class="btn btnPrimary" data-play="${track.id}">Play</button>
+    <a class="btn" href="/music/index.html#${track.id}">Details</a>
+  </div>
+`;
       mount.appendChild(card);
     }
   }
@@ -280,21 +288,31 @@
     for (const track of TRACKS) {
       const row = document.createElement("div");
       row.className = "card";
-      row.innerHTML = `
-        <div class="cardImg">
-          <img src="${track.cover}" alt="${track.title} cover">
-        </div>
-        <div class="cardTop">
-          <div>
-            <h3 class="cardTitle" id="${track.id}">${track.title}</h3>
-            <div class="cardMeta">${track.lane} lane, ${track.note}</div>
-          </div>
-          <div class="badge">${track.year}</div>
-        </div>
-        <div class="cardActions">
-          <button class="btn btnPrimary" data-play="${track.id}">Play</button>
-        </div>
-      `;
+row.innerHTML = `
+  <div class="cardImg">
+    <img src="${track.cover}" alt="${track.title} cover">
+    <div class="cardInfo">
+      <div class="cardInfoInner">
+        <div class="cardInfoTitle">${track.title}</div>
+        <div class="cardInfoMeta">${track.lane} lane, ${track.note}</div>
+        ${track.blurb ? `<div class="cardInfoBlurb">${track.blurb}</div>` : ``}
+        ${track.tags ? `<div class="cardInfoTags">${track.tags}</div>` : ``}
+      </div>
+    </div>
+  </div>
+
+  <div class="cardTop">
+    <div>
+      <h3 class="cardTitle" id="${track.id}">${track.title}</h3>
+      <div class="cardMeta">${track.lane} lane, ${track.note}</div>
+    </div>
+    <div class="badge">${track.year}</div>
+  </div>
+
+  <div class="cardActions">
+    <button class="btn btnPrimary" data-play="${track.id}">Play</button>
+  </div>
+`;
       mount.appendChild(row);
     }
   }
