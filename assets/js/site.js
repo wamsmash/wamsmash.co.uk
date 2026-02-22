@@ -417,7 +417,7 @@
 function switchView(view) {
   const home = document.getElementById("homeView");
   const music = document.getElementById("musicView");
-  const hero = document.querySelector(".hero");
+ const hero = document.querySelector(".heroIntro");
 
   if (!home || !music) return;
 
@@ -434,16 +434,16 @@ function switchView(view) {
   setActiveNav(view);
 }
 
-  function setActiveNav(view) {
-    const navItems = $all("[data-view]");
-    for (const el of navItems) {
-      const v = el.getAttribute("data-view");
-      const isActive = v === view;
-      el.classList.toggle("isActive", isActive);
-      if (isActive) el.setAttribute("aria-current", "page");
-      else el.removeAttribute("aria-current");
-    }
+function setActiveNav(view) {
+  const navItems = $all("[data-view]");
+  for (const el of navItems) {
+    const v = el.getAttribute("data-view");
+    const isActive = v === view;
+    el.classList.toggle("isActive", isActive);
+    if (isActive) el.setAttribute("aria-current", "page");
+    else el.removeAttribute("aria-current");
   }
+}
 
   function parseHash() {
     const raw = (location.hash || "").replace(/^#/, "");
