@@ -235,32 +235,30 @@ nav{
   width:100%;
 }
 
-.cardInfo {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.cardInfo{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
 
-  padding: 1.2rem;
+  padding:1.2rem;
 
-  background: linear-gradient(
+  background:linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.95) 0%,
-    rgba(0, 0, 0, 0.75) 40%,
-    rgba(0, 0, 0, 0.4) 70%,
-    rgba(0, 0, 0, 0) 100%
+    rgba(0,0,0,0.95) 0%,
+    rgba(0,0,0,0.75) 40%,
+    rgba(0,0,0,0.4) 70%,
+    rgba(0,0,0,0) 100%
   );
 
-  transform: translateY(100%);
-  transition: transform 0.35s ease;
+  transform:translateY(100%);
+  transition:transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 
-  display: flex;
-  align-items: flex-end;
+  display:flex;
+  align-items:flex-end;
 }
-
-.card:hover .cardInfo{
-  opacity:1;
-  transform:translateX(0);
+.cardImg:hover .cardInfo{
+  transform:translateY(0);
 }
 
 .cardInfoInner{
