@@ -414,21 +414,25 @@
     });
   }
 
-  function switchView(view) {
-    const home = document.getElementById("homeView");
-    const music = document.getElementById("musicView");
-    if (!home || !music) return;
+function switchView(view) {
+  const home = document.getElementById("homeView");
+  const music = document.getElementById("musicView");
+  const hero = document.querySelector(".hero");
 
-    if (view === "music") {
-      home.style.display = "none";
-      music.style.display = "block";
-    } else {
-      home.style.display = "block";
-      music.style.display = "none";
-    }
+  if (!home || !music) return;
 
-    setActiveNav(view);
+  if (view === "music") {
+    home.style.display = "none";
+    music.style.display = "block";
+    if (hero) hero.style.display = "none";
+  } else {
+    home.style.display = "block";
+    music.style.display = "none";
+    if (hero) hero.style.display = "block";
   }
+
+  setActiveNav(view);
+}
 
   function setActiveNav(view) {
     const navItems = $all("[data-view]");
