@@ -91,7 +91,7 @@
       audio: "/assets/audio/thedeviliswicked.mp3",
       cover: "/assets/img/covers/thedeviliswicked.jpg",
       note: "Judgement"
-    }
+    },
   ];
 
   function $(sel, root = document) {
