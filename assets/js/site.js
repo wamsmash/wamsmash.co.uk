@@ -162,7 +162,7 @@
       lane: "pink",
       year: "2026",
       audio: "/assets/audio/jazz-baby.mp3",
-      cover: "/assets/img/covers/jazzbaby.jpg",
+      cover: "/assets/img/covers/jazz-baby.jpg",
       note: "Flirt",
       blurb: "Pink lane play. Smooth edges, bright accents, controlled heat.",
       tags: "pink lane, flirt, groove, smooth, neon noir",
