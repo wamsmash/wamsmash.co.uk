@@ -235,16 +235,57 @@ nav{
   width:100%;
 }
 .cardImg{
-  width:100%;
-  aspect-ratio: 1 / 1;
-  background:#0b0c12;
-  border-bottom:1px solid var(--edge);
-  overflow:hidden;
+  position:relative;
 }
 
-.cardImg img{
-  width:100%;
+.cardInfo{
+  position:absolute;
+  top:0;
+  right:0;
   height:100%;
-  object-fit:cover;
-  display:block;
+  width:68%;
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-start;
+  padding:14px;
+  opacity:0;
+  transform:translateX(18px);
+  transition:opacity 160ms ease, transform 160ms ease;
+  background:linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.72) 30%, rgba(0,0,0,0.92) 100%);
+}
+
+.card:hover .cardInfo{
+  opacity:1;
+  transform:translateX(0);
+}
+
+.cardInfoInner{
+  width:100%;
+  max-height:100%;
+  overflow:auto;
+}
+
+.cardInfoTitle{
+  font-size:14px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+
+.cardInfoMeta{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+
+.cardInfoBlurb{
+  font-size:13px;
+  line-height:1.35;
+  margin-bottom:10px;
+}
+
+.cardInfoTags{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.35;
 }
