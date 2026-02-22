@@ -8,6 +8,7 @@
       lane: "red",
       year: "2026",
       audio: "/assets/audio/chaos.mp3",
+      cover: "/assets/img/covers/chaos.jpg",
       note: "Flagship"
     },
     {
