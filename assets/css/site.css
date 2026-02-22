@@ -319,6 +319,7 @@ header{
   align-items:flex-start;
   padding:44px 0 18px 0;
   margin-bottom:22px;
+  position:relative;
 }
 
 .brand h1{
@@ -328,7 +329,7 @@ header{
 
 .brand .sub{
   max-width:560px;
-  opacity:0.72;
+  opacity:0.78;
 }
 
 /* nav upgrade */
@@ -348,7 +349,6 @@ header{
 header::after{
   content:"";
   display:block;
-  flex-basis:100%;
   width:100%;
   height:1px;
   margin-top:18px;
@@ -359,4 +359,19 @@ header::after{
     rgba(0,229,255,0.22),
     transparent
   );
+}
+
+/* footer alignment */
+.footer{
+  margin-top:26px;
+  padding-top:18px;
+  border-top:1px solid rgba(255,255,255,0.08);
+  display:flex;
+  justify-content:center;
+  text-align:center;
+}
+
+@media (max-width: 560px){
+  header{padding:26px 0 14px 0}
+  .brand h1{font-size:28px}
 }
