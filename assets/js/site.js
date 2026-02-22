@@ -243,7 +243,7 @@
     for (const track of TRACKS) {
       const row = document.createElement("div");
       row.className = "card";
-      row.innerHTML = `
+ row.innerHTML = `
         <div class="cardImg">
           <img src="${track.cover}" alt="${track.title} cover">
         </div>
