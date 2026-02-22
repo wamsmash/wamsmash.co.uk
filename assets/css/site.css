@@ -147,7 +147,14 @@ nav{
   line-height:1.6;
   max-width:520px;
 }
+.heroIntro p{
+  font-weight:500;
+}
 
+.heroIntro p strong{
+  color:var(--text);
+  letter-spacing:0.06em;
+}
 /* grids */
 .grid{
   display:grid;
