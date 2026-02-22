@@ -435,11 +435,17 @@ function switchView(view) {
 }
 
 function setActiveNav(view) {
-  const navItems = $all("[data-view]");
+  const navRoot = document.querySelector("header nav");
+  if (!navRoot) return;
+
+  const navItems = $all("[data-view]", navRoot);
+
   for (const el of navItems) {
     const v = el.getAttribute("data-view");
     const isActive = v === view;
+
     el.classList.toggle("isActive", isActive);
+
     if (isActive) el.setAttribute("aria-current", "page");
     else el.removeAttribute("aria-current");
   }
