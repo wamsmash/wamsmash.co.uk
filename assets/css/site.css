@@ -263,7 +263,6 @@ display:flex;
 .cardImg:hover .cardInfo{
   transform:translateY(0);
   opacity:1;
-  
 }
 .cardInfoInner{
   width:100%;
