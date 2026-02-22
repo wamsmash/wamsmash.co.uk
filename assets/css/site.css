@@ -102,24 +102,29 @@ nav{
 
 /* hero */
 .hero{
-  border:1px solid var(--edge);
-  border-radius:18px;
-  background:linear-gradient(180deg, rgba(14,15,22,0.85), rgba(7,7,11,0.65));
-  padding:18px;
-  margin-bottom:18px;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:20px;
+  background:
+    linear-gradient(180deg, rgba(14,15,22,0.88), rgba(7,7,11,0.72)),
+    radial-gradient(800px 400px at 10% 0%, rgba(255,43,214,0.08), transparent 60%),
+    radial-gradient(600px 400px at 90% 20%, rgba(0,229,255,0.08), transparent 60%);
+  padding:24px;
+  margin-bottom:28px;
 }
 
 .hero h2{
-  margin:0 0 6px 0;
-  font-size:16px;
-  letter-spacing:0.02em;
+  margin:0 0 10px 0;
+  font-size:18px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
 }
 
 .hero p{
   margin:0;
   color:var(--muted);
-  font-size:13px;
-  line-height:1.55;
+  font-size:14px;
+  line-height:1.6;
+  max-width:520px;
 }
 
 /* grids */
