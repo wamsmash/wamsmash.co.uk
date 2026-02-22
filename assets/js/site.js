@@ -274,7 +274,8 @@
         <div class="cardActions">
           <button class="btn btnPrimary" data-play="${track.id}">Play</button>
         </div>
-      `;
+    `;
+    mount.appendChild(row);
     }
   }
 
