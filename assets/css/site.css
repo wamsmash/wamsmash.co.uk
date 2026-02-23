@@ -48,12 +48,12 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   background:url("/assets/img/wamhero.jpg") center center / cover no-repeat;
 }
 
-/* optional lion overlay, delete this block if you want hero only */
+/* optional lion overlay */
 .mainHeader::before{
   content:"";
   position:absolute;
   inset:-2px;
-  background-image:url("/assets/img/lion-monika.jpg");
+  background-image:url("/assets/img/covers/lion-monika.jpg");
   background-repeat:no-repeat;
   background-size:clamp(520px, 52vw, 920px);
   background-position:92% 22%;
