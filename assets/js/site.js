@@ -220,11 +220,6 @@
       quote: "“CHAOS is a seriously hard, high pressure electronic banger with a clear modern and genre bending style”"
     },
     {
-      source: "Indie Dock Music Blog",
-      href: "https://indiedockmusicblog.co.uk/",
-      quote: "“Great song, thank you”"
-    },
-    {
       source: "College Music",
       href: "https://collegemusic.co.uk/",
       quote: "“Cool track with impressive singing and strong energy”"
@@ -238,7 +233,12 @@
       source: "Boulimique de Musique, Les Saveurs du Jour",
       href: "https://boulimiquedemusique.blogspot.com/2026/02/la-steppe-awake-dreaming-wamsmash-les.html",
       quote: "“L'artiste britannique lance un morceau bass music à la sauce de Dub FX pour l'approche doucement bouncy. L'interprétation vocale féminine bourrée d'attitude véhicule un récit poétique, telle une fable des temps modernes, débordante de métaphores empreintes d'une touche de spiritualité.”"
-    }
+    },
+        {
+      source: "Indie Dock Music Blog",
+      href: "https://indiedockmusicblog.co.uk/",
+      quote: "“Great song, thank you”"
+    },
   ];
 
   function renderPress() {
