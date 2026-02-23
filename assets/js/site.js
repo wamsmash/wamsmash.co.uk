@@ -77,8 +77,8 @@
       audio: "/assets/audio/hold.mp3",
       cover: "/assets/img/covers/hold.jpg",
       note: "",
-      blurb: "Pink lane restraint. Tension contained without collapse.",
-      tags: "pink lane, control, tension, discipline, restraint",
+      blurb: "Edge before release\nNo names. I’m here\nFeel it start. Hold",
+      tags: "dubstep with sax lead\nhiphop swing drums\ncontrolled bounce bass\ncarnival edge tension",
     },
     {
       id: "breach",
@@ -88,8 +88,8 @@
       audio: "/assets/audio/breach.mp3",
       cover: "/assets/img/covers/breach.jpg",
       note: "",
-      blurb: "Iridescent pressure point. Threshold moment before impact.",
-      tags: "iridescent lane, pressure, threshold, rupture, structural tension",
+      blurb: "Brick codes speak\nGrey wind through back lanes\nI’ll stand when the night gets rough",
+      tags: "uk regional hiphop\nnorth east narrative\ncomfort chorus contrast\nbleak urban tension",
     },
     {
       id: "jungle",
@@ -99,8 +99,8 @@
       audio: "/assets/audio/jungle.mp3",
       cover: "/assets/img/covers/jungle.jpg",
       note: "",
-      blurb: "Red lane force. Instinct, rhythm, environment pushing back.",
-      tags: "red lane, impact, instinct, rhythm, primal energy",
+      blurb: "Predators parade. City shapes\nFeast or fall. Who’s next\nWalk away slow. Bite back",
+      tags: "cinematic end credits\njungle leaning drums\nelectro bassline drive\nvocal scratch texture",
     },
     {
       id: "thedeviliswicked",
@@ -110,8 +110,8 @@
       audio: "/assets/audio/thedeviliswicked.mp3",
       cover: "/assets/img/covers/thedeviliswicked.jpg",
       note: "",
-      blurb: "Red lane judgement. Cold authority, weight without spectacle.",
-      tags: "red lane, judgement, authority, underworld, industrial noir",
+      blurb: "So you say you run this game\nHold that pose. Prove it\n2 tonne steel on the back",
+      tags: "liquid drum and bass\njamaican vocal influence\npressure proof narrative\nguardian stance energy",
     },
     {
       id: "dreams",
