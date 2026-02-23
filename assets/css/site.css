@@ -647,3 +647,97 @@ nav{
   padding-top: 80px;
   padding-bottom: 60px;
 }
+/* brand lockup overrides, fixes duplicate WAMSMASH and upgrades typography */
+.brand{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-width:760px;
+}
+
+/* override old .brand h1 rule for the new markup */
+.brand h1.brandTitle{
+  position:relative;
+  margin:0;
+  line-height:0.92;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  font-weight:900;
+  font-size:clamp(46px, 6.2vw, 92px);
+  color:transparent;
+}
+
+/* visible crisp title */
+.brandTitleFill{
+  display:block;
+  color:transparent;
+  background-image:linear-gradient(180deg, rgba(255,255,255,0.94), rgba(242,243,247,0.78));
+  -webkit-background-clip:text;
+  background-clip:text;
+  text-shadow:
+    0 10px 30px rgba(0,0,0,0.55),
+    0 2px 0 rgba(0,0,0,0.25);
+}
+
+/* glow layer, absolutely stacked, not taking layout width */
+.brandTitleGlow{
+  position:absolute;
+  inset:0;
+  display:block;
+  color:transparent;
+  background-image:linear-gradient(90deg, rgba(255,43,214,0.92), rgba(255,176,0,0.86));
+  -webkit-background-clip:text;
+  background-clip:text;
+  opacity:0.42;
+  filter:blur(10px);
+  transform:translateZ(0);
+  pointer-events:none;
+  mix-blend-mode:screen;
+}
+
+/* divider under title */
+.brandRule{
+  height:1px;
+  width:min(560px, 92%);
+  margin:2px 0 4px 0;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,43,214,0.62),
+    rgba(0,229,255,0.22),
+    transparent
+  );
+}
+
+/* subtitle, forced two lines */
+.brandSub{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  color:rgba(242,243,247,0.78);
+  font-size:clamp(13px, 1.5vw, 16px);
+  line-height:1.4;
+  letter-spacing:0.02em;
+  max-width:620px;
+}
+
+/* header cinematic presence and readable layering */
+.mainHeader{
+  padding:72px 0 44px 0;
+}
+
+/* keep nav aligned with taller header */
+.mainHeader nav{
+  margin-top:8px;
+}
+
+/* mobile tightening */
+@media (max-width: 560px){
+  .mainHeader{
+    padding:44px 0 24px 0;
+  }
+  .brand h1.brandTitle{
+    letter-spacing:0.12em;
+    font-size:clamp(38px, 10vw, 54px);
+  }
+}
