@@ -34,7 +34,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   padding:28px 18px 110px 18px;
 }
 
-/* header, hero background always wamhero */
+/* HEADER, ALWAYS HERO IMAGE */
 .mainHeader{
   position:relative;
   overflow:hidden;
@@ -52,20 +52,19 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   background-position:center center;
   background-size:cover;
 
-  /* this reserves space so bottom right nav can sit there */
-  padding:22px 24px 22px 24px;
+  padding:22px 24px;
 }
 
-/* lighter darken overlay, keep hero visible */
+/* LIGHT OVERLAY, DO NOT BLACK OUT HERO */
 .mainHeader::after{
   content:"";
   position:absolute;
   inset:0;
   background:linear-gradient(
     180deg,
-    rgba(0,0,0,0.18) 0%,
-    rgba(0,0,0,0.42) 55%,
-    rgba(0,0,0,0.55) 100%
+    rgba(0,0,0,0.16) 0%,
+    rgba(0,0,0,0.38) 55%,
+    rgba(0,0,0,0.52) 100%
   );
   pointer-events:none;
 }
@@ -75,22 +74,21 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   z-index:1;
 }
 
-/* make brand fill the header so we can pin a bottom bar */
+/* BRAND AREA FILLS HEADER SO WE CAN PIN ELEMENTS */
 .brand{
   position:relative;
-  height:100%;
   min-height:240px;
 }
 
-/* subtitle pinned bottom left */
+/* SUBTITLE BOTTOM LEFT */
 .brandSubSingle{
   position:absolute;
   left:18px;
   bottom:14px;
 
   max-width:760px;
-  padding:10px 14px;
 
+  padding:10px 14px;
   border:1px solid rgba(255,255,255,0.12);
   border-radius:14px;
 
@@ -105,7 +103,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   margin:0;
 }
 
-/* nav pinned bottom right */
+/* NAV BOTTOM RIGHT */
 .navUnderSub{
   position:absolute;
   right:18px;
@@ -119,29 +117,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   z-index:2;
 }
 
-/* small screen tweaks */
-@media (max-width: 560px){
-  .brandSubSingle{
-    left:14px;
-    right:14px;
-    max-width:none;
-  }
-
-  .navUnderSub{
-    right:14px;
-    bottom:12px;
-  }
-
-  .mainHeader{
-    padding:18px 16px 18px 16px;
-    min-height:220px;
-  }
-
-  .brand{
-    min-height:220px;
-  }
-}
-/* navigation buttons, shared with footer buttons */
+/* NAV BUTTONS */
 .navlink{
   padding:10px 12px;
   border:1px solid rgba(255,255,255,0.12);
@@ -182,7 +158,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
     0 10px 28px rgba(0,0,0,0.28);
 }
 
-/* hero blocks (like Full Music Catalogue, Links hero, About hero) */
+/* HERO BLOCKS */
 .hero{
   border:1px solid rgba(255,255,255,0.14);
   border-radius:20px;
@@ -214,9 +190,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   transition:transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.heroIntro p{
-  font-weight:500;
-}
+.heroIntro p{font-weight:500}
 
 .heroIntro p strong{
   color:var(--text);
@@ -229,7 +203,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   box-shadow:0 12px 40px rgba(0,0,0,0.35);
 }
 
-/* grids */
+/* GRIDS */
 .grid{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
@@ -237,7 +211,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   margin-top:10px;
 }
 
-/* cards */
+/* CARDS */
 .card{
   border:1px solid rgba(255,255,255,0.12);
   border-radius:20px;
@@ -289,7 +263,6 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   flex-wrap:wrap;
 }
 
-/* buttons */
 .btn{
   border:1px solid rgba(255,255,255,0.18);
   background:rgba(0,0,0,0.20);
@@ -311,7 +284,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   box-shadow:0 0 0 1px rgba(0,229,255,0.15) inset;
 }
 
-/* cover image and hover info */
+/* COVER IMAGE */
 .cardImg{
   position:relative;
   width:100%;
@@ -328,81 +301,15 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   display:block;
 }
 
-.cardInfo{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  padding:1.2rem;
-  background:linear-gradient(
-    to top,
-    rgba(0,0,0,0.98) 0%,
-    rgba(0,0,0,0.92) 25%,
-    rgba(0,0,0,0.75) 45%,
-    rgba(0,0,0,0.45) 65%,
-    rgba(0,0,0,0.0) 100%
-  );
-  transform:translateY(100%);
-  opacity:0;
-  transition:
-    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.25s ease;
-  display:flex;
-  align-items:flex-end;
-}
-
-.cardImg:hover .cardInfo{
-  transform:translateY(0);
-  opacity:1;
-}
-
-.cardInfoInner{
-  width:100%;
-  max-height:100%;
-  overflow:hidden;
-}
-
-@media (hover: none){
-  .cardInfo{
-    transform:translateY(0);
-    opacity:1;
-  }
-}
-
-.cardInfoTitle{
-  font-size:14px;
-  letter-spacing:0.08em;
-  text-transform:uppercase;
-  margin-bottom:6px;
-}
-
-.cardInfoMeta{
-  font-size:12px;
-  color:var(--muted);
-  margin-bottom:10px;
-}
-
-.cardInfoBlurb{
-  font-size:13px;
-  line-height:1.35;
-  margin-bottom:10px;
-}
-
-.cardInfoTags{
-  font-size:12px;
-  color:var(--muted);
-  line-height:1.35;
-}
-
-/* links view */
+/* LINKS VIEW */
 .linksGrid{
   display:grid;
   grid-template-columns:1fr;
   gap:16px;
 }
 
-/* about identity block, lion goes here (inside the content, not header) */
-.aboutIdentity{
+/* IDENTITY BLOCK IN LINKS CONTENT */
+.linksIdentity{
   display:flex;
   align-items:center;
   gap:14px;
@@ -412,7 +319,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   background:rgba(14,15,22,0.45);
 }
 
-.aboutMark{
+.linksMark{
   width:64px;
   height:64px;
   border-radius:16px;
@@ -422,13 +329,13 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   display:block;
 }
 
-.aboutIdentityTitle{
+.linksIdentityTitle{
   font-size:14px;
   letter-spacing:0.10em;
   text-transform:uppercase;
 }
 
-.aboutIdentitySub{
+.linksIdentitySub{
   margin-top:6px;
   font-size:12px;
   color:var(--muted);
@@ -492,7 +399,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   word-break:break-word;
 }
 
-/* press */
+/* PRESS */
 .pressGrid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -514,9 +421,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   background:rgba(14,15,22,0.62);
 }
 
-.pressTop{
-  margin-bottom:10px;
-}
+.pressTop{margin-bottom:10px}
 
 .pressSource{
   font-size:13px;
@@ -543,7 +448,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   outline-offset:3px;
 }
 
-/* player bar */
+/* PLAYER BAR */
 .playerBar{
   position:fixed;
   left:0;
@@ -564,9 +469,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   justify-content:space-between;
 }
 
-.playerNow{
-  min-width:220px;
-}
+.playerNow{min-width:220px}
 
 .playerNowTitle{
   font-size:12px;
@@ -587,11 +490,9 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   width:min(560px, 100%);
 }
 
-.playerControls audio{
-  width:100%;
-}
+.playerControls audio{width:100%}
 
-/* footer */
+/* FOOTER */
 .footer{
   margin-top:26px;
   padding-top:18px;
@@ -617,7 +518,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   text-align:right;
 }
 
-/* responsive */
+/* RESPONSIVE */
 @media (max-width: 920px){
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .linksCards{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -635,12 +536,23 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
 
 @media (max-width: 560px){
   .mainHeader{
-    padding:42px 16px 56px 16px;
+    min-height:220px;
+    padding:18px 16px;
   }
+
+  .brand{min-height:220px}
+
+  .brandSubSingle{
+    left:14px;
+    right:14px;
+    max-width:none;
+  }
+
   .navUnderSub{
     right:14px;
     bottom:12px;
   }
+
   .grid{grid-template-columns:1fr}
   .linksCards{grid-template-columns:1fr}
 }
