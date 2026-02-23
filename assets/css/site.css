@@ -579,3 +579,21 @@ nav{
   font-size:13px;
   line-height:1.5;
 }
+.linkIcon{
+  width:34px;
+  height:34px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,255,255,0.16);
+  background:rgba(0,0,0,0.22);
+  flex:0 0 auto;
+}
+
+.linkIcon svg{
+  width:18px;
+  height:18px;
+  display:block;
+  fill:currentColor;
+  opacity:0.95;
+}
