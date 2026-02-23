@@ -338,6 +338,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   font-size:13px;
   color:rgba(242,243,247,0.86);
   line-height:1.4;
+  white-space: pre-line;
   margin-bottom:8px;
 }
 
@@ -345,6 +346,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   font-size:12px;
   color:rgba(166,168,179,0.95);
   line-height:1.35;
+  white-space: pre-line;
 }
 
 .cardImg:hover .cardInfo{
