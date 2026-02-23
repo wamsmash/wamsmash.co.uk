@@ -36,23 +36,9 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
 
 /* header, hero background with lion integration */
 .mainHeader{
-  display:flex;
-  justify-content:space-between;
-  gap:16px;
-  margin-bottom:40px;
-  align-items:flex-start;
-  position:relative;
-  flex-wrap:wrap;
-  overflow:hidden;
-
-  padding:72px 0 44px 0;
-
-  border-bottom:1px solid rgba(255,255,255,0.08);
-
   background:
-    radial-gradient(1200px 700px at 20% 10%, rgba(255,43,214,0.08), transparent 55%),
-    radial-gradient(900px 600px at 80% 20%, rgba(255,176,0,0.06), transparent 60%),
-    linear-gradient(180deg, #070815, #05060a);
+    url("/assets/img/wamhero.jpg") center center / cover no-repeat;
+  position:relative;
 }
 
 .mainHeader::before{
@@ -67,15 +53,8 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   filter:contrast(1.08) saturate(1.06);
   pointer-events:none;
 }
-
 .mainHeader::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(1200px 650px at 30% 10%, rgba(0,0,0,0.25), rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.70) 100%),
-    linear-gradient(180deg, rgba(0,0,0,0.30), rgba(0,0,0,0.65));
-  pointer-events:none;
+  background: rgba(0,0,0,0.35);
 }
 
 .mainHeader > *{
