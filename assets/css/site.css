@@ -553,50 +553,6 @@ nav{
   fill:currentColor;
   color:var(--text);
 }
-.pressCard{
-  padding:16px;
-  border:1px solid rgba(255,255,255,0.14);
-  border-radius:20px;
-  background:rgba(14,15,22,0.40);
-}
-
-.pressTop{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:10px;
-}
-
-.pressSource{
-  font-size:13px;
-  letter-spacing:0.06em;
-  text-transform:uppercase;
-}
-
-.pressQuote{
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.5;
-}
-.linkIcon{
-  width:34px;
-  height:34px;
-  border-radius:999px;
-  display:grid;
-  place-items:center;
-  border:1px solid rgba(255,255,255,0.16);
-  background:rgba(0,0,0,0.22);
-  flex:0 0 auto;
-}
-
-.linkIcon svg{
-  width:18px;
-  height:18px;
-  display:block;
-  fill:currentColor;
-  opacity:0.95;
-}
 .pressGrid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -623,21 +579,22 @@ nav{
 }
 
 .pressTop{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:10px;
   margin-bottom:10px;
 }
 
 .pressSource{
-  font-size:14px;
+  font-size:13px;
   letter-spacing:0.06em;
   text-transform:uppercase;
+  color:var(--text);
 }
 
 .pressQuote{
   font-size:13px;
   color:var(--muted);
   line-height:1.5;
+}
+.pressCard:focus{
+  outline:2px solid var(--focus);
+  outline-offset:3px;
 }
