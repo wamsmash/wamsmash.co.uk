@@ -10,7 +10,7 @@
   --accentGold:#ffb000;
 }
 
-*{box-sizing:border-box}
+*{box-sizing:border-box} /* updated with this */
 html,body{height:100%}
 
 body{
