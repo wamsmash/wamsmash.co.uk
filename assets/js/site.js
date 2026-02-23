@@ -209,12 +209,12 @@ const LINKS = [
   { label: "YouTube", href: "https://www.youtube.com/@wamsmash", note: "Visual hub", icon: "youtube" },
   { label: "Instagram", href: "https://www.instagram.com/wamsmash", note: "Updates", icon: "instagram" },
   { label: "X", href: "https://x.com/wamsmash_", note: "Updates", icon: "x" },
-  { label: "Email", href: "mailto:willedit@proton.me", note: "Direct contact", icon: "email" }
+  { label: "Bandcamp", href: "https://wamsmash.bandcamp.com/", note: "Direct support and catalogue", icon: "bandcamp" }
 ];
 const PRESS = [
   {
     source: "RetroReverbRecords",
-    href: "https://www.retroreverbrecords.co.uk/",
+    href: "https://www.retroreverbrecords.com/",
     quote: "“CHAOS is a seriously hard, high pressure electronic banger with a clear modern and genre bending style”"
   },
   {
@@ -276,7 +276,8 @@ const ICONS = {
   youtube: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2a3 3 0 00-2.1-2.1C17.7 4.6 12 4.6 12 4.6s-5.7 0-7.5.5A3 3 0 002.4 7.2 31.4 31.4 0 002.4 12a31.4 31.4 0 00.0 4.8 3 3 0 002.1 2.1c1.8.5 7.5.5 7.5.5s5.7 0 7.5-.5a3 3 0 002.1-2.1A31.4 31.4 0 0021.6 12a31.4 31.4 0 000-4.8zM10.2 15.2V8.8L15.8 12l-5.6 3.2z"/></svg>`,
   instagram: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 2h9A5.5 5.5 0 0122 7.5v9A5.5 5.5 0 0116.5 22h-9A5.5 5.5 0 012 16.5v-9A5.5 5.5 0 017.5 2zm0 2A3.5 3.5 0 004 7.5v9A3.5 3.5 0 007.5 20h9a3.5 3.5 0 003.5-3.5v-9A3.5 3.5 0 0016.5 4h-9zM12 7a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6zm5.6-2.2a1 1 0 110 2 1 1 0 010-2z"/></svg>`,
   x: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.6l-5.2-6.5L5.6 22H2.5l7.3-8.4L1 2h6.8l4.7 5.9L18.9 2zm-1.2 18h1.7L6.1 3.9H4.3L17.7 20z"/></svg>`,
-  email: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2zm0 2v.3l8 5.3 8-5.3V7H4zm16 2.7l-8 5.3-8-5.3V17h16V9.7z"/></svg>`
+  email: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2zm0 2v.3l8 5.3 8-5.3V7H4zm16 2.7l-8 5.3-8-5.3V17h16V9.7z"/></svg>`,
+  bandcamp: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 7H22l-4.9 10H9.3L14.7 7zM2 7h9.1L6.2 17H2V7z"/></svg>`,
 };
 
 function iconMarkup(name){
