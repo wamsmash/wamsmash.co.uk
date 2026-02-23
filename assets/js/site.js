@@ -317,19 +317,18 @@ function createPlayerBar() {
         <div class="playerNowSub" id="wmNowSub">Select a track</div>
       </div>
       <div class="playerControls">
-        <audio id="wmAudio" controls preload="none" playsinline controlsList="nodownload noplaybackrate"></audio>
+<audio id="wmAudio" controls preload="none" playsinline controlsList="nodownload noplaybackrate noremoteplayback"></audio>
       </div>
     </div>
   `;
   document.body.appendChild(bar);
 
-  const audioEl = bar.querySelector("#wmAudio");
-  if (audioEl) {
-    audioEl.setAttribute("controlsList", "nodownload noplaybackrate");
-    audioEl.setAttribute("playsinline", "");
-    audioEl.setAttribute("preload", "none");
-    audioEl.setAttribute("crossorigin", "anonymous");
-  }
+const audioEl = bar.querySelector("#wmAudio");
+if (audioEl) {
+  audioEl.setAttribute("controlsList", "nodownload noplaybackrate noremoteplayback");
+  audioEl.setAttribute("playsinline", "");
+  audioEl.setAttribute("disableRemotePlayback", "");
+}
 
   return bar;
 }
