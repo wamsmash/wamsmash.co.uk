@@ -44,7 +44,7 @@
       year: "2026",
       audio: "/assets/audio/equinox.mp3",
       cover: "/assets/img/covers/equinox.jpg",
-      note: "Lift",
+      note: "",
       blurb: "Cold divides. Warm replies\nTempo shifts. Keys turn\nThe line holds",
       tags: "season cycle form\ntempo and key modulation\npiano sax call response\nanalogue meets aggressive",
     },
@@ -54,7 +54,7 @@
       lane: "green",      year: "2026",
       audio: "/assets/audio/mary.mp3",
       cover: "/assets/img/covers/mary.jpg",
-      note: "Story",
+      note: "",
       blurb: "Stillness in a crowded room\nShe reads past the surface\nNothing lost. It’s now enough",
       tags: "downtempo regulation\nreggae pulse undercurrent\nsynth spine motif\nrestorative tension",
     },
@@ -65,7 +65,7 @@
       year: "2026",
       audio: "/assets/audio/arc-raiders.mp3",
       cover: "/assets/img/covers/arcraiders.jpg",
-      note: "Gaming",
+      note: "",
       blurb: "Green lane propulsion. Tactical movement through structured resistance.",
       tags: "uk grime cadence\ndubstep texture pressure\ntactical survival rhythm\nindustrial machine threat",
     },
@@ -76,7 +76,7 @@
       year: "2026",
       audio: "/assets/audio/hold.mp3",
       cover: "/assets/img/covers/hold.jpg",
-      note: "Control",
+      note: "",
       blurb: "Pink lane restraint. Tension contained without collapse.",
       tags: "pink lane, control, tension, discipline, restraint",
     },
@@ -87,7 +87,7 @@
       year: "2026",
       audio: "/assets/audio/breach.mp3",
       cover: "/assets/img/covers/breach.jpg",
-      note: "Pressure",
+      note: "",
       blurb: "Iridescent pressure point. Threshold moment before impact.",
       tags: "iridescent lane, pressure, threshold, rupture, structural tension",
     },
@@ -98,7 +98,7 @@
       year: "2026",
       audio: "/assets/audio/jungle.mp3",
       cover: "/assets/img/covers/jungle.jpg",
-      note: "Impact",
+      note: "",
       blurb: "Red lane force. Instinct, rhythm, environment pushing back.",
       tags: "red lane, impact, instinct, rhythm, primal energy",
     },
@@ -109,7 +109,7 @@
       year: "2026",
       audio: "/assets/audio/thedeviliswicked.mp3",
       cover: "/assets/img/covers/thedeviliswicked.jpg",
-      note: "Judgement",
+      note: "",
       blurb: "Red lane judgement. Cold authority, weight without spectacle.",
       tags: "red lane, judgement, authority, underworld, industrial noir",
     },
@@ -120,7 +120,7 @@
       year: "2026",
       audio: "/assets/audio/dreams.mp3",
       cover: "/assets/img/covers/dreams.jpg",
-      note: "Night drive",
+      note: "",
       blurb: "Blue lane drift. Late hours, clean motion, quiet confidence.",
       tags: "blue lane, night drive, drift, focus, neon noir",
     },
@@ -435,7 +435,9 @@ function laneLabel(lane) {
       <div class="cardTop">
         <div>
           <h3 class="cardTitle" ${opts && opts.anchorId ? `id="${track.id}"` : ``}>${track.title}</h3>
-          <div class="cardMeta">${laneLabel(track.lane)}, ${track.note}</div>
+      <div class="cardMeta">
+  ${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}
+</div>
         </div>
         <div class="badge">${track.year}</div>
       </div>
