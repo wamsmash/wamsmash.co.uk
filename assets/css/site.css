@@ -1,3 +1,4 @@
+```css
 :root{
   --bg:#07070b;
   --panel:#0e0f16;
@@ -10,7 +11,7 @@
   --accentGold:#ffb000;
 }
 
-*{box-sizing:border-box} /* updated with this */
+*{box-sizing:border-box}
 html,body{height:100%}
 
 body{
@@ -34,7 +35,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   padding:28px 18px 110px 18px;
 }
 
-/* header, hero background with lion integration */
+/* header, hero background */
 .mainHeader{
   display:flex;
   justify-content:space-between;
@@ -51,21 +52,26 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   background:url("/assets/img/wamhero.jpg") center center / cover no-repeat;
 }
 
+/* optional lion overlay, delete this block if you want hero only */
 .mainHeader::before{
   content:"";
   position:absolute;
-  inset:0;
-  background:rgba(0,0,0,0.35);
+  inset:-2px;
+  background-image:url("/assets/img/lion-monika.jpg");
+  background-repeat:no-repeat;
+  background-size:clamp(520px, 52vw, 920px);
+  background-position:92% 22%;
+  opacity:0.28;
+  filter:contrast(1.08) saturate(1.06);
   pointer-events:none;
 }
 
+/* darken overlay */
 .mainHeader::after{
   content:"";
   position:absolute;
   inset:0;
-  background:
-    radial-gradient(1200px 650px at 20% 0%, rgba(0,0,0,0.12), rgba(0,0,0,0.62) 55%, rgba(0,0,0,0.78) 100%),
-    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.55));
+  background:rgba(0,0,0,0.35);
   pointer-events:none;
 }
 
@@ -668,3 +674,4 @@ nav{
     font-size:clamp(38px, 10vw, 54px);
   }
 }
+```
