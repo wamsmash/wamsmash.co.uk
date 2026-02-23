@@ -51,7 +51,8 @@
     {
       id: "mary",
       title: "MARY",
-      lane: "green",      year: "2026",
+      lane: "green",
+      year: "2026",
       audio: "/assets/audio/mary.mp3",
       cover: "/assets/img/covers/mary.jpg",
       note: "",
@@ -86,7 +87,7 @@
       lane: "iridescent",
       year: "2026",
       audio: "/assets/audio/breach.mp3",
-      cover: "/assets/img/covers/breach.jpg",
+      cover: "/assets/img/covers/breach.mp3",
       note: "",
       blurb: "Brick codes speak\nGrey wind through back lanes\nI’ll stand when the night gets rough",
       tags: "uk regional hiphop\nnorth east narrative\ncomfort chorus contrast\nbleak urban tension",
@@ -235,6 +236,28 @@
     },
   ];
 
+  const GAMES = [
+    {
+      id: "reaction",
+      title: "Neon Reaction",
+      note: "Reflex",
+      blurb: "Wait for the flash\nClick as soon as it flips\nNo false starts",
+      tags: "reaction time\nrepeatable loop\nclean input",
+    },
+    {
+      id: "memory",
+      title: "Lane Memory",
+      note: "Pairs",
+      blurb: "Match the lanes\nEmoji and label pairs\nFinish clean",
+      tags: "lane system\npattern recall\nshort session",
+    }
+  ];
+
+  const gameState = {
+    reaction: { stage: "idle", timerId: 0, startAt: 0, best: 0, last: 0, falseStarts: 0 },
+    memory: { deck: [], flipped: [], matched: 0, moves: 0, locked: false }
+  };
+
   function renderPress() {
     const mount = document.getElementById("wmPress");
     if (!mount) return;
@@ -258,17 +281,19 @@
       mount.appendChild(a);
     }
   }
-function laneLabel(lane) {
-  const v = String(lane || "").toLowerCase();
-  if (v === "red") return "🔴 RED LANE";
-  if (v === "blue") return "🔵 BLUE LANE";
-  if (v === "green") return "🟢 GREEN LANE";
-  if (v === "yellow") return "🟡 YELLOW LANE";
-  if (v === "pink") return "🩷 PINK LANE";
-  if (v === "iridescent") return "🫧 IRIDESCENT LANE";
-  if (v === "orange") return "🟠 ORANGE LANE";
-  return (v ? v.toUpperCase() : "LANE");
-}
+
+  function laneLabel(lane) {
+    const v = String(lane || "").toLowerCase();
+    if (v === "red") return "🔴 RED LANE";
+    if (v === "blue") return "🔵 BLUE LANE";
+    if (v === "green") return "🟢 GREEN LANE";
+    if (v === "yellow") return "🟡 YELLOW LANE";
+    if (v === "pink") return "🩷 PINK LANE";
+    if (v === "iridescent") return "🫧 IRIDESCENT LANE";
+    if (v === "orange") return "🟠 ORANGE LANE";
+    return (v ? v.toUpperCase() : "LANE");
+  }
+
   function $(sel, root = document) {
     return root.querySelector(sel);
   }
@@ -365,7 +390,7 @@ function laneLabel(lane) {
     }
 
     title.textContent = track.title;
-    sub.textContent = `${laneLabel(track.lane)}, ${track.note}`;
+    sub.textContent = `${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}`;
   }
 
   function setAudioSource(audioEl, track) {
@@ -418,15 +443,13 @@ function laneLabel(lane) {
   }
 
   function cardMarkup(track, opts) {
-
-
     return `
       <div class="cardImg">
         ${imgTag(track, !!(opts && opts.eagerImage))}
         <div class="cardInfo">
           <div class="cardInfoInner">
             <div class="cardInfoTitle">${track.title}</div>
-            <div class="cardInfoMeta">${laneLabel(track.lane)}, ${track.note}</div>
+            <div class="cardInfoMeta">${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}</div>
             ${track.blurb ? `<div class="cardInfoBlurb">${track.blurb}</div>` : ``}
             ${track.tags ? `<div class="cardInfoTags">${track.tags}</div>` : ``}
           </div>
@@ -436,16 +459,35 @@ function laneLabel(lane) {
       <div class="cardTop">
         <div>
           <h3 class="cardTitle" ${opts && opts.anchorId ? `id="${track.id}"` : ``}>${track.title}</h3>
-      <div class="cardMeta">
-  ${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}
-</div>
+          <div class="cardMeta">
+            ${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}
+          </div>
         </div>
         <div class="badge">${track.year}</div>
       </div>
 
-<div class="cardActions">
-  <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
-</div>
+      <div class="cardActions">
+        <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
+      </div>
+    `;
+  }
+
+  function gameCardMarkup(game) {
+    return `
+      <div class="cardTop">
+        <div>
+          <h3 class="cardTitle">${game.title}</h3>
+          <div class="cardMeta">${game.note}</div>
+        </div>
+        <div class="badge">Game</div>
+      </div>
+
+      ${game.blurb ? `<div style="padding:0 14px 12px 14px; color:rgba(242,243,247,0.86); line-height:1.4; white-space:pre-line;">${game.blurb}</div>` : ``}
+      ${game.tags ? `<div style="padding:0 14px 12px 14px; color:rgba(166,168,179,0.95); line-height:1.35; white-space:pre-line; font-size:12px;">${game.tags}</div>` : ``}
+
+      <div class="cardActions">
+        <button class="btn btnPrimary" type="button" data-game-open="${game.id}">Open</button>
+      </div>
     `;
   }
 
@@ -517,6 +559,360 @@ function laneLabel(lane) {
     }
   }
 
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = a[i];
+      a[i] = a[j];
+      a[j] = t;
+    }
+    return a;
+  }
+
+  function buildMemoryDeck() {
+    const pairs = [
+      { k: "red", label: laneLabel("red") },
+      { k: "blue", label: laneLabel("blue") },
+      { k: "green", label: laneLabel("green") },
+      { k: "yellow", label: laneLabel("yellow") },
+      { k: "pink", label: laneLabel("pink") },
+      { k: "iridescent", label: laneLabel("iridescent") },
+    ];
+
+    const deck = [];
+    for (let i = 0; i < pairs.length; i++) {
+      const p = pairs[i];
+      deck.push({ id: `${p.k}_a`, key: p.k, face: p.label });
+      deck.push({ id: `${p.k}_b`, key: p.k, face: p.label });
+    }
+    return shuffle(deck);
+  }
+
+  function renderGames() {
+    const mount = document.getElementById("wmGames");
+    if (!mount) return;
+
+    mount.innerHTML = "";
+
+    for (let i = 0; i < GAMES.length; i++) {
+      const g = GAMES[i];
+      const card = document.createElement("div");
+      card.className = "card";
+      card.setAttribute("data-game-card", g.id);
+      card.innerHTML = gameCardMarkup(g);
+      mount.appendChild(card);
+    }
+  }
+
+  function openGame(gameId) {
+    const card = document.querySelector(`[data-game-card="${gameId}"]`);
+    if (!card) return;
+
+    if (gameId === "reaction") {
+      const s = gameState.reaction;
+      if (s.timerId) clearTimeout(s.timerId);
+      s.stage = "idle";
+      s.startAt = 0;
+      s.last = 0;
+
+      card.innerHTML = `
+        <div class="cardTop">
+          <div>
+            <h3 class="cardTitle">Neon Reaction</h3>
+            <div class="cardMeta">Wait, then click</div>
+          </div>
+          <div class="badge">Game</div>
+        </div>
+
+        <div style="padding:0 14px 12px 14px; color:rgba(242,243,247,0.86); line-height:1.4; white-space:pre-line;">
+          Click Start\nWait for the signal\nClick the panel
+        </div>
+
+        <div style="padding:0 14px 12px 14px; color:rgba(166,168,179,0.95); line-height:1.35; white-space:pre-line; font-size:12px;">
+          Last: ${s.last ? `${s.last} ms` : `—`}\nBest: ${s.best ? `${s.best} ms` : `—`}\nFalse starts: ${s.falseStarts}
+        </div>
+
+        <div style="padding:0 14px 14px 14px;">
+          <div
+            data-reaction-panel="1"
+            style="
+              height:140px;
+              border:1px solid rgba(255,255,255,0.12);
+              border-radius:16px;
+              background:rgba(0,0,0,0.20);
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              user-select:none;
+              -webkit-user-select:none;
+              cursor:pointer;
+              letter-spacing:0.06em;
+              text-transform:uppercase;
+              font-size:12px;
+              color:rgba(242,243,247,0.92);
+            "
+          >Idle</div>
+        </div>
+
+        <div class="cardActions">
+          <button class="btn btnPrimary" type="button" data-reaction-start="1">Start</button>
+          <button class="btn" type="button" data-game-back="1">Back</button>
+        </div>
+      `;
+      return;
+    }
+
+    if (gameId === "memory") {
+      const m = gameState.memory;
+      m.deck = buildMemoryDeck();
+      m.flipped = [];
+      m.matched = 0;
+      m.moves = 0;
+      m.locked = false;
+
+      const tiles = m.deck.map(function (t) {
+        return `
+          <button
+            type="button"
+            class="btn"
+            data-memory-tile="${t.id}"
+            style="
+              width:100%;
+              height:72px;
+              border-radius:14px;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              letter-spacing:0.06em;
+              text-transform:uppercase;
+              font-size:12px;
+              white-space:nowrap;
+              overflow:hidden;
+              text-overflow:ellipsis;
+            "
+          >?</button>
+        `;
+      }).join("");
+
+      card.innerHTML = `
+        <div class="cardTop">
+          <div>
+            <h3 class="cardTitle">Lane Memory</h3>
+            <div class="cardMeta">Match the pairs</div>
+          </div>
+          <div class="badge">Game</div>
+        </div>
+
+        <div style="padding:0 14px 12px 14px; color:rgba(166,168,179,0.95); line-height:1.35; white-space:pre-line; font-size:12px;">
+          Moves: <span data-memory-moves="1">0</span>\nMatched: <span data-memory-matched="1">0</span> / 6
+        </div>
+
+        <div style="padding:0 14px 14px 14px;">
+          <div
+            style="
+              display:grid;
+              grid-template-columns:repeat(3, minmax(0, 1fr));
+              gap:10px;
+            "
+          >
+            ${tiles}
+          </div>
+        </div>
+
+        <div class="cardActions">
+          <button class="btn btnPrimary" type="button" data-memory-reset="1">Reset</button>
+          <button class="btn" type="button" data-game-back="1">Back</button>
+        </div>
+      `;
+      return;
+    }
+  }
+
+  function closeGame(gameId) {
+    const card = document.querySelector(`[data-game-card="${gameId}"]`);
+    if (!card) return;
+
+    const g = GAMES.find(x => x.id === gameId);
+    if (!g) return;
+
+    if (gameId === "reaction") {
+      const s = gameState.reaction;
+      if (s.timerId) clearTimeout(s.timerId);
+      s.timerId = 0;
+      s.stage = "idle";
+      s.startAt = 0;
+    }
+
+    card.innerHTML = gameCardMarkup(g);
+  }
+
+  function startReaction() {
+    const s = gameState.reaction;
+    if (s.timerId) clearTimeout(s.timerId);
+
+    s.stage = "waiting";
+    s.startAt = 0;
+
+    const card = document.querySelector(`[data-game-card="reaction"]`);
+    if (!card) return;
+
+    const panel = card.querySelector("[data-reaction-panel]");
+    if (panel) {
+      panel.textContent = "Waiting";
+      panel.style.background = "rgba(0,0,0,0.20)";
+      panel.style.borderColor = "rgba(255,255,255,0.12)";
+    }
+
+    const delay = 700 + Math.floor(Math.random() * 1600);
+    s.timerId = setTimeout(function () {
+      s.timerId = 0;
+      s.stage = "go";
+      s.startAt = performance.now();
+
+      const c = document.querySelector(`[data-game-card="reaction"]`);
+      const p = c ? c.querySelector("[data-reaction-panel]") : null;
+      if (p) {
+        p.textContent = "Go";
+        p.style.background = "rgba(255,255,255,0.10)";
+        p.style.borderColor = "rgba(255,255,255,0.28)";
+      }
+    }, delay);
+  }
+
+  function clickReactionPanel() {
+    const s = gameState.reaction;
+    const card = document.querySelector(`[data-game-card="reaction"]`);
+    if (!card) return;
+
+    const panel = card.querySelector("[data-reaction-panel]");
+    if (!panel) return;
+
+    if (s.stage === "waiting") {
+      s.falseStarts += 1;
+      s.stage = "idle";
+      if (s.timerId) clearTimeout(s.timerId);
+      s.timerId = 0;
+      panel.textContent = "False start";
+      panel.style.background = "rgba(0,0,0,0.20)";
+      panel.style.borderColor = "rgba(255,255,255,0.12)";
+      openGame("reaction");
+      return;
+    }
+
+    if (s.stage !== "go" || !s.startAt) return;
+
+    const ms = Math.max(0, Math.round(performance.now() - s.startAt));
+    s.last = ms;
+    if (!s.best || ms < s.best) s.best = ms;
+    s.stage = "idle";
+    s.startAt = 0;
+
+    panel.textContent = `${ms} ms`;
+    panel.style.background = "rgba(0,0,0,0.20)";
+    panel.style.borderColor = "rgba(255,255,255,0.12)";
+
+    openGame("reaction");
+  }
+
+  function memoryFind(id) {
+    const m = gameState.memory;
+    return m.deck.find(x => x.id === id) || null;
+  }
+
+  function setMemoryCounters(root) {
+    const m = gameState.memory;
+    const movesEl = root.querySelector("[data-memory-moves]");
+    const matchedEl = root.querySelector("[data-memory-matched]");
+    if (movesEl) movesEl.textContent = String(m.moves);
+    if (matchedEl) matchedEl.textContent = String(m.matched);
+  }
+
+  function revealMemoryTile(btn, face) {
+    btn.textContent = face;
+    btn.style.borderColor = "rgba(255,255,255,0.30)";
+    btn.style.background = "rgba(255,255,255,0.10)";
+  }
+
+  function hideMemoryTile(btn) {
+    btn.textContent = "?";
+    btn.style.borderColor = "rgba(255,255,255,0.18)";
+    btn.style.background = "rgba(0,0,0,0.20)";
+  }
+
+  function lockMemoryTile(btn) {
+    btn.disabled = true;
+    btn.style.borderColor = "rgba(255,255,255,0.12)";
+    btn.style.background = "rgba(0,0,0,0.25)";
+    btn.style.opacity = "0.75";
+  }
+
+  function clickMemoryTile(tileId) {
+    const card = document.querySelector(`[data-game-card="memory"]`);
+    if (!card) return;
+
+    const m = gameState.memory;
+    if (m.locked) return;
+
+    const btn = card.querySelector(`[data-memory-tile="${tileId}"]`);
+    if (!btn || btn.disabled) return;
+
+    const item = memoryFind(tileId);
+    if (!item) return;
+
+    if (m.flipped.indexOf(tileId) >= 0) return;
+
+    m.flipped.push(tileId);
+    revealMemoryTile(btn, item.face);
+
+    if (m.flipped.length < 2) return;
+
+    m.moves += 1;
+    setMemoryCounters(card);
+
+    const aId = m.flipped[0];
+    const bId = m.flipped[1];
+    const a = memoryFind(aId);
+    const b = memoryFind(bId);
+
+    if (!a || !b) {
+      m.flipped = [];
+      return;
+    }
+
+    if (a.key === b.key) {
+      const aBtn = card.querySelector(`[data-memory-tile="${aId}"]`);
+      const bBtn = card.querySelector(`[data-memory-tile="${bId}"]`);
+      if (aBtn) lockMemoryTile(aBtn);
+      if (bBtn) lockMemoryTile(bBtn);
+
+      m.matched += 1;
+      m.flipped = [];
+      setMemoryCounters(card);
+
+      if (m.matched >= 6) {
+        const top = card.querySelector(".cardMeta");
+        if (top) top.textContent = "Complete";
+      }
+      return;
+    }
+
+    m.locked = true;
+    setTimeout(function () {
+      const aBtn = card.querySelector(`[data-memory-tile="${aId}"]`);
+      const bBtn = card.querySelector(`[data-memory-tile="${bId}"]`);
+      if (aBtn) hideMemoryTile(aBtn);
+      if (bBtn) hideMemoryTile(bBtn);
+      m.flipped = [];
+      m.locked = false;
+    }, 650);
+  }
+
+  function renderLinksAndPress() {
+    renderLinks();
+    renderPress();
+  }
+
   function playTrack(audioEl, trackId) {
     const track = findTrackById(trackId);
     if (!track) return;
@@ -537,17 +933,64 @@ function laneLabel(lane) {
     });
   }
 
+  function wireGames() {
+    document.addEventListener("click", function (e) {
+      const openBtn = e.target.closest("[data-game-open]");
+      if (openBtn) {
+        const id = openBtn.getAttribute("data-game-open");
+        openGame(id);
+        return;
+      }
+
+      const backBtn = e.target.closest("[data-game-back]");
+      if (backBtn) {
+        const card = e.target.closest("[data-game-card]");
+        if (!card) return;
+        const id = card.getAttribute("data-game-card");
+        closeGame(id);
+        return;
+      }
+
+      const reactionStart = e.target.closest("[data-reaction-start]");
+      if (reactionStart) {
+        startReaction();
+        return;
+      }
+
+      const reactionPanel = e.target.closest("[data-reaction-panel]");
+      if (reactionPanel) {
+        clickReactionPanel();
+        return;
+      }
+
+      const memReset = e.target.closest("[data-memory-reset]");
+      if (memReset) {
+        openGame("memory");
+        return;
+      }
+
+      const memTile = e.target.closest("[data-memory-tile]");
+      if (memTile) {
+        const tileId = memTile.getAttribute("data-memory-tile");
+        clickMemoryTile(tileId);
+        return;
+      }
+    });
+  }
+
   function switchView(view) {
     const home = document.getElementById("homeView");
     const music = document.getElementById("musicView");
     const links = document.getElementById("linksView");
+    const games = document.getElementById("gamesView");
     const hero = document.querySelector(".heroIntro");
 
-    if (!home || !music || !links) return;
+    if (!home || !music || !links || !games) return;
 
     home.style.display = view === "home" ? "block" : "none";
     music.style.display = view === "music" ? "block" : "none";
     links.style.display = view === "links" ? "block" : "none";
+    games.style.display = view === "games" ? "block" : "none";
 
     if (hero) hero.style.display = view === "home" ? "block" : "none";
 
@@ -581,6 +1024,7 @@ function laneLabel(lane) {
 
     if (viewPart === "music") return { view: "music", scrollId };
     if (viewPart === "links") return { view: "links", scrollId: "" };
+    if (viewPart === "games") return { view: "games", scrollId: "" };
 
     return { view: "home", scrollId: "" };
   }
@@ -623,6 +1067,11 @@ function laneLabel(lane) {
         return;
       }
 
+      if (view === "games") {
+        location.hash = "games";
+        return;
+      }
+
       if (view === "home") location.hash = "";
     });
 
@@ -650,11 +1099,12 @@ function laneLabel(lane) {
 
     renderFeaturedGrid();
     renderMusicList();
-    renderLinks();
-    renderPress();
+    renderLinksAndPress();
+    renderGames();
 
     wirePlayButtons(audioEl);
     wireNavigation();
+    wireGames();
 
     window.addEventListener("hashchange", applyRoute);
     applyRoute();
