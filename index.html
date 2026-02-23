@@ -8,33 +8,19 @@
 </head>
 <body>
   <div class="wrap">
-<header class="mainHeader">
-  <div class="brand">
-    <div class="brandSub brandSubSingle">
-      Structured electronic built around tension and contrast. Neon noir sound design!
-    </div>
 
-    <nav class="navUnderSub">
-      <a class="navlink isActive" href="/">Home</a>
-      <a class="navlink" href="/music/">Music</a>
-      <a class="navlink" href="/links/">Links</a>
-    </nav>
-  </div>
-</header>
+    <header class="mainHeader">
+      <div class="brand">
+        <div class="brandSub brandSubSingle">
+          Structured electronic built around tension and contrast. Neon noir sound design!
+        </div>
 
-  <div class="brandRule" aria-hidden="true"></div>
-
-  <div class="brandSub">
-    <span>Structured electronic built around tension and contrast</span>
-    <span>Neon noir sound design</span>
-  </div>
-</div>
-
-      <nav>
-        <button class="navlink" data-view="home">Home</button>
-        <button class="navlink" data-view="music">Music</button>
-        <button class="navlink" data-view="links">Links</button>
-      </nav>
+        <nav class="navUnderSub">
+          <button class="navlink isActive" data-view="home" type="button">Home</button>
+          <button class="navlink" data-view="music" type="button">Music</button>
+          <button class="navlink" data-view="links" type="button">Links</button>
+        </nav>
+      </div>
     </header>
 
     <section class="hero heroIntro" role="button" tabindex="0" data-view="music" aria-label="Open music catalogue">
@@ -49,44 +35,43 @@
     <section id="musicView" style="display:none;">
       <div id="wmMusicList" class="grid"></div>
     </section>
-<section id="linksView" style="display:none;">
-  <div class="linksHero hero">
-    <h2>Links</h2>
-    <p>Official channels, clean routing, no noise</p>
-  </div>
 
-  <div class="linksGrid">
-
-    <section>
-      <div class="hero" style="margin-bottom:16px;">
-        <h2>Press</h2>
-        <p>Selected quotes, click a source to open</p>
+    <section id="linksView" style="display:none;">
+      <div class="linksHero hero">
+        <h2>Links</h2>
+        <p>Official channels, clean routing, no noise</p>
       </div>
-      <div id="wmPress" class="pressGrid"></div>
-    </section>
 
-    <div class="linksIdentity">
-      <img class="linksMark" src="/assets/img/lion-monika.jpg" alt="WAMSMASH identity mark">
-      <div class="linksIdentityText">
-        <div class="linksIdentityTitle">WAMSMASH</div>
-        <div class="linksIdentitySub">Neon noir identity layer</div>
+      <div class="linksGrid">
+        <section>
+          <div class="hero" style="margin-bottom:16px;">
+            <h2>Press</h2>
+            <p>Selected quotes, click a source to open</p>
+          </div>
+          <div id="wmPress" class="pressGrid"></div>
+        </section>
+
+        <div class="linksIdentity">
+          <img class="linksMark" src="/assets/img/lion-monika.jpg" alt="WAMSMASH identity mark">
+          <div class="linksIdentityText">
+            <div class="linksIdentityTitle">WAMSMASH</div>
+            <div class="linksIdentitySub">Neon noir identity layer</div>
+          </div>
+        </div>
+
+        <div id="wmLinksList" class="linksCards"></div>
+
+        <section class="hero" style="margin-top:16px;">
+          <h2>About</h2>
+          <p>Structured electronic built around tension and contrast<br>Neon noir sound design</p>
+        </section>
       </div>
-    </div>
-
-    <div id="wmLinksList" class="linksCards"></div>
-
-    <section class="hero" style="margin-top:16px;">
-      <h2>About</h2>
-      <p>Structured electronic built around tension and contrast<br>Neon noir sound design</p>
     </section>
-
-  </div>
-</section>
 
     <footer class="footer">
       <div class="footerInner">
         <div class="footerLinks">
-          <button class="navlink" data-view="links">Links</button>
+          <button class="navlink" data-view="links" type="button">Links</button>
         </div>
 
         <div class="footerCopy">
@@ -94,6 +79,7 @@
         </div>
       </div>
     </footer>
+
   </div>
 
   <script src="/assets/js/site.js"></script>
