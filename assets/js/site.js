@@ -8,7 +8,7 @@
       id: "chaos",
       title: "CHAOS",
       lane: "red",
-      year: "2026",
+      year: "2025",
       audio: "/assets/audio/chaos.mp3",
       cover: "/assets/img/covers/chaos.jpg",
       note: "",
