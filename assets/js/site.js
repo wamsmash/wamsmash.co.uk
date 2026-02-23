@@ -121,19 +121,19 @@
       audio: "/assets/audio/dreams.mp3",
       cover: "/assets/img/covers/dreams.jpg",
       note: "",
-      blurb: "Blue lane drift. Late hours, clean motion, quiet confidence.",
-      tags: "blue lane, night drive, drift, focus, neon noir",
+      blurb: "Bathroom floor. Mirror empty\nYou appeared where you don’t belong\nCouldn’t get to you. Drift away",
+      tags: "vocal modulation highlight\ndream piano and sax\ndubstep drop contrast\nunresolved desire held",
     },
     {
       id: "snowberry",
       title: "SNOWBERRY",
-      lane: "iridescent",
+      lane: "blue",
       year: "2026",
       audio: "/assets/audio/snowberry.mp3",
       cover: "/assets/img/covers/snowberry.jpg",
-      note: "Winter glow",
-      blurb: "Iridescent winter. Pink neon reflection on snow, sweetness with bite.",
-      tags: "iridescent lane, winter, neon reflection, sweetness, cold air",
+      note: "",
+      blurb: "Sweet in the cold\nLetters through the phone\nWinter turns to home",
+      tags: "liquid drum and bass\nwinter atmosphere pads\nfemale melodic lead\ndubstep bass undercurrent",
     },
     {
       id: "greenmachine",
@@ -143,8 +143,8 @@
       audio: "/assets/audio/green-machine.mp3",
       cover: "/assets/img/covers/green-machine.jpg",
       note: "Propulsion",
-      blurb: "Green lane engine. Structured drive, mechanical intent, forward push.",
-      tags: "green lane, propulsion, engine, drive, industrial",
+      blurb: "Fizzy on the inside\nDeep sub underneath\nStep inside the green machine",
+      tags: "half time hiphop drums\ntropical percussion layer\nhypnotic bassline drive\nurban dubstep contrast",
     },
     {
       id: "jimmy",
@@ -154,19 +154,19 @@
       audio: "/assets/audio/jimmy.mp3",
       cover: "/assets/img/covers/jimmy.jpg",
       note: "Character",
-      blurb: "Blue lane portrait. A person in motion, story told with restraint.",
-      tags: "blue lane, character, portrait, story, late night",
+      blurb: "Mouth too quick. Room goes quiet\nHeartbeat in the street\nRead the moment before you speak",
+      tags: "rock drums with sax lead\nvocal scratch textures\nsocial realism narrative\ncall and response hook",
     },
     {
       id: "jazzbaby",
       title: "JAZZ BABY",
-      lane: "pink",
+      lane: "orange",
       year: "2026",
       audio: "/assets/audio/jazz-baby.mp3",
       cover: "/assets/img/covers/jazz-baby.jpg",
       note: "Flirt",
-      blurb: "Pink lane play. Smooth edges, bright accents, controlled heat.",
-      tags: "pink lane, flirt, groove, smooth, neon noir",
+      blurb: "Loose shoulders. Time opens\nPlayful fragments drift past\nStay present. Let it melt",
+      tags: "jazz dubstep fusion\nrelaxed swing timing\nmelodic fragment flow\nwarm decompression",
     },
     {
       id: "dancefloorsaviour",
@@ -266,6 +266,7 @@ function laneLabel(lane) {
   if (v === "yellow") return "🟡 YELLOW LANE";
   if (v === "pink") return "🩷 PINK LANE";
   if (v === "iridescent") return "🫧 IRIDESCENT LANE";
+  if (v === "orange") return "🟠 ORANGE LANE";
   return (v ? v.toUpperCase() : "LANE");
 }
   function $(sel, root = document) {
