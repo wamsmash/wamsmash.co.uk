@@ -48,7 +48,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   min-height:240px;
 
   background-color:#0b0c12;
-  background-image:url("/assets/img/wamhero.jpg");
+  background-image:url("/assets/img/covers/wamhero.jpg");
   background-repeat:no-repeat;
   background-position:center center;
   background-size:cover;
