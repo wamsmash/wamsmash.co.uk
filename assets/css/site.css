@@ -607,3 +607,39 @@ nav{
 .pressCard:hover .pressSource{
   text-decoration-color:rgba(255,255,255,0.55);
 }
+.mainHeader{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(1200px 700px at 20% 10%, rgba(255,43,214,0.08), transparent 55%),
+    radial-gradient(900px 600px at 80% 20%, rgba(255,176,0,0.06), transparent 60%),
+    linear-gradient(180deg, #070815, #05060a);
+}
+
+.mainHeader::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background-image:url("/assets/img/lion-monika.jpg");
+  background-repeat:no-repeat;
+  background-size:clamp(520px, 52vw, 920px);
+  background-position:92% 22%;
+  opacity:0.22;
+  filter:contrast(1.08) saturate(1.06);
+  pointer-events:none;
+}
+
+.mainHeader::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(1200px 650px at 30% 10%, rgba(0,0,0,0.10), rgba(0,0,0,0.86) 58%, rgba(0,0,0,0.96) 100%),
+    linear-gradient(180deg, rgba(0,0,0,0.42), rgba(0,0,0,0.86));
+  pointer-events:none;
+}
+
+.mainHeader > *{
+  position:relative;
+  z-index:1;
+}
