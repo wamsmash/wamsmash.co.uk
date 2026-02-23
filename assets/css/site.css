@@ -700,3 +700,46 @@ nav{
     font-size:clamp(38px, 10vw, 54px);
   }
 }
+```html
+<header class="mainHeader">
+  <div class="brand">
+    <div class="brandSub brandSubSingle">
+      Structured electronic built around tension and contrast. Neon noir sound design!
+    </div>
+
+    <nav class="navUnderSub">
+      <a class="navlink isActive" href="/">Home</a>
+      <a class="navlink" href="/music/">Music</a>
+      <a class="navlink" href="/links/">Links</a>
+    </nav>
+  </div>
+</header>
+```
+
+```css
+/* remove the big WAMSMASH title, image is the title now */
+.brand h1.brandTitle{display:none}
+
+/* subtitle as one line, cleaner over the hero image */
+.brandSubSingle{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:min(920px, 100%);
+  color:rgba(242,243,247,0.86);
+  font-size:clamp(13px, 1.6vw, 16px);
+  letter-spacing:0.02em;
+  text-shadow:0 10px 22px rgba(0,0,0,0.70);
+}
+
+/* move nav under the subtitle */
+.navUnderSub{
+  justify-content:flex-start;
+  margin-top:12px;
+}
+
+/* optional, tighten header vertical space now the title is gone */
+.mainHeader{
+  padding:44px 18px 34px 18px;
+}
+```
