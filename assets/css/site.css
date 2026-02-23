@@ -36,25 +36,19 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
 
 /* header, hero background */
 .mainHeader{
-  display:flex;
-  justify-content:space-between;
-  gap:16px;
-  margin-bottom:26px;
-  align-items:flex-start;
   position:relative;
-  flex-wrap:wrap;
   overflow:hidden;
 
-  padding:72px 0 44px 0;
-
-  border:1px solid rgba(255,255,255,0.10);
+  border:1px solid rgba(255,255,255,0.14);
   border-radius:20px;
 
-  background:url("/assets/img/covers/wamhero.jpg") center center / cover no-repeat;
-  box-shadow:0 18px 60px rgba(0,0,0,0.55);
+  padding:54px 24px 22px 24px;
+  margin-bottom:18px;
+
+  background:url("/assets/img/wamhero.jpg") center center / cover no-repeat;
 }
 
-/* optional lion overlay */
+/* optional lion overlay, delete this block if you want hero only */
 .mainHeader::before{
   content:"";
   position:absolute;
@@ -73,12 +67,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(
-    90deg,
-    rgba(0,0,0,0.55) 0%,
-    rgba(0,0,0,0.34) 45%,
-    rgba(0,0,0,0.55) 100%
-  );
+  background:rgba(0,0,0,0.35);
   pointer-events:none;
 }
 
@@ -87,91 +76,50 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   z-index:1;
 }
 
-/* brand lockup */
+/* brand block inside header */
 .brand{
   display:flex;
   flex-direction:column;
-  gap:10px;
-  max-width:760px;
+  gap:12px;
+  width:100%;
 }
 
-.brand h1.brandTitle{
-  position:relative;
-  margin:0;
-  line-height:0.92;
-  letter-spacing:0.16em;
-  text-transform:uppercase;
-  font-weight:900;
-  font-size:clamp(46px, 6.2vw, 92px);
-  color:transparent;
-}
-
-.brandTitleFill{
+/* one line subtitle, left aligned */
+.brandSubSingle{
   display:block;
-  color:transparent;
-  background-image:linear-gradient(180deg, rgba(255,255,255,0.94), rgba(242,243,247,0.78));
-  -webkit-background-clip:text;
-  background-clip:text;
-  text-shadow:
-    0 10px 30px rgba(0,0,0,0.55),
-    0 2px 0 rgba(0,0,0,0.25);
-}
-
-.brandTitleGlow{
-  position:absolute;
-  inset:0;
-  display:block;
-  color:transparent;
-  background-image:linear-gradient(90deg, rgba(255,43,214,0.92), rgba(255,176,0,0.86));
-  -webkit-background-clip:text;
-  background-clip:text;
-  opacity:0.42;
-  filter:blur(10px);
-  transform:translateZ(0);
-  pointer-events:none;
-  mix-blend-mode:screen;
-}
-
-.brandRule{
-  height:1px;
-  width:min(560px, 92%);
-  margin:2px 0 4px 0;
-  background:linear-gradient(
-    90deg,
-    transparent,
-    rgba(255,43,214,0.62),
-    rgba(0,229,255,0.22),
-    transparent
-  );
-  box-shadow:0 0 22px rgba(255,43,214,0.10);
-}
-
-.brandSub{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  color:rgba(242,243,247,0.82);
+  max-width:920px;
+  padding:10px 14px;
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:14px;
+  background:rgba(14,15,22,0.35);
+  color:rgba(242,243,247,0.84);
   font-size:clamp(13px, 1.5vw, 16px);
-  line-height:1.4;
-  letter-spacing:0.02em;
-  max-width:620px;
+  line-height:1.35;
+  text-align:left;
   text-shadow:0 10px 22px rgba(0,0,0,0.65);
+  margin:0;
 }
 
-/* navigation */
-nav{
+/* nav pinned bottom right */
+.navUnderSub{
   display:flex;
   gap:10px;
   flex-wrap:wrap;
   justify-content:flex-end;
-  margin-top:8px;
+  align-self:flex-end;
+
+  position:absolute;
+  right:18px;
+  bottom:14px;
+  z-index:2;
 }
 
+/* navigation buttons */
 .navlink{
   padding:10px 12px;
-  border:1px solid rgba(255,255,255,0.14);
+  border:1px solid rgba(255,255,255,0.12);
   border-radius:12px;
-  background:rgba(14,15,22,0.48);
+  background:rgba(14,15,22,0.40);
   font-size:13px;
 
   color:var(--text);
@@ -181,14 +129,13 @@ nav{
   appearance:none;
   -webkit-appearance:none;
 
-  transition:background 0.18s ease, border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  transition:background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
 }
 
 .navlink:hover{
   background:rgba(14,15,22,0.70);
-  border-color:rgba(255,255,255,0.24);
+  border-color:rgba(255,255,255,0.22);
   transform:translateY(-1px);
-  box-shadow:0 10px 26px rgba(0,0,0,0.35);
 }
 
 .navlink.isActive{
@@ -208,12 +155,11 @@ nav{
   border:1px solid rgba(255,255,255,0.14);
   border-radius:20px;
   background:
-    linear-gradient(180deg, rgba(14,15,22,0.92), rgba(7,7,11,0.78)),
+    linear-gradient(180deg, rgba(14,15,22,0.88), rgba(7,7,11,0.72)),
     radial-gradient(800px 400px at 10% 0%, rgba(255,43,214,0.08), transparent 60%),
     radial-gradient(600px 400px at 90% 20%, rgba(0,229,255,0.08), transparent 60%);
   padding:24px;
   margin-bottom:28px;
-  box-shadow:0 18px 60px rgba(0,0,0,0.45);
 }
 
 .hero h2{
@@ -236,8 +182,14 @@ nav{
   transition:transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.heroIntro p{font-weight:500}
-.heroIntro p strong{color:var(--text);letter-spacing:0.06em}
+.heroIntro p{
+  font-weight:500;
+}
+
+.heroIntro p strong{
+  color:var(--text);
+  letter-spacing:0.06em;
+}
 
 .heroIntro:hover{
   border-color:rgba(255,255,255,0.28);
@@ -255,23 +207,11 @@ nav{
 
 /* cards */
 .card{
-  background:rgba(14,15,22,0.58);
+  background:rgba(14,15,22,0.50);
   overflow:hidden;
   display:flex;
   flex-direction:column;
   min-height:150px;
-
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:20px;
-  box-shadow:0 14px 44px rgba(0,0,0,0.45);
-  transition:transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
-}
-
-.card:hover{
-  transform:translateY(-2px);
-  border-color:rgba(255,255,255,0.22);
-  background:rgba(14,15,22,0.68);
-  box-shadow:0 18px 58px rgba(0,0,0,0.55);
 }
 
 .cardTop{
@@ -323,12 +263,10 @@ nav{
   border-radius:12px;
   font-size:13px;
   cursor:pointer;
-  transition:border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
 }
 
 .btn:hover{
   border-color:rgba(255,255,255,0.30);
-  transform:translateY(-1px);
 }
 
 .btnPrimary{
@@ -342,7 +280,7 @@ nav{
   width:100%;
   aspect-ratio:1 / 1;
   background:#0b0c12;
-  border-bottom:1px solid rgba(255,255,255,0.08);
+  border-bottom:1px solid var(--edge);
   overflow:hidden;
 }
 
@@ -351,22 +289,6 @@ nav{
   height:100%;
   object-fit:cover;
   display:block;
-  filter:contrast(1.06) saturate(1.04);
-  transform:translateZ(0);
-}
-
-/* restores the slick, premium edge */
-.cardImg::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(
-    180deg,
-    rgba(0,0,0,0.10) 0%,
-    rgba(0,0,0,0.00) 38%,
-    rgba(0,0,0,0.30) 100%
-  );
-  pointer-events:none;
 }
 
 .cardInfo{
@@ -449,8 +371,7 @@ nav{
   padding:16px;
   border:1px solid rgba(255,255,255,0.14);
   border-radius:20px;
-  background:rgba(14,15,22,0.55);
-  box-shadow:0 14px 44px rgba(0,0,0,0.45);
+  background:rgba(14,15,22,0.45);
 }
 
 .linksMark{
@@ -486,16 +407,14 @@ nav{
   padding:16px;
   border:1px solid rgba(255,255,255,0.14);
   border-radius:20px;
-  background:rgba(14,15,22,0.52);
-  transition:transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
-  box-shadow:0 14px 44px rgba(0,0,0,0.40);
+  background:rgba(14,15,22,0.40);
+  transition:transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 
 .linkCard:hover{
   transform:translateY(-2px);
   border-color:rgba(255,255,255,0.26);
-  background:rgba(14,15,22,0.66);
-  box-shadow:0 18px 58px rgba(0,0,0,0.52);
+  background:rgba(14,15,22,0.62);
 }
 
 .linkCardTop{
@@ -566,19 +485,19 @@ nav{
   padding:16px;
   border:1px solid rgba(255,255,255,0.14);
   border-radius:20px;
-  background:rgba(14,15,22,0.52);
-  transition:transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
-  box-shadow:0 14px 44px rgba(0,0,0,0.40);
+  background:rgba(14,15,22,0.40);
+  transition:transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 
 .pressCard:hover{
   transform:translateY(-2px);
   border-color:rgba(255,255,255,0.26);
-  background:rgba(14,15,22,0.66);
-  box-shadow:0 18px 58px rgba(0,0,0,0.52);
+  background:rgba(14,15,22,0.62);
 }
 
-.pressTop{margin-bottom:10px}
+.pressTop{
+  margin-bottom:10px;
+}
 
 .pressSource{
   font-size:13px;
@@ -626,7 +545,9 @@ nav{
   justify-content:space-between;
 }
 
-.playerNow{min-width:220px}
+.playerNow{
+  min-width:220px;
+}
 
 .playerNowTitle{
   font-size:12px;
@@ -647,7 +568,9 @@ nav{
   width:min(560px, 100%);
 }
 
-.playerControls audio{width:100%}
+.playerControls audio{
+  width:100%;
+}
 
 /* footer */
 .footer{
@@ -682,232 +605,23 @@ nav{
 }
 
 @media (max-width: 700px){
-  .pressGrid{grid-template-columns:1fr}
   .footerInner{
     flex-direction:column;
     align-items:flex-start;
   }
-  .footerCopy{text-align:left}
-}
-
-@media (max-width: 560px){
-  .mainHeader{padding:44px 0 24px 0}
-  nav{justify-content:flex-start}
-  .grid{grid-template-columns:1fr}
-  .linksCards{grid-template-columns:1fr}
-  .brand h1.brandTitle{
-    letter-spacing:0.12em;
-    font-size:clamp(38px, 10vw, 54px);
+  .footerCopy{
+    text-align:left;
   }
 }
-```html
-<header class="mainHeader">
-  <div class="brand">
-    <div class="brandSub brandSubSingle">
-      Structured electronic built around tension and contrast. Neon noir sound design!
-    </div>
 
-    <nav class="navUnderSub">
-      <a class="navlink isActive" href="/">Home</a>
-      <a class="navlink" href="/music/">Music</a>
-      <a class="navlink" href="/links/">Links</a>
-    </nav>
-  </div>
-</header>
-```
-
-```css
-/* remove the big WAMSMASH title, image is the title now */
-.brand h1.brandTitle{display:none}
-
-/* subtitle as one line, cleaner over the hero image */
-.brandSubSingle{
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:min(920px, 100%);
-  color:rgba(242,243,247,0.86);
-  font-size:clamp(13px, 1.6vw, 16px);
-  letter-spacing:0.02em;
-  text-shadow:0 10px 22px rgba(0,0,0,0.70);
-}
-
-/* move nav under the subtitle */
-.navUnderSub{
-  justify-content:flex-start;
-  margin-top:12px;
-}
-
-/* optional, tighten header vertical space now the title is gone */
-.mainHeader{
-  padding:44px 18px 34px 18px;
-}
-```
-/* header hero lockup overrides */
-.mainHeader{
-  padding:32px 22px;
-  margin-bottom:26px;
-  border:1px solid rgba(255,255,255,0.14);
-  border-radius:20px;
-  overflow:hidden;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-
-  background-position:center 38%;
-  min-height:140px;
-}
-
-.mainHeader::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(
-    180deg,
-    rgba(0,0,0,0.42) 0%,
-    rgba(0,0,0,0.28) 55%,
-    rgba(0,0,0,0.46) 100%
-  );
-  pointer-events:none;
-}
-
-.brand{
-  width:100%;
-  max-width:980px;
-  align-items:center;
-  gap:12px;
-}
-
-.brandSubSingle{
-  display:inline-block;
-  max-width:900px;
-  margin:0 auto;
-
-  font-size:clamp(13px, 1.6vw, 16px);
-  line-height:1.35;
-  color:rgba(242,243,247,0.92);
-  text-shadow:0 10px 22px rgba(0,0,0,0.70);
-
-  padding:10px 14px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.12);
-  background:rgba(0,0,0,0.32);
-  backdrop-filter:blur(6px);
-}
-
-.navUnderSub{
-  width:100%;
-  justify-content:center;
-  margin-top:2px;
-}
-
-.navUnderSub .navlink{
-  background:rgba(14,15,22,0.44);
-  border-color:rgba(255,255,255,0.16);
-}
-/* header hero lockup overrides, v2 */
-.mainHeader{
-  padding:34px 26px 26px 26px;
-  margin-bottom:26px;
-  border:1px solid rgba(255,255,255,0.14);
-  border-radius:20px;
-  overflow:hidden;
-
-  position:relative;
-  display:flex;
-  align-items:flex-end;
-  justify-content:flex-start;
-
-  min-height:190px;
-
-  background:url("/assets/img/wamhero.jpg") center 58% / cover no-repeat;
-}
-
-/* keep lion overlay if you want it, otherwise delete your ::before block entirely */
-.mainHeader::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(
-    180deg,
-    rgba(0,0,0,0.18) 0%,
-    rgba(0,0,0,0.22) 45%,
-    rgba(0,0,0,0.42) 100%
-  );
-  pointer-events:none;
-}
-
-.mainHeader > *{
-  position:relative;
-  z-index:1;
-}
-
-.brand{
-  width:100%;
-  max-width:980px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-/* subtitle as a single line plate, left aligned */
-.brandSubSingle{
-  display:block;
-  width:fit-content;
-  max-width:min(900px, 100%);
-  margin:0;
-
-  font-size:clamp(13px, 1.6vw, 16px);
-  line-height:1.25;
-  color:rgba(242,243,247,0.94);
-  text-shadow:0 10px 22px rgba(0,0,0,0.70);
-
-  padding:10px 12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.12);
-  background:rgba(0,0,0,0.30);
-  backdrop-filter:blur(6px);
-}
-
-/* nav pinned bottom right, not covering the neon text */
-.navUnderSub{
-  position:absolute;
-  right:18px;
-  bottom:16px;
-
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-  margin:0;
-}
-
-.navUnderSub .navlink{
-  padding:9px 11px;
-  border-radius:12px;
-  background:rgba(14,15,22,0.46);
-  border-color:rgba(255,255,255,0.16);
-}
-
-.navUnderSub .navlink:hover{
-  background:rgba(14,15,22,0.68);
-  border-color:rgba(255,255,255,0.26);
-}
-
-/* small screens, keep buttons off the art */
 @media (max-width: 560px){
   .mainHeader{
-    min-height:210px;
-    padding:28px 18px 22px 18px;
-    background-position:center 62%;
+    padding:42px 16px 56px 16px;
   }
-
   .navUnderSub{
-    left:18px;
-    right:18px;
-    bottom:14px;
-    justify-content:flex-start;
+    right:14px;
+    bottom:12px;
   }
+  .grid{grid-template-columns:1fr}
+  .linksCards{grid-template-columns:1fr}
 }
