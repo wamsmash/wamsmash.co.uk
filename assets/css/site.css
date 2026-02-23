@@ -442,7 +442,7 @@ nav{
   transform:translateY(-2px);
   box-shadow:0 12px 40px rgba(0,0,0,0.35);
 }
-..linksGrid{
+.linksGrid{
   display:grid;
   grid-template-columns:1fr;
   gap:16px;
