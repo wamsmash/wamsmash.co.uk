@@ -413,21 +413,6 @@
       playTrack(audioEl, id);
     });
   }
-  document.addEventListener("keydown", function (e) {
-  if (e.key !== "Enter") return;
-
-  const el = document.activeElement;
-  if (!el) return;
-
-  const view = el.getAttribute("data-view");
-  if (!view) return;
-
-  if (view === "music") {
-    location.hash = "music";
-  } else {
-    location.hash = "";
-  }
-});
 
 function switchView(view) {
   const home = document.getElementById("homeView");
@@ -494,6 +479,12 @@ function setActiveNav(view) {
 
 function wireNavigation() {
   document.addEventListener("click", function (e) {
+    const hero = e.target.closest(".heroIntro");
+    if (hero) {
+      location.hash = "music";
+      return;
+    }
+
     const btn = e.target.closest("[data-view]");
     if (!btn) return;
 
@@ -505,13 +496,32 @@ function wireNavigation() {
       return;
     }
 
-    location.hash = "";
-  });
-
-  document.addEventListener("click", function (e) {
-    const hero = e.target.closest(".heroIntro");
-    if (!hero) return;
-
-    location.hash = "music";
+    if (view === "home") location.hash = "";
   });
 }
+
+  function init() {
+    createPlayerBar();
+
+    const audioEl = $("#wmAudio");
+    wireAudioPersistence(audioEl);
+    restoreAudio(audioEl);
+
+    renderFeaturedGrid();
+    renderMusicList();
+
+    wirePlayButtons(audioEl);
+    wireNavigation();
+
+    window.addEventListener("hashchange", applyRoute);
+    applyRoute();
+
+    if (!audioEl.getAttribute("data-track-id")) setNowPlayingUI(null);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
