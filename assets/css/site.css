@@ -556,3 +556,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   .grid{grid-template-columns:1fr}
   .linksCards{grid-template-columns:1fr}
 }
+.playerControls audio{
+  -webkit-touch-callout:none;
+  user-select:none;
+}
