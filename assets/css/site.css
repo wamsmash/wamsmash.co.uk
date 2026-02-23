@@ -454,3 +454,102 @@ nav{
   border-radius:16px;
   background:rgba(14,15,22,0.45);
 }
+.linksIdentity{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:16px;
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:20px;
+  background:rgba(14,15,22,0.45);
+}
+
+.linksMark{
+  width:64px;
+  height:64px;
+  border-radius:16px;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,0.10);
+}
+
+.linksIdentityTitle{
+  font-size:14px;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+}
+
+.linksIdentitySub{
+  margin-top:6px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.linksCards{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+}
+
+.linkCard{
+  display:block;
+  padding:16px;
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:20px;
+  background:rgba(14,15,22,0.40);
+  transition:transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.linkCard:hover{
+  transform:translateY(-2px);
+  border-color:rgba(255,255,255,0.26);
+  background:rgba(14,15,22,0.62);
+}
+
+.linkCardTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.linkCardTitle{
+  font-size:14px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+}
+
+.linkCardBadge{
+  font-size:11px;
+  padding:6px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.18);
+  background:rgba(0,0,0,0.25);
+  white-space:nowrap;
+}
+
+.linkCardNote{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.4;
+  margin-bottom:10px;
+}
+
+.linkCardUrl{
+  font-size:12px;
+  color:var(--muted);
+  opacity:0.85;
+  word-break:break-word;
+}
+
+@media (max-width: 920px){
+  .linksCards{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media (max-width: 560px){
+  .linksCards{
+    grid-template-columns:1fr;
+  }
+}
