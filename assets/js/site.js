@@ -187,8 +187,8 @@
       audio: "/assets/audio/my-love.mp3",
       cover: "/assets/img/covers/my-love.jpg",
       note: "",
-      blurb: "Blue lane pop. Clean hook energy, sentimental but disciplined.",
-      tags: "blue lane, pop, hook, sweet, clean",
+      blurb: "Borrowed melodies fade\nEvery note finally mine\nNow it sounds like something new",
+      tags: "intimate piano intro\nidentity shift narrative\nglitch break contrast\nanthemic melodic arc",
     },
     {
       id: "monkeyman",
@@ -198,8 +198,8 @@
       audio: "/assets/audio/monkey-man.mp3",
       cover: "/assets/img/covers/monkey-man.jpg",
       note: "",
-      blurb: "Red lane chaos engine. Instinct, punch, playful menace.",
-      tags: "red lane, impact, chaos, instinct, punch",
+      blurb: "First swing lands on his brother\nWild beast in borrowed skin\nNo comment",
+      tags: "metal dubstep crossover\nfast live drums energy\nfuzzy guitar drive\nprimal aggression rhythm",
     }
   ];
 
