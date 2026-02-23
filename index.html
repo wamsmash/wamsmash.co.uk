@@ -8,47 +8,67 @@
 </head>
 <body>
   <div class="wrap">
-<header>
-  <div class="brand">
-    <h1>WAMSMASH</h1>
-    <div class="sub">
-      Structured electronic built around tension and contrast<br>
-      Neon noir sound design
-    </div>
-  </div>
+    <header>
+      <div class="brand">
+        <h1>WAMSMASH</h1>
+        <div class="sub">
+          Structured electronic built around tension and contrast<br>
+          Neon noir sound design
+        </div>
+      </div>
 
-<nav>
-  <button class="navlink" data-view="home">Home</button>
-  <button class="navlink" data-view="music">Full Music Catalogue</button>
-  <a class="navlink" href="/links/index.html">Links</a>
-</nav>
-</header>
-    
-<section class="hero heroIntro" role="button" tabindex="0" data-view="music" aria-label="Open music catalogue">
-  <h2>Full Music Catalogue</h2>
-<p>Pick a track to play or <strong>CLICK HERE</strong></p>
-</section>
+      <nav>
+        <button class="navlink" data-view="home">Home</button>
+        <button class="navlink" data-view="music">Music</button>
+        <button class="navlink" data-view="links">Links</button>
+      </nav>
+    </header>
 
-<section id="homeView">
-  <div id="wmFeatured" class="grid"></div>
-</section>
+    <section class="hero heroIntro" role="button" tabindex="0" data-view="music" aria-label="Open music catalogue">
+      <h2>Full Music Catalogue</h2>
+      <p>Start Playback or <strong>CLICK HERE</strong></p>
+    </section>
 
-<section id="musicView" style="display:none;">
-  <div id="wmMusicList" class="grid"></div>
-</section>
-<footer class="footer">
-  <div class="footerInner">
-<div class="footerLinks">
-  <a href="/links/index.html">Links</a>
-</div>
-    <div class="footerCopy">
-      © 2026 WAMSMASH / All rights reserved / WAMSMASH™
-    </div>
-  </div>
-</footer>
+    <section id="homeView">
+      <div id="wmFeatured" class="grid"></div>
+    </section>
+
+    <section id="musicView" style="display:none;">
+      <div id="wmMusicList" class="grid"></div>
+    </section>
+
+    <section id="linksView" style="display:none;">
+      <div class="linksHero hero">
+        <h2>Links</h2>
+        <p>Official channels, clean routing, no noise</p>
+      </div>
+
+      <div class="linksGrid">
+        <div class="linksIdentity">
+          <img class="linksMark" src="/assets/img/lion-monika.jpg" alt="WAMSMASH identity mark">
+          <div class="linksIdentityText">
+            <div class="linksIdentityTitle">WAMSMASH</div>
+            <div class="linksIdentitySub">Neon noir identity layer</div>
+          </div>
+        </div>
+
+        <div id="wmLinksList" class="linksCards"></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footerInner">
+        <div class="footerLinks">
+          <button class="navlink" data-view="links">Links</button>
+        </div>
+
+        <div class="footerCopy">
+          © 2026 WAMSMASH / All rights reserved / WAMSMASH™
+        </div>
+      </div>
+    </footer>
   </div>
 
   <script src="/assets/js/site.js"></script>
 </body>
-  
 </html>
