@@ -4,14 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>WAMSMASH</title>
-<link rel="stylesheet" href="/assets/css/site.css?v=7">
+  <link rel="stylesheet" href="/assets/css/site.css?v=100">
 </head>
 <body>
   <div class="wrap">
 
+    <!-- HEADER -->
     <header class="mainHeader">
       <div class="brand">
-        <div class="brandSub brandSubSingle">
+        <div class="brandSubSingle">
           Structured electronic built around tension and contrast. Neon noir sound design!
         </div>
 
@@ -23,26 +24,33 @@
       </div>
     </header>
 
+    <!-- HERO ENTRY -->
     <section class="hero heroIntro" role="button" tabindex="0" data-view="music" aria-label="Open music catalogue">
       <h2>Full Music Catalogue</h2>
       <p>Start Playback or <strong>CLICK HERE</strong></p>
     </section>
 
+    <!-- HOME VIEW -->
     <section id="homeView">
       <div id="wmFeatured" class="grid"></div>
     </section>
 
+    <!-- MUSIC VIEW -->
     <section id="musicView" style="display:none;">
       <div id="wmMusicList" class="grid"></div>
     </section>
 
+    <!-- LINKS + ABOUT VIEW -->
     <section id="linksView" style="display:none;">
-      <div class="linksHero hero">
+
+      <div class="hero">
         <h2>Links</h2>
         <p>Official channels, clean routing, no noise</p>
       </div>
 
       <div class="linksGrid">
+
+        <!-- PRESS -->
         <section>
           <div class="hero" style="margin-bottom:16px;">
             <h2>Press</h2>
@@ -51,29 +59,36 @@
           <div id="wmPress" class="pressGrid"></div>
         </section>
 
-        <div class="linksIdentity">
-<img class="linksMark" src="/assets/img/covers/lion-monika.jpg" alt="WAMSMASH identity mark">
-          <div class="linksIdentityText">
-            <div class="linksIdentityTitle">WAMSMASH</div>
-            <div class="linksIdentitySub">Neon noir identity layer</div>
+        <!-- LINKS LIST -->
+        <div id="wmLinksList" class="linksCards"></div>
+
+        <!-- ABOUT SECTION -->
+        <section class="hero" style="margin-top:16px;">
+          <h2>About</h2>
+          <p>
+            Structured electronic built around tension and contrast<br>
+            Neon noir sound design
+          </p>
+        </section>
+
+        <!-- ABOUT IDENTITY BLOCK WITH LION -->
+        <div class="aboutIdentity">
+          <img class="aboutMark" src="/assets/img/covers/lion-monika.jpg" alt="WAMSMASH identity mark">
+          <div>
+            <div class="aboutIdentityTitle">WAMSMASH</div>
+            <div class="aboutIdentitySub">Neon noir identity layer</div>
           </div>
         </div>
 
-        <div id="wmLinksList" class="linksCards"></div>
-
-        <section class="hero" style="margin-top:16px;">
-          <h2>About</h2>
-          <p>Structured electronic built around tension and contrast<br>Neon noir sound design</p>
-        </section>
       </div>
     </section>
 
+    <!-- FOOTER -->
     <footer class="footer">
       <div class="footerInner">
         <div class="footerLinks">
           <button class="navlink" data-view="links" type="button">Links</button>
         </div>
-
         <div class="footerCopy">
           © 2026 WAMSMASH / All rights reserved / WAMSMASH™
         </div>
