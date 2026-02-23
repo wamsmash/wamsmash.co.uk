@@ -36,25 +36,37 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
 
 /* header, hero background with lion integration */
 .mainHeader{
-  background:
-    url("/assets/img/wamhero.jpg") center center / cover no-repeat;
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:40px;
+  align-items:flex-start;
   position:relative;
+  flex-wrap:wrap;
+  overflow:hidden;
+
+  padding:72px 0 44px 0;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+
+  background:url("/assets/img/wamhero.jpg") center center / cover no-repeat;
 }
 
 .mainHeader::before{
   content:"";
   position:absolute;
-  inset:-2px;
-  background-image:url("/assets/img/lion-monika.jpg");
-  background-repeat:no-repeat;
-  background-size:clamp(520px, 52vw, 920px);
-  background-position:92% 22%;
-  opacity:0.28;
-  filter:contrast(1.08) saturate(1.06);
+  inset:0;
+  background:rgba(0,0,0,0.35);
   pointer-events:none;
 }
+
 .mainHeader::after{
-  background: rgba(0,0,0,0.35);
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(1200px 650px at 20% 0%, rgba(0,0,0,0.12), rgba(0,0,0,0.62) 55%, rgba(0,0,0,0.78) 100%),
+    linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.55));
+  pointer-events:none;
 }
 
 .mainHeader > *{
