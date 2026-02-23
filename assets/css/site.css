@@ -49,7 +49,8 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   padding:72px 0 44px 0;
   border-bottom:1px solid rgba(255,255,255,0.08);
 
-  background:url("/assets/img/wamhero.jpg") center center / cover no-repeat;
+  /* IMPORTANT: this matches your repo path assets/img/covers/wamhero.jpg */
+  background:url("/assets/img/covers/wamhero.jpg") center center / cover no-repeat;
 }
 
 /* optional lion overlay, delete this block if you want hero only */
