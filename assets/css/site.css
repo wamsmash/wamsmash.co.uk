@@ -34,7 +34,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   padding:28px 18px 110px 18px;
 }
 
-/* header, hero background */
+/* header always uses wamhero, no lion overlay */
 .mainHeader{
   position:relative;
   overflow:hidden;
@@ -42,16 +42,13 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   border:1px solid rgba(255,255,255,0.14);
   border-radius:20px;
 
-  padding:54px 24px 22px 24px;
+  padding:54px 24px 56px 24px;
   margin-bottom:18px;
 
   background:url("/assets/img/wamhero.jpg") center center / cover no-repeat;
 }
 
-/* optional lion overlay */
-
-
-/* darken overlay */
+/* darken overlay so subtitle and buttons read clean */
 .mainHeader::after{
   content:"";
   position:absolute;
@@ -89,13 +86,12 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   margin:0;
 }
 
-/* nav pinned bottom right */
+/* nav pinned bottom right inside header */
 .navUnderSub{
   display:flex;
   gap:10px;
   flex-wrap:wrap;
   justify-content:flex-end;
-  align-self:flex-end;
 
   position:absolute;
   right:18px;
@@ -103,7 +99,15 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   z-index:2;
 }
 
-/* navigation buttons */
+/* navigation */
+nav{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  margin-top:8px;
+}
+
 .navlink{
   padding:10px 12px;
   border:1px solid rgba(255,255,255,0.12);
@@ -201,6 +205,8 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   display:flex;
   flex-direction:column;
   min-height:150px;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:20px;
 }
 
 .cardTop{
@@ -271,6 +277,8 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   background:#0b0c12;
   border-bottom:1px solid var(--edge);
   overflow:hidden;
+  border-top-left-radius:20px;
+  border-top-right-radius:20px;
 }
 
 .cardImg img{
@@ -443,25 +451,6 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   word-break:break-word;
 }
 
-.linkIcon{
-  width:34px;
-  height:34px;
-  border-radius:12px;
-  display:grid;
-  place-items:center;
-  border:1px solid rgba(255,255,255,0.14);
-  background:rgba(0,0,0,0.20);
-  flex:0 0 auto;
-}
-
-.linkIcon svg{
-  width:18px;
-  height:18px;
-  display:block;
-  fill:currentColor;
-  color:var(--text);
-}
-
 /* press */
 .pressGrid{
   display:grid;
@@ -511,6 +500,33 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
 .pressCard:focus{
   outline:2px solid var(--focus);
   outline-offset:3px;
+}
+
+/* about block inside Links page, lion goes here not in header */
+.aboutBlock{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  padding:20px;
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:20px;
+  background:rgba(14,15,22,0.45);
+  margin-top:16px;
+}
+
+.aboutLion{
+  width:120px;
+  height:auto;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.10);
+  flex:0 0 auto;
+  display:block;
+}
+
+.aboutText{
+  font-size:14px;
+  color:var(--muted);
+  line-height:1.5;
 }
 
 /* player bar */
@@ -594,6 +610,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
 }
 
 @media (max-width: 700px){
+  .pressGrid{grid-template-columns:1fr}
   .footerInner{
     flex-direction:column;
     align-items:flex-start;
@@ -601,11 +618,18 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   .footerCopy{
     text-align:left;
   }
+  .aboutBlock{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .aboutLion{
+    width:96px;
+  }
 }
 
 @media (max-width: 560px){
   .mainHeader{
-    padding:42px 16px 56px 16px;
+    padding:42px 16px 60px 16px;
   }
   .navUnderSub{
     right:14px;
