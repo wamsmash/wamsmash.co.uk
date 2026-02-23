@@ -203,7 +203,14 @@
       tags: "red lane, impact, chaos, instinct, punch",
     }
   ];
-
+  const LINKS = [
+    { label: "Spotify", href: "https://open.spotify.com/artist/4s68tFsNBcKZSDB5Ja4HQl", note: "Canonical releases" },
+    { label: "SoundCloud", href: "https://soundcloud.com/wamsmash", note: "Playground and iteration" },
+    { label: "YouTube", href: "https://www.youtube.com/@wamsmash", note: "Visual hub" },
+    { label: "Instagram", href: "https://www.instagram.com/wamsmash", note: "Updates" },
+    { label: "X", href: "https://x.com/wamsmash_", note: "Updates" },
+    { label: "Email", href: "mailto:willedit@proton.me", note: "Direct contact" }
+  ];
   function $(sel, root = document) {
     return root.querySelector(sel);
   }
@@ -393,7 +400,33 @@
       mount.appendChild(row);
     }
   }
+  function renderLinks() {
+    const mount = document.getElementById("wmLinksList");
+    if (!mount) return;
 
+    mount.innerHTML = "";
+
+    for (let i = 0; i < LINKS.length; i++) {
+      const item = LINKS[i];
+
+      const a = document.createElement("a");
+      a.className = "linkCard";
+      a.href = item.href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+
+      a.innerHTML = `
+        <div class="linkCardTop">
+          <div class="linkCardTitle">${item.label}</div>
+          <div class="linkCardBadge">Open</div>
+        </div>
+        <div class="linkCardNote">${item.note || ""}</div>
+        <div class="linkCardUrl">${item.href}</div>
+      `;
+
+      mount.appendChild(a);
+    }
+  }
   function playTrack(audioEl, trackId) {
     const track = findTrackById(trackId);
     if (!track) return;
@@ -417,19 +450,16 @@
 function switchView(view) {
   const home = document.getElementById("homeView");
   const music = document.getElementById("musicView");
- const hero = document.querySelector(".heroIntro");
+  const links = document.getElementById("linksView");
+  const hero = document.querySelector(".heroIntro");
 
-  if (!home || !music) return;
+  if (!home || !music || !links) return;
 
-  if (view === "music") {
-    home.style.display = "none";
-    music.style.display = "block";
-    if (hero) hero.style.display = "none";
-  } else {
-    home.style.display = "block";
-    music.style.display = "none";
-    if (hero) hero.style.display = "block";
-  }
+  home.style.display = view === "home" ? "block" : "none";
+  music.style.display = view === "music" ? "block" : "none";
+  links.style.display = view === "links" ? "block" : "none";
+
+  if (hero) hero.style.display = view === "home" ? "block" : "none";
 
   setActiveNav(view);
 }
@@ -451,17 +481,19 @@ function setActiveNav(view) {
   }
 }
 
-  function parseHash() {
-    const raw = (location.hash || "").replace(/^#/, "");
-    if (!raw) return { view: "home", scrollId: "" };
+function parseHash() {
+  const raw = (location.hash || "").replace(/^#/, "");
+  if (!raw) return { view: "home", scrollId: "" };
 
-    const parts = raw.split("#");
-    const viewPart = parts[0];
-    const scrollId = parts[1] || "";
+  const parts = raw.split("#");
+  const viewPart = parts[0];
+  const scrollId = parts[1] || "";
 
-    if (viewPart === "music") return { view: "music", scrollId };
-    return { view: "home", scrollId: "" };
-  }
+  if (viewPart === "music") return { view: "music", scrollId };
+  if (viewPart === "links") return { view: "links", scrollId: "" };
+
+  return { view: "home", scrollId: "" };
+}
 
   function applyRoute() {
     const route = parseHash();
@@ -496,8 +528,23 @@ function wireNavigation() {
       return;
     }
 
+    if (view === "links") {
+      location.hash = "links";
+      return;
+    }
+
     if (view === "home") location.hash = "";
   });
+  document.addEventListener("keydown", function (e) {
+    const hero = e.target.closest && e.target.closest(".heroIntro");
+    if (!hero) return;
+
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      location.hash = "music";
+    }
+  });
+
 }
 
   function init() {
@@ -509,6 +556,7 @@ function wireNavigation() {
 
     renderFeaturedGrid();
     renderMusicList();
+    renderLinks();
 
     wirePlayButtons(audioEl);
     wireNavigation();
