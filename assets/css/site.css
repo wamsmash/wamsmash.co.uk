@@ -387,20 +387,6 @@ nav{
   flex-wrap:wrap;
 }
 
-.footerLinks a{
-  padding:8px 10px;
-  border:1px solid rgba(255,255,255,0.10);
-  border-radius:12px;
-  background:rgba(14,15,22,0.35);
-  font-size:12px;
-  color:var(--muted);
-}
-
-.footerLinks a:hover{
-  border-color:rgba(255,255,255,0.22);
-  color:var(--text);
-}
-
 .footerCopy{
   color:var(--muted);
   font-size:12px;
