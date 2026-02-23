@@ -560,3 +560,39 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   -webkit-touch-callout:none;
   user-select:none;
 }
+/* MOBILE HEADER FIX, PREVENT SUBTITLE AND NAV COLLISION */
+@media (max-width: 560px){
+  .mainHeader{
+    min-height:260px;
+  }
+
+  .brand{
+    min-height:260px;
+  }
+
+  /* keep the buttons truly bottom right */
+  .navUnderSub{
+    right:12px;
+    bottom:12px;
+    gap:8px;
+  }
+
+  /* slightly smaller buttons so they do not wrap and distort */
+  .navlink{
+    padding:8px 10px;
+    font-size:12px;
+    border-radius:10px;
+  }
+
+  /* subtitle becomes full width and moves up above the button row */
+  .brandSubSingle{
+    left:12px;
+    right:12px;
+    bottom:56px;
+    max-width:none;
+
+    padding:10px 12px;
+    font-size:13px;
+    line-height:1.3;
+  }
+}
