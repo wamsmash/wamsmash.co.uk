@@ -262,10 +262,10 @@ function renderPress(){
     mount.appendChild(a);
   }
 }
+
+function $(sel, root = document) {
+  return root.querySelector(sel);
 }
-  function $(sel, root = document) {
-    return root.querySelector(sel);
-  }
 
   function $all(sel, root = document) {
     return Array.from(root.querySelectorAll(sel));
