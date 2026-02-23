@@ -643,3 +643,7 @@ nav{
   position:relative;
   z-index:1;
 }
+.mainHeader{
+  padding-top: 80px;
+  padding-bottom: 60px;
+}
