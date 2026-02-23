@@ -203,14 +203,14 @@
       tags: "red lane, impact, chaos, instinct, punch",
     }
   ];
-  const LINKS = [
-    { label: "Spotify", href: "https://open.spotify.com/artist/4s68tFsNBcKZSDB5Ja4HQl", note: "Canonical releases" },
-    { label: "SoundCloud", href: "https://soundcloud.com/wamsmash", note: "Playground and iteration" },
-    { label: "YouTube", href: "https://www.youtube.com/@wamsmash", note: "Visual hub" },
-    { label: "Instagram", href: "https://www.instagram.com/wamsmash", note: "Updates" },
-    { label: "X", href: "https://x.com/wamsmash_", note: "Updates" },
-    { label: "Email", href: "mailto:willedit@proton.me", note: "Direct contact" }
-  ];
+const LINKS = [
+  { label: "Spotify", href: "https://open.spotify.com/artist/4s68tFsNBcKZSDB5Ja4HQl", note: "Canonical releases", icon: "spotify" },
+  { label: "SoundCloud", href: "https://soundcloud.com/wamsmash", note: "Playground and iteration", icon: "soundcloud" },
+  { label: "YouTube", href: "https://www.youtube.com/@wamsmash", note: "Visual hub", icon: "youtube" },
+  { label: "Instagram", href: "https://www.instagram.com/wamsmash", note: "Updates", icon: "instagram" },
+  { label: "X", href: "https://x.com/wamsmash_", note: "Updates", icon: "x" },
+  { label: "Email", href: "mailto:willedit@proton.me", note: "Direct contact", icon: "email" }
+];
   function $(sel, root = document) {
     return root.querySelector(sel);
   }
@@ -218,7 +218,19 @@
   function $all(sel, root = document) {
     return Array.from(root.querySelectorAll(sel));
   }
+const ICONS = {
+  spotify: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm4.6 14.4a.9.9 0 01-1.24.3c-3.4-2.1-7.7-2.6-12.7-1.4a.9.9 0 11-.42-1.75c5.45-1.3 10.2-.75 14 1.6.42.26.55.82.3 1.25zm1.8-3.1a1.1 1.1 0 01-1.5.37c-3.9-2.4-9.9-3.1-14.6-1.7a1.1 1.1 0 01-.64-2.1c5.4-1.6 12-.84 16.6 2a1.1 1.1 0 01.37 1.43zm.15-3.3C14.9 7.8 8.1 7.6 4.3 8.8a1.3 1.3 0 01-.75-2.5c4.4-1.3 12.1-1 16.8 1.8a1.3 1.3 0 01-1.78 1.9z"/></svg>`,
+  soundcloud: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 11.2V21h8.2a3.8 3.8 0 000-7.6c-.3 0-.6 0-.9.1A5.5 5.5 0 007 10.2c0 .3 0 .6.1.9l.4 2h.2v-3l.4 3h.2l.4-4 .4 4h.2l.4-5 .4 5h.2l.4-2.8.4 2.8H11zM3.6 12.2a.8.8 0 00-.6.8V21h1.2v-8a.8.8 0 00-.6-.8zm2.2-1a.8.8 0 00-.6.8V21h1.2v-9a.8.8 0 00-.6-.8z"/></svg>`,
+  youtube: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2a3 3 0 00-2.1-2.1C17.7 4.6 12 4.6 12 4.6s-5.7 0-7.5.5A3 3 0 002.4 7.2 31.4 31.4 0 002.4 12a31.4 31.4 0 00.0 4.8 3 3 0 002.1 2.1c1.8.5 7.5.5 7.5.5s5.7 0 7.5-.5a3 3 0 002.1-2.1A31.4 31.4 0 0021.6 12a31.4 31.4 0 000-4.8zM10.2 15.2V8.8L15.8 12l-5.6 3.2z"/></svg>`,
+  instagram: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 2h9A5.5 5.5 0 0122 7.5v9A5.5 5.5 0 0116.5 22h-9A5.5 5.5 0 012 16.5v-9A5.5 5.5 0 017.5 2zm0 2A3.5 3.5 0 004 7.5v9A3.5 3.5 0 007.5 20h9a3.5 3.5 0 003.5-3.5v-9A3.5 3.5 0 0016.5 4h-9zM12 7a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6zm5.6-2.2a1 1 0 110 2 1 1 0 010-2z"/></svg>`,
+  x: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.6l-5.2-6.5L5.6 22H2.5l7.3-8.4L1 2h6.8l4.7 5.9L18.9 2zm-1.2 18h1.7L6.1 3.9H4.3L17.7 20z"/></svg>`,
+  email: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2zm0 2v.3l8 5.3 8-5.3V7H4zm16 2.7l-8 5.3-8-5.3V17h16V9.7z"/></svg>`
+};
 
+function iconMarkup(name){
+  const svg = ICONS[name] || "";
+  return `<div class="linkIcon" aria-hidden="true">${svg}</div>`;
+}
   function loadState() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -415,14 +427,17 @@
       a.target = "_blank";
       a.rel = "noopener noreferrer";
 
-      a.innerHTML = `
-        <div class="linkCardTop">
-          <div class="linkCardTitle">${item.label}</div>
-          <div class="linkCardBadge">Open</div>
-        </div>
-        <div class="linkCardNote">${item.note || ""}</div>
-        <div class="linkCardUrl">${item.href}</div>
-      `;
+a.innerHTML = `
+  <div class="linkCardTop">
+    <div style="display:flex; align-items:center; gap:10px;">
+      ${iconMarkup(item.icon)}
+      <div class="linkCardTitle">${item.label}</div>
+    </div>
+    <div class="linkCardBadge">Open</div>
+  </div>
+  <div class="linkCardNote">${item.note || ""}</div>
+  <div class="linkCardUrl">${item.href}</div>
+`;
 
       mount.appendChild(a);
     }
