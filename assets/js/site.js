@@ -211,7 +211,7 @@ const LINKS = [
   { label: "X", href: "https://x.com/wamsmash_", note: "Updates", icon: "x" },
   { label: "Email", href: "mailto:willedit@proton.me", note: "Direct contact", icon: "email" }
 ];
-  const PRESS = [
+const PRESS = [
   {
     source: "RetroReverbRecords",
     href: "https://www.retroreverbrecords.co.uk/",
@@ -231,15 +231,15 @@ const LINKS = [
     source: "Synergy FM",
     href: "https://synergyfm.net/",
     quote: "“It’s well produced and has a strong vibe”"
+  },
+  {
+    source: "Boulimique de Musique, Les Saveurs du Jour",
+    href: "https://boulimiquedemusique.blogspot.com/2026/02/la-steppe-awake-dreaming-wamsmash-les.html",
+    quote: "“L'artiste britannique lance un morceau bass music à la sauce de Dub FX pour l'approche doucement bouncy. L'interprétation vocale féminine bourrée d'attitude véhicule un récit poétique, telle une fable des temps modernes, débordante de métaphores empreintes d'une touche de spiritualité.”"
   }
-    {
-  source: "Boulimique de Musique, Les Saveurs du Jour",
-  href: "https://boulimiquedemusique.blogspot.com/2026/02/la-steppe-awake-dreaming-wamsmash-les.html",
-  quote: "“L'artiste britannique lance un morceau bass music à la sauce de Dub FX pour l'approche doucement bouncy. L'interprétation vocale féminine bourrée d'attitude véhicule un récit poétique, telle une fable des temps modernes, débordante de métaphores empreintes d'une touche de spiritualité.”"
-}
 ];
 
-  function renderPress(){
+function renderPress(){
   const mount = document.getElementById("wmPress");
   if (!mount) return;
 
@@ -255,13 +255,13 @@ const LINKS = [
     a.innerHTML = `
       <div class="pressTop">
         <div class="pressSource">${item.source}</div>
-        <div class="linkCardBadge">Source</div>
       </div>
       <div class="pressQuote">${item.quote}</div>
     `;
 
     mount.appendChild(a);
   }
+}
 }
   function $(sel, root = document) {
     return root.querySelector(sel);
