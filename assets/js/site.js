@@ -19,7 +19,7 @@
       id: "bonfire",
       title: "BONFIRE",
       lane: "blue",
-      year: "2026",
+      year: "2025",
       audio: "/assets/audio/bonfire.mp3",
       cover: "/assets/img/covers/bonfire.jpg",
       note: "",
