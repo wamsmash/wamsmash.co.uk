@@ -12,7 +12,7 @@
       audio: "/assets/audio/chaos.mp3",
       cover: "/assets/img/covers/chaos.jpg",
       note: "Modern Parable",
-      blurb: "Rented crown. Borrowed power\nPredators eat. Allies ghost\nGates shut. No way back in",
+      blurb: "Borrowed power. No rules\nPredators eat. Allies ghost\nGates shut. No way back in",
       tags: "modern parable, jungle leaning drums, cinematic pressure, high contrast",
     },
     {
