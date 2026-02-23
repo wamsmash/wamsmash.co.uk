@@ -259,7 +259,16 @@
       mount.appendChild(a);
     }
   }
-
+function laneLabel(lane) {
+  const v = String(lane || "").toLowerCase();
+  if (v === "red") return "🔴 RED LANE";
+  if (v === "blue") return "🔵 BLUE LANE";
+  if (v === "green") return "🟢 GREEN LANE";
+  if (v === "yellow") return "🟡 YELLOW LANE";
+  if (v === "pink") return "🩷 PINK LANE";
+  if (v === "iridescent") return "🫧 IRIDESCENT LANE";
+  return (v ? v.toUpperCase() : "LANE");
+}
   function $(sel, root = document) {
     return root.querySelector(sel);
   }
@@ -356,7 +365,7 @@
     }
 
     title.textContent = track.title;
-    sub.textContent = `${track.lane} lane, ${track.note}`;
+    sub.textContent = `${laneLabel(track.lane)}, ${track.note}`;
   }
 
   function setAudioSource(audioEl, track) {
@@ -417,7 +426,7 @@
         <div class="cardInfo">
           <div class="cardInfoInner">
             <div class="cardInfoTitle">${track.title}</div>
-            <div class="cardInfoMeta">${track.lane} lane, ${track.note}</div>
+            <div class="cardInfoMeta">${laneLabel(track.lane)}, ${track.note}</div>
             ${track.blurb ? `<div class="cardInfoBlurb">${track.blurb}</div>` : ``}
             ${track.tags ? `<div class="cardInfoTags">${track.tags}</div>` : ``}
           </div>
@@ -427,7 +436,7 @@
       <div class="cardTop">
         <div>
           <h3 class="cardTitle" ${opts && opts.anchorId ? `id="${track.id}"` : ``}>${track.title}</h3>
-          <div class="cardMeta">${track.lane} lane, ${track.note}</div>
+          <div class="cardMeta">${laneLabel(track.lane)}, ${track.note}</div>
         </div>
         <div class="badge">${track.year}</div>
       </div>
