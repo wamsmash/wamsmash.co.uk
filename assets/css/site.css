@@ -553,3 +553,29 @@ nav{
   fill:currentColor;
   color:var(--text);
 }
+.pressCard{
+  padding:16px;
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:20px;
+  background:rgba(14,15,22,0.40);
+}
+
+.pressTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.pressSource{
+  font-size:13px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+}
+
+.pressQuote{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
