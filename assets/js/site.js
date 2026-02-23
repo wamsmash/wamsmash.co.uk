@@ -211,6 +211,53 @@ const LINKS = [
   { label: "X", href: "https://x.com/wamsmash_", note: "Updates", icon: "x" },
   { label: "Email", href: "mailto:willedit@proton.me", note: "Direct contact", icon: "email" }
 ];
+  const PRESS = [
+  {
+    source: "RetroReverbRecords",
+    href: "https://www.retroreverbrecords.co.uk/",
+    quote: "“CHAOS is a seriously hard, high pressure electronic banger with a clear modern and genre bending style”"
+  },
+  {
+    source: "Indie Dock Music Blog",
+    href: "https://indiedockmusicblog.co.uk/",
+    quote: "“Great song, thank you”"
+  },
+  {
+    source: "College Music",
+    href: "https://collegemusic.co.uk/",
+    quote: "“Cool track with impressive singing and strong energy”"
+  },
+  {
+    source: "Synergy FM",
+    href: "https://synergyfm.net/",
+    quote: "“It’s well produced and has a strong vibe”"
+  }
+];
+
+  function renderPress(){
+  const mount = document.getElementById("wmPress");
+  if (!mount) return;
+
+  mount.innerHTML = "";
+
+  for (const item of PRESS){
+    const a = document.createElement("a");
+    a.className = "pressCard";
+    a.href = item.href;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+
+    a.innerHTML = `
+      <div class="pressTop">
+        <div class="pressSource">${item.source}</div>
+        <div class="linkCardBadge">Source</div>
+      </div>
+      <div class="pressQuote">${item.quote}</div>
+    `;
+
+    mount.appendChild(a);
+  }
+}
   function $(sel, root = document) {
     return root.querySelector(sel);
   }
@@ -251,23 +298,26 @@ function iconMarkup(name){
     return TRACKS.find(t => t.id === id) || null;
   }
 
-  function createPlayerBar() {
-    const bar = document.createElement("div");
-    bar.className = "playerBar";
-    bar.innerHTML = `
-      <div class="playerInner">
-        <div class="playerNow">
-          <div class="playerNowTitle" id="wmNowTitle">WAMSMASH</div>
-          <div class="playerNowSub" id="wmNowSub">Select a track</div>
-        </div>
-        <div class="playerControls">
-          <audio id="wmAudio" controls preload="none"></audio>
-        </div>
+function createPlayerBar() {
+  const existing = document.querySelector(".playerBar");
+  if (existing) return existing;
+
+  const bar = document.createElement("div");
+  bar.className = "playerBar";
+  bar.innerHTML = `
+    <div class="playerInner">
+      <div class="playerNow">
+        <div class="playerNowTitle" id="wmNowTitle">WAMSMASH</div>
+        <div class="playerNowSub" id="wmNowSub">Select a track</div>
       </div>
-    `;
-    document.body.appendChild(bar);
-    return bar;
-  }
+      <div class="playerControls">
+        <audio id="wmAudio" controls preload="none"></audio>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(bar);
+  return bar;
+}
 
   function setNowPlayingUI(track) {
     const title = $("#wmNowTitle");
@@ -562,29 +612,30 @@ function wireNavigation() {
 
 }
 
-  function init() {
-    createPlayerBar();
+function init() {
+  createPlayerBar();
 
-    const audioEl = $("#wmAudio");
-    wireAudioPersistence(audioEl);
-    restoreAudio(audioEl);
+  const audioEl = $("#wmAudio");
+  wireAudioPersistence(audioEl);
+  restoreAudio(audioEl);
 
-    renderFeaturedGrid();
-    renderMusicList();
-    renderLinks();
+  renderFeaturedGrid();
+  renderMusicList();
+  renderLinks();
+  renderPress();
 
-    wirePlayButtons(audioEl);
-    wireNavigation();
+  wirePlayButtons(audioEl);
+  wireNavigation();
 
-    window.addEventListener("hashchange", applyRoute);
-    applyRoute();
+  window.addEventListener("hashchange", applyRoute);
+  applyRoute();
 
-    if (!audioEl.getAttribute("data-track-id")) setNowPlayingUI(null);
-  }
+  if (!audioEl.getAttribute("data-track-id")) setNowPlayingUI(null);
+}
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
 })();
