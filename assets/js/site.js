@@ -413,6 +413,21 @@
       playTrack(audioEl, id);
     });
   }
+  document.addEventListener("keydown", function (e) {
+  if (e.key !== "Enter") return;
+
+  const el = document.activeElement;
+  if (!el) return;
+
+  const view = el.getAttribute("data-view");
+  if (!view) return;
+
+  if (view === "music") {
+    location.hash = "music";
+  } else {
+    location.hash = "";
+  }
+});
 
 function switchView(view) {
   const home = document.getElementById("homeView");
