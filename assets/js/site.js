@@ -234,11 +234,6 @@
       href: "https://boulimiquedemusique.blogspot.com/2026/02/la-steppe-awake-dreaming-wamsmash-les.html",
       quote: "“L'artiste britannique lance un morceau bass music à la sauce de Dub FX pour l'approche doucement bouncy. L'interprétation vocale féminine bourrée d'attitude véhicule un récit poétique, telle une fable des temps modernes, débordante de métaphores empreintes d'une touche de spiritualité.”"
     },
-        {
-      source: "Indie Dock Music Blog",
-      href: "https://indiedockmusicblog.co.uk/",
-      quote: "“Great song, thank you”"
-    },
   ];
 
   function renderPress() {
