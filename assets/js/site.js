@@ -414,7 +414,7 @@
   }
 
   function cardMarkup(track, opts) {
-    const showDetails = opts && opts.showDetails;
+
 
     return `
       <div class="cardImg">
@@ -437,10 +437,9 @@
         <div class="badge">${track.year}</div>
       </div>
 
-      <div class="cardActions">
-        <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
-        ${showDetails ? `<button class="btn" type="button" data-view="music" data-scroll="${track.id}">Details</button>` : ``}
-      </div>
+<div class="cardActions">
+  <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
+</div>
     `;
   }
 
@@ -456,7 +455,6 @@
       const card = document.createElement("div");
       card.className = "card";
       card.innerHTML = cardMarkup(track, {
-        showDetails: true,
         eagerImage: i < 3,
         anchorId: false
       });
@@ -475,7 +473,6 @@
       const row = document.createElement("div");
       row.className = "card";
       row.innerHTML = cardMarkup(track, {
-        showDetails: false,
         eagerImage: i < 3,
         anchorId: true
       });
