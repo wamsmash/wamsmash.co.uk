@@ -670,7 +670,6 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   animation:wmPulseDot 0.95s ease-in-out infinite;
   opacity:1;
 }
-
 @keyframes wmPulseDot{
   0%{ transform:scale(0.92); opacity:0.65; }
   50%{ transform:scale(1.18); opacity:1; }
