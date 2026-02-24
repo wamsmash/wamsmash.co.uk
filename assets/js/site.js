@@ -270,7 +270,53 @@
     if (v === "iridescent") return "🫧 IRIDESCENT";
     return (v ? v.toUpperCase() : "LANE");
   }
+function laneLabel(lane) {
+  ...
+}
 
+function laneDotColor(lane){
+  const v = String(lane || "").toLowerCase();
+  if (v === "red") return "rgba(255, 60, 90, 0.95)";
+  if (v === "blue") return "rgba(60, 180, 255, 0.95)";
+  if (v === "green") return "rgba(60, 255, 170, 0.95)";
+  if (v === "yellow") return "rgba(255, 210, 60, 0.95)";
+  if (v === "pink") return "rgba(255, 80, 210, 0.95)";
+  if (v === "orange") return "rgba(255, 140, 60, 0.95)";
+  if (v === "iridescent") return "rgba(170, 210, 255, 0.95)";
+  return "rgba(255,255,255,0.35)";
+}
+
+function ensureBrandPulseDot(){
+  const header = document.querySelector("header");
+  if (!header) return null;
+
+  const brand = header.querySelector("h1, .brand, .logo, a");
+  if (!brand) return null;
+
+  if (header.querySelector("#wmPulseDot")) {
+    return header.querySelector("#wmPulseDot");
+  }
+
+  const dot = document.createElement("span");
+  dot.id = "wmPulseDot";
+  dot.className = "wmPulseDot";
+  dot.setAttribute("aria-hidden", "true");
+
+  brand.insertAdjacentElement("afterend", dot);
+
+  return dot;
+}
+
+function updateBrandPulseDot(track){
+  const dot = ensureBrandPulseDot();
+  if (!dot) return;
+
+  const lane = track && track.lane ? track.lane : "";
+  dot.style.background = laneDotColor(lane);
+
+  const playing = wmAudio && !wmAudio.paused && !wmAudio.ended;
+  dot.classList.toggle("isPlaying", !!playing);
+}
   function $(sel, root = document) {
     return root.querySelector(sel);
   }
