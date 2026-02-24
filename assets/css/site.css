@@ -649,29 +649,3 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   -webkit-touch-callout:none;
   user-select:none;
 }
-.wmBrandRow{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.wmPulseDot{
-  display:inline-block;
-  width:10px;
-  height:10px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.35);
-  box-shadow:0 0 0 1px rgba(255,255,255,0.10), 0 0 12px rgba(255,255,255,0.10);
-  opacity:0.75;
-  transform:scale(0.98);
-}
-
-.wmPulseDot.isPlaying{
-  animation:wmPulseDot 0.95s ease-in-out infinite;
-  opacity:1;
-}
-@keyframes wmPulseDot{
-  0%{ transform:scale(0.92); opacity:0.65; }
-  50%{ transform:scale(1.18); opacity:1; }
-  100%{ transform:scale(0.92); opacity:0.65; }
-}
