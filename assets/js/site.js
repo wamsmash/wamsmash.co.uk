@@ -1,4 +1,3 @@
-/* jshint esversion: 6 */
 (function () {
   const STORAGE_KEY = "wamsmash_player_state_v1";
   const FEATURED_COUNT = 6;
@@ -272,49 +271,6 @@
     return (v ? v.toUpperCase() : "LANE");
   }
 
-  function laneDotColor(lane) {
-    const v = String(lane || "").toLowerCase();
-    if (v === "red") return "rgba(255, 60, 90, 0.95)";
-    if (v === "blue") return "rgba(60, 180, 255, 0.95)";
-    if (v === "green") return "rgba(60, 255, 170, 0.95)";
-    if (v === "yellow") return "rgba(255, 210, 60, 0.95)";
-    if (v === "pink") return "rgba(255, 80, 210, 0.95)";
-    if (v === "orange") return "rgba(255, 140, 60, 0.95)";
-    if (v === "iridescent") return "rgba(170, 210, 255, 0.95)";
-    return "rgba(255,255,255,0.35)";
-  }
-
-  function ensureBrandPulseDot() {
-    const header = document.querySelector("header");
-    if (!header) return null;
-
-    const brand = header.querySelector("h1, .brand, .logo, a");
-    if (!brand) return null;
-
-    const existing = header.querySelector("#wmPulseDot");
-    if (existing) return existing;
-
-    const dot = document.createElement("span");
-    dot.id = "wmPulseDot";
-    dot.className = "wmPulseDot";
-    dot.setAttribute("aria-hidden", "true");
-
-    brand.insertAdjacentElement("afterend", dot);
-
-    return dot;
-  }
-
-  function updateBrandPulseDot(track) {
-    const dot = ensureBrandPulseDot();
-    if (!dot) return;
-
-    const lane = track && track.lane ? track.lane : "";
-    dot.style.background = laneDotColor(lane);
-
-    const playing = wmAudio && !wmAudio.paused && !wmAudio.ended;
-    dot.classList.toggle("isPlaying", !!playing);
-  }
-
   function $(sel, root = document) {
     return root.querySelector(sel);
   }
@@ -337,51 +293,15 @@
     return `<div class="linkIcon" aria-hidden="true">${svg}</div>`;
   }
 
-  function readJson(key, fallback) {
-    try {
-      const raw = localStorage.getItem(key);
-      if (!raw) return fallback;
-      return JSON.parse(raw);
-    } catch (e) {
-      return fallback;
-    }
-  }
-
-  function writeJson(key, value) {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-    } catch (e) {}
-  }
-
-  function updateLeaderboard(gameKey, score) {
-    const lbKey = `wamsmash_lb_${gameKey}`;
-    const list = readJson(lbKey, []);
-
-    const best = list.length ? Math.max.apply(null, list.map(x => x.score || 0)) : 0;
-    if (score <= best) return list.slice(0, 5);
-
-    const entry = { initials: "YOU", score, ts: Date.now() };
-
-    const next = [entry].concat(list)
-      .sort((a, b) => (b.score || 0) - (a.score || 0))
-      .slice(0, 20);
-
-    writeJson(lbKey, next);
-    return next.slice(0, 5);
-  }
-
-  function renderLeaderboard(list) {
-    const rows = (list || []).slice(0, 5).map((x, i) => {
-      const a = String(x.initials || "YOU").toUpperCase();
-      const s = String(x.score || 0);
-      return `<div style="display:flex; justify-content:space-between; gap:10px;"><div>${i + 1}. ${a}</div><div>${s}</div></div>`;
-    }).join("");
-    return rows || `<div style="opacity:0.75;">No scores yet</div>`;
-  }
-
   function saveState(state) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {}
+  }
+
+  function clearState() {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
     } catch (e) {}
   }
 
@@ -401,63 +321,6 @@
   let currentTrackId = "";
   let shuffleOn = true;
   let recentQueue = [];
-
-  function persistPlayerState(opts) {
-    if (!wmAudio) return;
-    const trackId = wmAudio.getAttribute("data-track-id") || currentTrackId || "";
-    const t = (typeof wmAudio.currentTime === "number" && isFinite(wmAudio.currentTime)) ? wmAudio.currentTime : 0;
-    const paused = !!wmAudio.paused;
-
-    saveState({
-      trackId,
-      time: Math.max(0, t),
-      paused,
-      shuffleOn,
-      recentQueue: recentQueue.slice(-20),
-      currentTrackId: currentTrackId || trackId || "",
-      ts: Date.now(),
-      reason: (opts && opts.reason) ? String(opts.reason) : ""
-    });
-  }
-
-  function restorePlayerState() {
-    if (!wmAudio) return;
-
-    const st = readJson(STORAGE_KEY, null);
-    if (!st || !st.trackId) return;
-
-    const track = findTrackById(st.trackId);
-    if (!track) return;
-
-    if (typeof st.shuffleOn === "boolean") shuffleOn = st.shuffleOn;
-    if (Array.isArray(st.recentQueue)) recentQueue = st.recentQueue.slice(-20);
-    currentTrackId = track.id;
-
-    setNowPlayingUI(track);
-    setAudioSource(wmAudio, track);
-
-    const wantTime = (typeof st.time === "number" && isFinite(st.time)) ? st.time : 0;
-    const wantPaused = (typeof st.paused === "boolean") ? st.paused : true;
-
-    const applyTimeAndMaybePlay = function () {
-      try {
-        wmAudio.currentTime = Math.max(0, wantTime);
-      } catch (e) {}
-
-      if (!wantPaused) {
-        wmAudio.play().catch(() => {});
-      } else {
-        wmAudio.pause();
-      }
-      updateBrandPulseDot(track);
-    };
-
-    if (wmAudio.readyState >= 1) {
-      applyTimeAndMaybePlay();
-    } else {
-      wmAudio.addEventListener("loadedmetadata", applyTimeAndMaybePlay, { once: true });
-    }
-  }
 
   function pickNextTrackId() {
     const ids = TRACKS.map(t => t.id);
@@ -509,13 +372,11 @@
     if (!track) {
       title.textContent = "WAMSMASH";
       sub.textContent = "Select a track";
-      updateBrandPulseDot(null);
       return;
     }
 
     title.textContent = track.title;
     sub.textContent = `${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}`;
-    updateBrandPulseDot(track);
   }
 
   function setAudioSource(audioEl, track) {
@@ -534,6 +395,10 @@
       audioEl.setAttribute("data-track-id", track.id);
       audioEl.load();
     }
+
+    try {
+      audioEl.currentTime = 0;
+    } catch (e) {}
   }
 
   function playTrackById(trackId) {
@@ -547,10 +412,7 @@
     setNowPlayingUI(track);
     setAudioSource(wmAudio, track);
 
-    try { wmAudio.currentTime = 0; } catch (e) {}
-
     wmAudio.play().catch(() => {});
-    persistPlayerState({ reason: "playTrackById" });
   }
 
   function playNext() {
@@ -593,41 +455,14 @@
       shuffleBtn.addEventListener("click", function () {
         shuffleOn = !shuffleOn;
         shuffleBtn.textContent = `Shuffle: ${shuffleOn ? "On" : "Off"}`;
-        persistPlayerState({ reason: "shuffleToggle" });
       });
     }
 
     if (wmAudio) {
       wmAudio.addEventListener("ended", function () {
-        persistPlayerState({ reason: "ended" });
         playNext();
       });
-      wmAudio.addEventListener("play", function () {
-        const id = wmAudio.getAttribute("data-track-id");
-        if (id) currentTrackId = id;
-        persistPlayerState({ reason: "play" });
-        const track = findTrackById(id);
-        if (track) updateBrandPulseDot(track);
-      });
-      wmAudio.addEventListener("pause", function () {
-        persistPlayerState({ reason: "pause" });
-        const id = wmAudio.getAttribute("data-track-id");
-        const track = findTrackById(id);
-        if (track) updateBrandPulseDot(track);
-      });
-
-      let lastSave = 0;
-      wmAudio.addEventListener("timeupdate", function () {
-        const now = Date.now();
-        if (now - lastSave < 800) return;
-        lastSave = now;
-        persistPlayerState({ reason: "timeupdate" });
-      });
     }
-
-    window.addEventListener("beforeunload", function () {
-      persistPlayerState({ reason: "beforeunload" });
-    });
 
     document.addEventListener("keydown", function (e) {
       const tag = (e.target && e.target.tagName) ? String(e.target.tagName).toLowerCase() : "";
@@ -641,8 +476,29 @@
         else wmAudio.pause();
       }
 
-      if (e.code === "ArrowRight") playNext();
-      if (e.code === "ArrowLeft") playPrev();
+      if (e.code === "ArrowRight") {
+        playNext();
+      }
+
+      if (e.code === "ArrowLeft") {
+        playPrev();
+      }
+    });
+  }
+
+  function wireAudioPersistence(audioEl) {
+    if (!audioEl) return;
+
+    audioEl.addEventListener("pause", function () {
+      const id = audioEl.getAttribute("data-track-id");
+      if (!id) return;
+      saveState({ trackId: id, time: 0, paused: true });
+    });
+
+    audioEl.addEventListener("play", function () {
+      const id = audioEl.getAttribute("data-track-id");
+      if (!id) return;
+      saveState({ trackId: id, time: 0, paused: false });
     });
   }
 
@@ -761,10 +617,7 @@
     setNowPlayingUI(track);
     setAudioSource(audioEl, track);
 
-    try { audioEl.currentTime = 0; } catch (e) {}
-
     audioEl.play().catch(() => {});
-    persistPlayerState({ reason: "playButton" });
   }
 
   function wirePlayButtons(audioEl) {
@@ -777,25 +630,24 @@
     });
   }
 
-function switchView(view) {
-  const home = document.getElementById("homeView");
-  const music = document.getElementById("musicView");
-  const links = document.getElementById("linksView");
-  const games = document.getElementById("gamesView");
-  const hero = document.querySelector(".heroIntro");
+  function switchView(view) {
+    const home = document.getElementById("homeView");
+    const music = document.getElementById("musicView");
+    const links = document.getElementById("linksView");
+    const games = document.getElementById("gamesView");
+    const hero = document.querySelector(".heroIntro");
 
-  if (!home || !music || !links) return;
+    if (!home || !music || !links || !games) return;
 
-  home.style.display = view === "home" ? "block" : "none";
-  music.style.display = view === "music" ? "block" : "none";
-  links.style.display = view === "links" ? "block" : "none";
+    home.style.display = view === "home" ? "block" : "none";
+    music.style.display = view === "music" ? "block" : "none";
+    links.style.display = view === "links" ? "block" : "none";
+    games.style.display = view === "games" ? "block" : "none";
 
-  if (games) games.style.display = view === "games" ? "block" : "none";
+    if (hero) hero.style.display = view === "home" ? "block" : "none";
 
-  if (hero) hero.style.display = view === "home" ? "block" : "none";
-
-  setActiveNav(view);
-}
+    setActiveNav(view);
+  }
 
   function setActiveNav(view) {
     const navRoot = document.querySelector("header nav");
@@ -836,7 +688,9 @@ function switchView(view) {
     if (route.view === "music" && route.scrollId) {
       requestAnimationFrame(function () {
         const target = document.getElementById(route.scrollId);
-        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       });
     }
   }
@@ -888,55 +742,223 @@ function switchView(view) {
     return Math.max(a, Math.min(b, n));
   }
 
-  function spawnSparks(root, cx, cy) {
-    const count = 16;
-    for (let i = 0; i < count; i++) {
-      const s = document.createElement("div");
-      s.className = "wmSpark";
-      s.style.left = `${cx}px`;
-      s.style.top = `${cy}px`;
+  function ensureGameStyles() {
+    if (document.getElementById("wmGameStyles")) return;
+    const style = document.createElement("style");
+    style.id = "wmGameStyles";
+    style.textContent = `
+      .wmGameWrap{
+        border:1px solid rgba(255,255,255,0.12);
+        border-radius:20px;
+        background:rgba(14,15,22,0.50);
+        padding:14px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.28);
+      }
+      .wmGameHead{
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:10px;
+        margin-bottom:12px;
+      }
+      .wmGameTitle{
+        margin:0;
+        font-size:14px;
+        letter-spacing:0.06em;
+        text-transform:uppercase;
+      }
+      .wmGameSub{
+        margin-top:6px;
+        color:rgba(166,168,179,0.95);
+        font-size:12px;
+        line-height:1.35;
+      }
+      .wmGameRow{
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+        margin-top:10px;
+      }
+      .wmMemGrid{
+        display:grid;
+        grid-template-columns:repeat(4, minmax(0, 1fr));
+        gap:10px;
+      }
+      @media (max-width: 700px){
+        .wmMemGrid{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+      }
+      .wmMemCard{
+        position:relative;
+        aspect-ratio:1/1;
+        border-radius:14px;
+        border:1px solid rgba(255,255,255,0.12);
+        overflow:hidden;
+        background:rgba(0,0,0,0.25);
+        cursor:pointer;
+        user-select:none;
+      }
+      .wmMemCardFace{
+        position:absolute;
+        inset:0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:12px;
+        letter-spacing:0.06em;
+        text-transform:uppercase;
+        color:rgba(242,243,247,0.90);
+      }
+      .wmMemBack{
+        background:
+          radial-gradient(500px 280px at 15% 15%, rgba(255,43,214,0.20), transparent 55%),
+          radial-gradient(420px 280px at 85% 20%, rgba(0,229,255,0.16), transparent 55%),
+          linear-gradient(180deg, rgba(14,15,22,0.85), rgba(0,0,0,0.35));
+      }
+      .wmMemCard.isFlipped .wmMemBack{ opacity:0; }
+      .wmMemFront{
+        background-size:cover;
+        background-position:center;
+        opacity:0;
+        transform:scale(1.02);
+      }
+      .wmMemCard.isFlipped .wmMemFront{ opacity:1; }
+      .wmMemFront, .wmMemBack{
+        transition:opacity 0.14s ease, transform 0.14s ease;
+      }
+      .wmMemCard.isMatched{
+        border-color:rgba(0,229,255,0.42);
+        box-shadow:0 0 0 1px rgba(0,0,0,0.35) inset, 0 10px 28px rgba(0,0,0,0.28);
+        cursor:default;
+      }
 
-      const ang = Math.random() * Math.PI * 2;
-      const mag = 26 + Math.random() * 44;
-      const dx = Math.cos(ang) * mag;
-      const dy = Math.sin(ang) * mag;
+      .wmReactArena{
+        position:relative;
+        height:260px;
+        border-radius:16px;
+        border:1px solid rgba(255,255,255,0.12);
+        overflow:hidden;
+        background:
+          radial-gradient(600px 240px at 20% 20%, rgba(255,43,214,0.16), transparent 60%),
+          radial-gradient(540px 240px at 80% 30%, rgba(0,229,255,0.14), transparent 60%),
+          linear-gradient(180deg, rgba(14,15,22,0.65), rgba(0,0,0,0.35));
+      }
+      .wmReactTarget{
+        position:absolute;
+        width:56px;
+        height:56px;
+        border-radius:999px;
+        border:1px solid rgba(255,255,255,0.18);
+        background:rgba(0,0,0,0.20);
+        box-shadow:0 0 0 1px rgba(0,0,0,0.35) inset, 0 10px 28px rgba(0,0,0,0.28);
+        cursor:pointer;
+      }
+      .wmReactTarget::after{
+        content:"";
+        position:absolute;
+        inset:-10px;
+        border-radius:999px;
+        background:radial-gradient(circle at 50% 50%, rgba(255,43,214,0.26), transparent 55%);
+        opacity:0.65;
+        filter:blur(1px);
+        animation:wmPulse 0.9s ease-in-out infinite;
+        pointer-events:none;
+      }
+      @keyframes wmPulse{
+        0%{ transform:scale(0.90); opacity:0.45; }
+        50%{ transform:scale(1.08); opacity:0.85; }
+        100%{ transform:scale(0.90); opacity:0.45; }
+      }
+      .wmSpark{
+        position:absolute;
+        width:6px;
+        height:6px;
+        border-radius:999px;
+        background:rgba(0,229,255,0.9);
+        pointer-events:none;
+        animation:wmSpark 0.55s ease-out forwards;
+      }
+      @keyframes wmSpark{
+        0%{ transform:translate(0,0) scale(1); opacity:1; }
+        100%{ transform:translate(var(--dx), var(--dy)) scale(0.2); opacity:0; }
+      }
 
-      s.style.setProperty("--dx", `${dx}px`);
-      s.style.setProperty("--dy", `${dy}px`);
-
-      root.appendChild(s);
-
-      setTimeout(function () {
-        if (s && s.parentNode) s.parentNode.removeChild(s);
-      }, 560);
-    }
+      .wmCanvasWrap{
+        border-radius:16px;
+        border:1px solid rgba(255,255,255,0.12);
+        overflow:hidden;
+        background:rgba(0,0,0,0.20);
+      }
+      .wmCanvasWrap canvas{
+        width:100%;
+        height:auto;
+        display:block;
+      }
+      .wmTiny{
+        font-size:12px;
+        color:rgba(166,168,179,0.95);
+        line-height:1.35;
+      }
+    `;
+    document.head.appendChild(style);
   }
 
-  function flashArena(arena, kind) {
-    if (!arena) return;
-    const d = document.createElement("div");
-    d.className = `wmFlash ${kind}`;
-    arena.appendChild(d);
-    setTimeout(function () {
-      if (d && d.parentNode) d.parentNode.removeChild(d);
-    }, 180);
+  let activeGame = "";
+
+  function renderGames() {
+    const mount = document.getElementById("wmGames");
+    if (!mount) return;
+
+    ensureGameStyles();
+
+    mount.innerHTML = `
+      <div class="wmGameWrap">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">Memory</h3>
+            <div class="wmGameSub">Match cover pairs. Clean loop. No filler</div>
+          </div>
+          <div class="wmGameRow">
+            <button class="btn btnPrimary" type="button" data-game="memory">Play</button>
+            <button class="btn" type="button" data-game="memory-reset">Reset</button>
+          </div>
+        </div>
+        <div id="wmGameMemory"></div>
+      </div>
+
+      <div class="wmGameWrap">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">Neon Reaction</h3>
+            <div class="wmGameSub">Hit the target. Spark on contact. No waiting</div>
+          </div>
+          <div class="wmGameRow">
+            <button class="btn btnPrimary" type="button" data-game="reaction">Play</button>
+            <button class="btn" type="button" data-game="reaction-reset">Reset</button>
+          </div>
+        </div>
+        <div id="wmGameReaction"></div>
+      </div>
+
+      <div class="wmGameWrap">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">Curve Ball</h3>
+            <div class="wmGameSub">Paddle control. Add curve by moving as you hit</div>
+          </div>
+          <div class="wmGameRow">
+            <button class="btn btnPrimary" type="button" data-game="curve">Play</button>
+            <button class="btn" type="button" data-game="curve-reset">Reset</button>
+          </div>
+        </div>
+        <div id="wmGameCurve"></div>
+      </div>
+    `;
+
+    initMemory(true);
+    initReaction(true);
+    initCurve(true);
   }
 
-  function showOverlay(root, text) {
-    const overlay = document.createElement("div");
-    overlay.className = "wmBigGo";
-    overlay.textContent = text;
-    root.appendChild(overlay);
-    return overlay;
-  }
-
-  function pickRandomCoverUrl() {
-    if (!TRACKS.length) return "";
-    const t = TRACKS[Math.floor(Math.random() * TRACKS.length)];
-    return t.cover || "";
-  }
-
- 
   function sampleTracksForMemory(pairCount) {
     const list = TRACKS.slice();
     for (let i = list.length - 1; i > 0; i--) {
@@ -1003,7 +1025,7 @@ function switchView(view) {
       grid.appendChild(card);
     }
 
-    if (!silent) {}
+    if (!silent) activeGame = "memory";
   }
 
   function memFlip(idx) {
@@ -1025,8 +1047,6 @@ function switchView(view) {
       memState.firstIdx = idx;
       return;
     }
-
-    if (memState.firstIdx === idx) return;
 
     memState.moves += 1;
     movesEl.textContent = String(memState.moves);
@@ -1069,53 +1089,33 @@ function switchView(view) {
     reactState = {
       running: false,
       score: 0,
-      hits: 0,
-      misses: 0,
-      targetsLeft: 19,
-      endAt: 0,
-      timerId: 0,
-      mult: 1
+      hits: 0
     };
 
     mount.innerHTML = `
       <div class="wmTiny" style="margin-bottom:10px;">
-        Targets: <span id="wmReactTargets">19</span>
+        Score: <span id="wmReactScore">0</span>
         <span style="margin-left:10px;">Hits: <span id="wmReactHits">0</span></span>
-        <span style="margin-left:10px;">Score: <span id="wmReactScore">0</span></span>
-        <span style="margin-left:10px;">x<span id="wmReactMult">1</span></span>
-        <span style="margin-left:10px;" class="wmCountdown">Time: <span id="wmReactTime">15.0</span></span>
       </div>
       <div class="wmReactArena" id="wmReactArena"></div>
-      <div class="wmLbBox">
-        <div class="wmTiny" style="margin-bottom:6px;">Top 5</div>
-        <div id="wmReactLb"></div>
-      </div>
     `;
 
-    const lbEl = document.getElementById("wmReactLb");
-    if (lbEl) lbEl.innerHTML = renderLeaderboard(readJson("wamsmash_lb_reaction", []).slice(0, 5));
-
-    if (!silent) {}
+    if (!silent) activeGame = "reaction";
   }
 
   function spawnReactionTarget() {
     const arena = document.getElementById("wmReactArena");
     const scoreEl = document.getElementById("wmReactScore");
     const hitsEl = document.getElementById("wmReactHits");
-    const targetsEl = document.getElementById("wmReactTargets");
-    const multEl = document.getElementById("wmReactMult");
-    if (!arena || !scoreEl || !hitsEl || !targetsEl || !multEl) return;
-    if (!reactState || !reactState.running) return;
-    if (reactState.targetsLeft <= 0) return;
+    if (!arena || !scoreEl || !hitsEl) return;
 
     arena.innerHTML = "";
 
     const w = arena.clientWidth;
     const h = arena.clientHeight;
 
-    const size = 56;
-    const x = Math.floor(Math.random() * Math.max(1, w - size));
-    const y = Math.floor(Math.random() * Math.max(1, h - size));
+    const x = Math.floor(Math.random() * Math.max(1, w - 56));
+    const y = Math.floor(Math.random() * Math.max(1, h - 56));
 
     const t = document.createElement("button");
     t.type = "button";
@@ -1125,658 +1125,216 @@ function switchView(view) {
 
     const born = performance.now();
 
-    const onMiss = function (e) {
+    t.addEventListener("click", function (e) {
       if (!reactState || !reactState.running) return;
-      if (e && e.target === t) return;
-
-      arena.removeEventListener("click", onMiss);
-
-      reactState.misses += 1;
-      reactState.targetsLeft -= 1;
-      reactState.mult = 1;
-
-      const penalty = 120;
-      reactState.score = Math.max(0, reactState.score - penalty);
-
-      scoreEl.textContent = String(reactState.score);
-      hitsEl.textContent = String(reactState.hits);
-      targetsEl.textContent = String(reactState.targetsLeft);
-      multEl.textContent = String(reactState.mult);
-
-      flashArena(arena, "wmFlashRed");
-
-      if (reactState.targetsLeft <= 0) {
-        endReaction("Time");
-        return;
-      }
-
-      spawnReactionTarget();
-    };
-
-    arena.addEventListener("click", onMiss);
-
-    t.addEventListener("click", function (ev) {
-      if (!reactState || !reactState.running) return;
-
-      arena.removeEventListener("click", onMiss);
 
       const now = performance.now();
-      const dt = clamp(now - born, 40, 1500);
+      const dt = clamp(now - born, 40, 1800);
+      const pts = Math.floor(1200 / dt * 100);
 
-      const rect = t.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-
-      const dx = (ev.clientX - cx);
-      const dy = (ev.clientY - cy);
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      const radius = rect.width / 2;
-      const perfectThreshold = Math.max(4, radius * 0.10);
-      const isPerfect = dist <= perfectThreshold;
-
-      const base = Math.max(50, Math.floor(1100 - dt));
-      const mult = reactState.mult;
-
-      let pts = base * mult;
-
-      if (isPerfect) {
-        reactState.mult = clamp(reactState.mult + 1, 1, 5);
-        pts += 150;
-        flashArena(arena, "wmFlashGold");
-      } else {
-        flashArena(arena, "wmFlashGreen");
-      }
-
-      reactState.score += Math.floor(pts);
+      reactState.score += pts;
       reactState.hits += 1;
-      reactState.targetsLeft -= 1;
 
       scoreEl.textContent = String(reactState.score);
       hitsEl.textContent = String(reactState.hits);
-      targetsEl.textContent = String(reactState.targetsLeft);
-      multEl.textContent = String(reactState.mult);
 
-      spawnSparks(arena, x + size / 2, y + size / 2);
-
-      if (reactState.targetsLeft <= 0) {
-        endReaction("All targets cleared");
-        return;
-      }
-
+      spawnSparks(arena, x + 28, y + 28);
       spawnReactionTarget();
     });
 
     arena.appendChild(t);
   }
 
-  function tickReaction() {
-    const timeEl = document.getElementById("wmReactTime");
-    if (!timeEl || !reactState) return;
+  function spawnSparks(root, cx, cy) {
+    const count = 12;
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement("div");
+      s.className = "wmSpark";
+      s.style.left = `${cx}px`;
+      s.style.top = `${cy}px`;
 
-    const leftMs = reactState.endAt - performance.now();
-    const secsLeft = Math.max(0, leftMs / 1000);
-    timeEl.textContent = secsLeft.toFixed(1);
+      const ang = Math.random() * Math.PI * 2;
+      const mag = 22 + Math.random() * 34;
+      const dx = Math.cos(ang) * mag;
+      const dy = Math.sin(ang) * mag;
 
-    if (leftMs <= 0) {
-      endReaction("Time");
-      return;
+      s.style.setProperty("--dx", `${dx}px`);
+      s.style.setProperty("--dy", `${dy}px`);
+
+      root.appendChild(s);
+
+      setTimeout(function () {
+        if (s && s.parentNode) s.parentNode.removeChild(s);
+      }, 560);
     }
-
-    reactState.timerId = window.setTimeout(tickReaction, 80);
   }
 
   function startReaction() {
     if (!reactState) return;
-
-    const arena = document.getElementById("wmReactArena");
-    if (!arena) return;
-
-    reactState.running = false;
-    reactState.score = 0;
-    reactState.hits = 0;
-    reactState.misses = 0;
-    reactState.targetsLeft = 19;
-    reactState.mult = 1;
-
-    const scoreEl = document.getElementById("wmReactScore");
-    const hitsEl = document.getElementById("wmReactHits");
-    const targetsEl = document.getElementById("wmReactTargets");
-    const timeEl = document.getElementById("wmReactTime");
-    const multEl = document.getElementById("wmReactMult");
-
-    if (scoreEl) scoreEl.textContent = "0";
-    if (hitsEl) hitsEl.textContent = "0";
-    if (targetsEl) targetsEl.textContent = "19";
-    if (timeEl) timeEl.textContent = "15.0";
-    if (multEl) multEl.textContent = "1";
-
-    arena.innerHTML = "";
-
-    const ready = showOverlay(arena, "READY");
-    setTimeout(function () {
-      if (ready && ready.parentNode) ready.parentNode.removeChild(ready);
-      const set = showOverlay(arena, "SET");
-      setTimeout(function () {
-        if (set && set.parentNode) set.parentNode.removeChild(set);
-        const go = showOverlay(arena, "GO");
-        setTimeout(function () {
-          if (go && go.parentNode) go.parentNode.removeChild(go);
-
-          reactState.running = true;
-          reactState.endAt = performance.now() + 15000;
-          if (reactState.timerId) clearTimeout(reactState.timerId);
-          tickReaction();
-          spawnReactionTarget();
-        }, 260);
-      }, 420);
-    }, 520);
+    reactState.running = true;
+    spawnReactionTarget();
   }
 
-  function endReaction(reason) {
-    if (!reactState) return;
+  let curveState = null;
 
-    reactState.running = false;
-    if (reactState.timerId) clearTimeout(reactState.timerId);
-
-    const arena = document.getElementById("wmReactArena");
-    if (arena) {
-      arena.innerHTML = "";
-      const done = showOverlay(arena, `${reason}`);
-      setTimeout(function () {
-        if (done && done.parentNode) done.parentNode.removeChild(done);
-      }, 900);
-    }
-
-    const lbEl = document.getElementById("wmReactLb");
-    const top5 = updateLeaderboard("reaction", reactState.score);
-    if (lbEl) lbEl.innerHTML = renderLeaderboard(top5);
-  }
-
-  let breakerState = null;
-
-  function initBreaker(silent) {
-    const mount = document.getElementById("wmGameBreaker");
+  function initCurve(silent) {
+    const mount = document.getElementById("wmGameCurve");
     if (!mount) return;
 
     mount.innerHTML = `
       <div class="wmTiny" style="margin-bottom:10px;">
-        Bricks: <span id="wmBrBricks">0</span>
-        <span style="margin-left:10px;">Score: <span id="wmBrScore">0</span></span>
-        <span style="margin-left:10px;" class="wmCountdown">Time: <span id="wmBrTime">15.0</span></span>
+        Move mouse or finger. Curve comes from paddle motion at impact
       </div>
-      <div class="wmCanvasWrap" style="position:relative;">
-        <canvas id="wmBreakerCanvas" width="960" height="480"></canvas>
+      <div class="wmCanvasWrap">
+        <canvas id="wmCurveCanvas" width="720" height="360"></canvas>
       </div>
-      <div class="wmLbBox">
-        <div class="wmTiny" style="margin-bottom:6px;">Top 5</div>
-        <div id="wmBrLb"></div>
+      <div class="wmGameRow" style="margin-top:10px;">
+        <button class="btn" type="button" id="wmCurveServe">Serve</button>
       </div>
     `;
 
-    const lbEl = document.getElementById("wmBrLb");
-    if (lbEl) lbEl.innerHTML = renderLeaderboard(readJson("wamsmash_lb_breaker", []).slice(0, 5));
-
-    const canvas = document.getElementById("wmBreakerCanvas");
-    if (!canvas) return;
+    const canvas = document.getElementById("wmCurveCanvas");
+    const serveBtn = document.getElementById("wmCurveServe");
+    if (!canvas || !serveBtn) return;
 
     const ctx = canvas.getContext("2d");
 
-    const bgUrl = pickRandomCoverUrl();
-    const bgImg = new Image();
-    if (bgUrl) bgImg.src = bgUrl;
-
-    breakerState = {
+    curveState = {
       canvas,
       ctx,
-      bgImg,
-      bgReady: false,
       running: false,
-      endAt: 0,
-      lastT: 0,
-      paddleX: canvas.width / 2,
-      paddleW: 160,
+      paddleX: 360,
+      paddleVX: 0,
+      lastPaddleX: 360,
+      ballX: 360,
+      ballY: 180,
+      ballVX: 3.2,
+      ballVY: 2.6,
+      radius: 10,
+      paddleW: 120,
       paddleH: 14,
-      paddleY: canvas.height - 26,
-      ballX: canvas.width / 2,
-      ballY: canvas.height - 60,
-      ballVX: 5.2,
-      ballVY: -5.6,
-      r: 10,
-      bricks: [],
-      bricksLeft: 0,
-      score: 0
-    };
-
-    bgImg.onload = function () { breakerState.bgReady = true; };
-
-    const cols = 10;
-    const rows = 4;
-    const pad = 10;
-    const top = 18;
-    const side = 18;
-    const bw = Math.floor((canvas.width - side * 2 - pad * (cols - 1)) / cols);
-    const bh = 20;
-
-    const brickColors = [
-      "rgba(0,229,255,0.55)",
-      "rgba(255,43,214,0.50)",
-      "rgba(0,255,160,0.45)",
-      "rgba(255,180,0,0.45)"
-    ];
-
-    const bricks = [];
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        bricks.push({
-          x: side + c * (bw + pad),
-          y: top + r * (bh + pad),
-          w: bw,
-          h: bh,
-          row: r,
-          alive: true,
-          color: brickColors[r % brickColors.length]
-        });
-      }
-    }
-
-    breakerState.bricks = bricks;
-    breakerState.bricksLeft = bricks.length;
-
-    function setPaddleFromClientX(clientX) {
-      const rect = canvas.getBoundingClientRect();
-      const px = (clientX - rect.left) * (canvas.width / rect.width);
-      breakerState.paddleX = clamp(px, breakerState.paddleW / 2, canvas.width - breakerState.paddleW / 2);
-    }
-
-    canvas.addEventListener("mousemove", function (e) {
-      if (!breakerState) return;
-      setPaddleFromClientX(e.clientX);
-    });
-
-    canvas.addEventListener("touchmove", function (e) {
-      if (!breakerState) return;
-      if (!e.touches || !e.touches.length) return;
-      setPaddleFromClientX(e.touches[0].clientX);
-      e.preventDefault();
-    }, { passive: false });
-
-    if (!silent) {}
-  }
-
-  function drawBreaker() {
-    const s = breakerState;
-    if (!s) return;
-
-    const g = s.ctx;
-    const w = s.canvas.width;
-    const h = s.canvas.height;
-
-    g.clearRect(0, 0, w, h);
-
-    if (s.bgReady) {
-      g.globalAlpha = 0.18;
-      g.drawImage(s.bgImg, 0, 0, w, h);
-      g.globalAlpha = 1;
-    }
-
-    g.fillStyle = "rgba(0,0,0,0.22)";
-    g.fillRect(0, 0, w, h);
-
-    for (const b of s.bricks) {
-      if (!b.alive) continue;
-      g.fillStyle = b.color;
-      g.fillRect(b.x, b.y, b.w, b.h);
-      g.strokeStyle = "rgba(255,255,255,0.12)";
-      g.strokeRect(b.x, b.y, b.w, b.h);
-    }
-
-    g.fillStyle = "rgba(255,255,255,0.88)";
-    g.fillRect(s.paddleX - s.paddleW / 2, s.paddleY, s.paddleW, s.paddleH);
-
-    g.beginPath();
-    g.arc(s.ballX, s.ballY, s.r, 0, Math.PI * 2);
-    g.fill();
-
-    g.strokeStyle = "rgba(0,229,255,0.18)";
-    g.strokeRect(1, 1, w - 2, h - 2);
-  }
-
-  function tickBreaker() {
-    const timeEl = document.getElementById("wmBrTime");
-    const scoreEl = document.getElementById("wmBrScore");
-    const bricksEl = document.getElementById("wmBrBricks");
-
-    if (!breakerState || !timeEl || !scoreEl || !bricksEl) return;
-    if (!breakerState.running) return;
-
-    const now = performance.now();
-    const dt = breakerState.lastT ? clamp((now - breakerState.lastT) / 16.666, 0.7, 1.6) : 1;
-    breakerState.lastT = now;
-
-    breakerState.ballX += breakerState.ballVX * dt;
-    breakerState.ballY += breakerState.ballVY * dt;
-
-    if (breakerState.ballX < breakerState.r) {
-      breakerState.ballX = breakerState.r;
-      breakerState.ballVX *= -1;
-    }
-    if (breakerState.ballX > breakerState.canvas.width - breakerState.r) {
-      breakerState.ballX = breakerState.canvas.width - breakerState.r;
-      breakerState.ballVX *= -1;
-    }
-    if (breakerState.ballY < breakerState.r) {
-      breakerState.ballY = breakerState.r;
-      breakerState.ballVY *= -1;
-    }
-
-    const pLeft = breakerState.paddleX - breakerState.paddleW / 2;
-    const pRight = breakerState.paddleX + breakerState.paddleW / 2;
-    const pTop = breakerState.paddleY;
-
-    const hitPaddleY = breakerState.ballY + breakerState.r >= pTop && breakerState.ballY + breakerState.r <= pTop + breakerState.paddleH;
-    const hitPaddleX = breakerState.ballX >= pLeft && breakerState.ballX <= pRight;
-
-    if (hitPaddleY && hitPaddleX && breakerState.ballVY > 0) {
-      const rel = (breakerState.ballX - breakerState.paddleX) / (breakerState.paddleW / 2);
-      breakerState.ballVY = -Math.abs(breakerState.ballVY) * 1.01;
-      breakerState.ballVX += rel * 1.4;
-    }
-
-    for (const b of breakerState.bricks) {
-      if (!b.alive) continue;
-
-      const bx = breakerState.ballX;
-      const by = breakerState.ballY;
-
-      const withinX = bx + breakerState.r >= b.x && bx - breakerState.r <= b.x + b.w;
-      const withinY = by + breakerState.r >= b.y && by - breakerState.r <= b.y + b.h;
-
-      if (withinX && withinY) {
-        b.alive = false;
-        breakerState.bricksLeft -= 1;
-        breakerState.score += 10;
-
-        if (b.row === 0) breakerState.endAt += 1000;
-
-        breakerState.ballVY *= -1;
-        break;
-      }
-    }
-
-    scoreEl.textContent = String(breakerState.score);
-    bricksEl.textContent = String((breakerState.bricks.length - breakerState.bricksLeft));
-
-    const leftMs = breakerState.endAt - now;
-    const secsLeft = Math.max(0, leftMs / 1000);
-    timeEl.textContent = secsLeft.toFixed(1);
-
-    drawBreaker();
-
-    if (leftMs <= 0) {
-      endBreaker();
-      return;
-    }
-
-    requestAnimationFrame(tickBreaker);
-  }
-
-  function startBreaker() {
-    if (!breakerState) return;
-
-    breakerState.running = false;
-    breakerState.lastT = 0;
-    breakerState.score = 0;
-
-    for (const b of breakerState.bricks) b.alive = true;
-    breakerState.bricksLeft = breakerState.bricks.length;
-
-    breakerState.ballX = breakerState.canvas.width / 2;
-    breakerState.ballY = breakerState.canvas.height - 60;
-    breakerState.ballVX = 5.2 * (Math.random() < 0.5 ? -1 : 1);
-    breakerState.ballVY = -5.6;
-
-    const timeEl = document.getElementById("wmBrTime");
-    const scoreEl = document.getElementById("wmBrScore");
-    const bricksEl = document.getElementById("wmBrBricks");
-    if (timeEl) timeEl.textContent = "15.0";
-    if (scoreEl) scoreEl.textContent = "0";
-    if (bricksEl) bricksEl.textContent = "0";
-
-    drawBreaker();
-
-    const wrap = breakerState.canvas.parentElement;
-    if (!wrap) return;
-
-    const overlay = showOverlay(wrap, "READY");
-    setTimeout(function () {
-      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      const set = showOverlay(wrap, "SET");
-      setTimeout(function () {
-        if (set && set.parentNode) set.parentNode.removeChild(set);
-        const go = showOverlay(wrap, "GO");
-        setTimeout(function () {
-          if (go && go.parentNode) go.parentNode.removeChild(go);
-          breakerState.running = true;
-          breakerState.endAt = performance.now() + 15000;
-          requestAnimationFrame(tickBreaker);
-        }, 260);
-      }, 420);
-    }, 520);
-  }
-
-  function endBreaker() {
-    if (!breakerState) return;
-    breakerState.running = false;
-
-    const lbEl = document.getElementById("wmBrLb");
-    const top5 = updateLeaderboard("breaker", breakerState.score);
-    if (lbEl) lbEl.innerHTML = renderLeaderboard(top5);
-  }
-
-  let dodgeState = null;
-
-  function initDodge(silent) {
-    const mount = document.getElementById("wmGameDodge");
-    if (!mount) return;
-
-    mount.innerHTML = `
-      <div class="wmTiny" style="margin-bottom:10px;">
-        Score: <span id="wmDodgeScore">0</span>
-        <span style="margin-left:10px;" class="wmCountdown">Time: <span id="wmDodgeTime">15.0</span></span>
-      </div>
-      <div class="wmCanvasWrap" style="position:relative;">
-        <canvas id="wmDodgeCanvas" width="960" height="440"></canvas>
-      </div>
-      <div class="wmLbBox">
-        <div class="wmTiny" style="margin-bottom:6px;">Top 5</div>
-        <div id="wmDodgeLb"></div>
-      </div>
-    `;
-
-    const lbEl = document.getElementById("wmDodgeLb");
-    if (lbEl) lbEl.innerHTML = renderLeaderboard(readJson("wamsmash_lb_dodge", []).slice(0, 5));
-
-    const canvas = document.getElementById("wmDodgeCanvas");
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    const bgUrl = pickRandomCoverUrl();
-    const bg = new Image();
-    if (bgUrl) bg.src = bgUrl;
-
-    dodgeState = {
-      canvas,
-      ctx,
-      bg,
-      bgReady: false,
-      running: false,
-      endAt: 0,
-      lastT: 0,
-      startAt: 0,
-      x: canvas.width / 2,
-      y: canvas.height - 64,
+      paddleY: 330,
       score: 0,
-      hazards: []
+      lastT: 0
     };
 
-    bg.onload = function () { dodgeState.bgReady = true; };
-
-    function setX(clientX) {
-      const r = canvas.getBoundingClientRect();
-      const px = (clientX - r.left) * (canvas.width / r.width);
-      dodgeState.x = clamp(px, 18, canvas.width - 18);
+    function setPaddleX(px) {
+      const nx = clamp(px, curveState.paddleW * 0.5, canvas.width - curveState.paddleW * 0.5);
+      curveState.paddleX = nx;
     }
 
     canvas.addEventListener("mousemove", function (e) {
-      if (!dodgeState) return;
-      setX(e.clientX);
+      const r = canvas.getBoundingClientRect();
+      const px = (e.clientX - r.left) * (canvas.width / r.width);
+      setPaddleX(px);
     });
 
     canvas.addEventListener("touchmove", function (e) {
-      if (!dodgeState) return;
       if (!e.touches || !e.touches.length) return;
-      setX(e.touches[0].clientX);
+      const r = canvas.getBoundingClientRect();
+      const px = (e.touches[0].clientX - r.left) * (canvas.width / r.width);
+      setPaddleX(px);
       e.preventDefault();
     }, { passive: false });
 
-    if (!silent) {}
-  }
+    function draw() {
+      const s = curveState;
+      const g = s.ctx;
 
-  function startDodge() {
-    if (!dodgeState) return;
+      g.clearRect(0, 0, canvas.width, canvas.height);
 
-    dodgeState.running = false;
-    dodgeState.lastT = 0;
-    dodgeState.score = 0;
-    dodgeState.hazards = [];
-    dodgeState.startAt = performance.now();
+      g.fillStyle = "rgba(242,243,247,0.9)";
+      g.font = "12px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+      g.fillText(`Score: ${s.score}`, 12, 20);
 
-    const scoreEl = document.getElementById("wmDodgeScore");
-    const timeEl = document.getElementById("wmDodgeTime");
-    if (scoreEl) scoreEl.textContent = "0";
-    if (timeEl) timeEl.textContent = "15.0";
+      g.fillStyle = "rgba(0,0,0,0.25)";
+      g.fillRect(0, 0, canvas.width, canvas.height);
 
-    const wrap = dodgeState.canvas.parentElement;
-    if (!wrap) return;
-
-    const overlay = showOverlay(wrap, "READY");
-    setTimeout(function () {
-      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      const set = showOverlay(wrap, "SET");
-      setTimeout(function () {
-        if (set && set.parentNode) set.parentNode.removeChild(set);
-        const go = showOverlay(wrap, "GO");
-        setTimeout(function () {
-          if (go && go.parentNode) go.parentNode.removeChild(go);
-          dodgeState.running = true;
-          dodgeState.endAt = performance.now() + 15000;
-          requestAnimationFrame(tickDodge);
-        }, 260);
-      }, 420);
-    }, 520);
-  }
-
-  function tickDodge(t) {
-    if (!dodgeState || !dodgeState.running) return;
-
-    const dt = dodgeState.lastT ? clamp((t - dodgeState.lastT) / 16.666, 0.7, 1.6) : 1;
-    dodgeState.lastT = t;
-
-    const sinceStart = t - dodgeState.startAt;
-
-    const graceMs = 1100;
-const spawnChance = sinceStart < graceMs ? 0 : 0.05;
-
-if (Math.random() < spawnChance) {
-  dodgeState.hazards.push({
-    x: Math.random() * dodgeState.canvas.width,
-    y: -24,
-    r: 10 + Math.random() * 10,
-    vy: 2.2 + Math.random() * 1.6
-  });
-}
-
-    for (const h of dodgeState.hazards) h.y += h.vy * dt;
-    dodgeState.hazards = dodgeState.hazards.filter(h => h.y < dodgeState.canvas.height + 50);
-
-    for (const h of dodgeState.hazards) {
-      const dx = h.x - dodgeState.x;
-      const dy = h.y - dodgeState.y;
-      const d = Math.sqrt(dx * dx + dy * dy);
-      if (d < h.r + 14) {
-        endDodge();
-        return;
+      g.fillStyle = "rgba(255,255,255,0.10)";
+      for (let i = 0; i < 24; i++) {
+        const x = (i * 31 + 17) % canvas.width;
+        const y = (i * 19 + 33) % canvas.height;
+        g.beginPath();
+        g.arc(x, y, 2.2, 0, Math.PI * 2);
+        g.fill();
       }
-    }
 
-    dodgeState.score += Math.floor(2 * dt);
+      g.fillStyle = "rgba(255,255,255,0.85)";
+      g.fillRect(s.paddleX - s.paddleW / 2, s.paddleY, s.paddleW, s.paddleH);
 
-    const leftMs = dodgeState.endAt - t;
-    const secsLeft = Math.max(0, leftMs / 1000);
-
-    const scoreEl = document.getElementById("wmDodgeScore");
-    const timeEl = document.getElementById("wmDodgeTime");
-    if (scoreEl) scoreEl.textContent = String(dodgeState.score);
-    if (timeEl) timeEl.textContent = secsLeft.toFixed(1);
-
-    drawDodge();
-
-    if (leftMs <= 0) {
-      endDodge();
-      return;
-    }
-
-    requestAnimationFrame(tickDodge);
-  }
-
-  function drawDodge() {
-    const s = dodgeState;
-    if (!s) return;
-    const g = s.ctx;
-    const w = s.canvas.width;
-    const h = s.canvas.height;
-
-    g.clearRect(0, 0, w, h);
-
-    if (s.bgReady) {
-      g.globalAlpha = 0.14;
-      g.drawImage(s.bg, 0, 0, w, h);
-      g.globalAlpha = 1;
-    }
-
-    g.fillStyle = "rgba(0,0,0,0.24)";
-    g.fillRect(0, 0, w, h);
-
-    g.strokeStyle = "rgba(255,255,255,0.08)";
-    for (let i = 1; i < 6; i++) {
-      const x = (w / 6) * i;
       g.beginPath();
-      g.moveTo(x, 0);
-      g.lineTo(x, h);
-      g.stroke();
-    }
-
-    for (const hz of s.hazards) {
-      g.fillStyle = "rgba(255,43,214,0.55)";
-      g.beginPath();
-      g.arc(hz.x, hz.y, hz.r, 0, Math.PI * 2);
+      g.arc(s.ballX, s.ballY, s.radius, 0, Math.PI * 2);
       g.fill();
     }
 
-    g.fillStyle = "rgba(0,229,255,0.85)";
-    g.beginPath();
-    g.arc(s.x, s.y, 14, 0, Math.PI * 2);
-    g.fill();
-  }
+    function step(t) {
+      const s = curveState;
+      if (!s.running) return;
 
-  function endDodge() {
-    if (!dodgeState) return;
-    dodgeState.running = false;
+      const dt = s.lastT ? clamp((t - s.lastT) / 16.666, 0.6, 1.6) : 1;
+      s.lastT = t;
 
-    const lbEl = document.getElementById("wmDodgeLb");
-    const top5 = updateLeaderboard("dodge", dodgeState.score);
-    if (lbEl) lbEl.innerHTML = renderLeaderboard(top5);
+      const px = s.paddleX;
+      s.paddleVX = (px - s.lastPaddleX);
+      s.lastPaddleX = px;
+
+      s.ballX += s.ballVX * dt;
+      s.ballY += s.ballVY * dt;
+
+      if (s.ballX < s.radius) {
+        s.ballX = s.radius;
+        s.ballVX *= -1;
+      }
+      if (s.ballX > s.canvas.width - s.radius) {
+        s.ballX = s.canvas.width - s.radius;
+        s.ballVX *= -1;
+      }
+      if (s.ballY < s.radius) {
+        s.ballY = s.radius;
+        s.ballVY *= -1;
+      }
+
+      const paddleTop = s.paddleY;
+      const paddleLeft = s.paddleX - s.paddleW / 2;
+      const paddleRight = s.paddleX + s.paddleW / 2;
+
+      const hitY = s.ballY + s.radius >= paddleTop && s.ballY + s.radius <= paddleTop + s.paddleH;
+      const hitX = s.ballX >= paddleLeft && s.ballX <= paddleRight;
+
+      if (hitY && hitX && s.ballVY > 0) {
+        const rel = (s.ballX - s.paddleX) / (s.paddleW / 2);
+        s.ballVY = -Math.abs(s.ballVY) * 1.02;
+        s.ballVX += rel * 1.8;
+
+        const curve = clamp(s.paddleVX / 18, -1.2, 1.2);
+        s.ballVX += curve * 1.6;
+
+        s.score += 1;
+      }
+
+      if (s.ballY > s.canvas.height + 40) {
+        s.running = false;
+      }
+
+      draw();
+      requestAnimationFrame(step);
+    }
+
+    serveBtn.addEventListener("click", function () {
+      const s = curveState;
+      s.ballX = s.canvas.width / 2;
+      s.ballY = s.canvas.height / 2;
+      s.ballVX = 3.2 * (Math.random() < 0.5 ? -1 : 1);
+      s.ballVY = 2.6;
+      s.score = 0;
+      s.lastT = 0;
+      s.running = true;
+      requestAnimationFrame(step);
+    });
+
+    draw();
+
+    if (!silent) activeGame = "curve";
   }
 
   function wireGamesControls() {
@@ -1787,17 +1345,33 @@ if (Math.random() < spawnChance) {
       const key = btn.getAttribute("data-game");
       if (!key) return;
 
-      if (key === "memory") { initMemory(false); return; }
-      if (key === "memory-reset") { initMemory(true); return; }
+      if (key === "memory") {
+        initMemory(false);
+        return;
+      }
+      if (key === "memory-reset") {
+        initMemory(true);
+        return;
+      }
 
-      if (key === "reaction") { initReaction(false); startReaction(); return; }
-      if (key === "reaction-reset") { initReaction(true); return; }
+      if (key === "reaction") {
+        initReaction(false);
+        startReaction();
+        return;
+      }
+      if (key === "reaction-reset") {
+        initReaction(true);
+        return;
+      }
 
-      if (key === "breaker") { initBreaker(false); startBreaker(); return; }
-      if (key === "breaker-reset") { initBreaker(true); return; }
-
-      if (key === "dodge") { initDodge(false); startDodge(); return; }
-      if (key === "dodge-reset") { initDodge(true); return; }
+      if (key === "curve") {
+        initCurve(false);
+        return;
+      }
+      if (key === "curve-reset") {
+        initCurve(true);
+        return;
+      }
     });
 
     document.addEventListener("click", function (e) {
@@ -1815,23 +1389,24 @@ if (Math.random() < spawnChance) {
     wmAudio = $("#wmAudio");
     hardenAudioElement(wmAudio);
 
+    clearState();
+
+    wireAudioPersistence(wmAudio);
     wirePlayButtons(wmAudio);
     wireNavigation();
     wirePlayerControls();
+    wireGamesControls();
 
-renderFeaturedGrid();
-renderMusicList();
-renderLinks();
-renderPress();
+    renderFeaturedGrid();
+    renderMusicList();
+    renderLinks();
+    renderPress();
+    renderGames();
 
     window.addEventListener("hashchange", applyRoute);
     applyRoute();
 
-    const shuffleBtn = $("#wmShuffleBtn");
-    if (shuffleBtn) shuffleBtn.textContent = `Shuffle: ${shuffleOn ? "On" : "Off"}`;
-
     setNowPlayingUI(null);
-    restorePlayerState();
   }
 
   if (document.readyState === "loading") {
