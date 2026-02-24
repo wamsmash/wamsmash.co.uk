@@ -42,7 +42,7 @@
       lane: "iridescent",
       year: "2026",
       audio: "/assets/audio/equinox.mp3",
-      cover: "/assets/img/covers/equinox.jpg",
+      cover: "/assets/img/covers/equinox.mp3",
       note: "",
       blurb: "Cold divides. Warm replies\nTempo shifts. Keys turn\nThe line holds",
       tags: "season cycle form\ntempo and key modulation\npiano sax call response\nanalogue meets aggressive",
@@ -293,6 +293,54 @@
     return `<div class="linkIcon" aria-hidden="true">${svg}</div>`;
   }
 
+  function readJson(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return fallback;
+      return JSON.parse(raw);
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  function writeJson(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {}
+  }
+
+  function normalizeInitials(s) {
+    const t = String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 3);
+    return t || "YOU";
+  }
+
+  function updateLeaderboard(gameKey, score) {
+    const lbKey = `wamsmash_lb_${gameKey}`;
+    const list = readJson(lbKey, []);
+
+    const best = list.length ? Math.max.apply(null, list.map(x => x.score || 0)) : 0;
+    if (score <= best) return list.slice(0, 5);
+
+    const initials = normalizeInitials(prompt("New PB, enter initials (3 chars)"));
+    const entry = { initials, score, ts: Date.now() };
+
+    const next = [entry].concat(list)
+      .sort((a, b) => (b.score || 0) - (a.score || 0))
+      .slice(0, 20);
+
+    writeJson(lbKey, next);
+    return next.slice(0, 5);
+  }
+
+  function renderLeaderboard(list) {
+    const rows = (list || []).slice(0, 5).map((x, i) => {
+      const a = String(x.initials || "YOU").toUpperCase();
+      const s = String(x.score || 0);
+      return `<div style="display:flex; justify-content:space-between; gap:10px;"><div>${i + 1}. ${a}</div><div>${s}</div></div>`;
+    }).join("");
+    return rows || `<div style="opacity:0.75;">No scores yet</div>`;
+  }
+
   function saveState(state) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -476,13 +524,8 @@
         else wmAudio.pause();
       }
 
-      if (e.code === "ArrowRight") {
-        playNext();
-      }
-
-      if (e.code === "ArrowLeft") {
-        playPrev();
-      }
+      if (e.code === "ArrowRight") playNext();
+      if (e.code === "ArrowLeft") playPrev();
     });
   }
 
@@ -688,9 +731,7 @@
     if (route.view === "music" && route.scrollId) {
       requestAnimationFrame(function () {
         const target = document.getElementById(route.scrollId);
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     }
   }
@@ -749,9 +790,12 @@
     style.textContent = `
       .wmGameWrap{
         border:1px solid rgba(255,255,255,0.12);
-        border-radius:20px;
-        background:rgba(14,15,22,0.50);
-        padding:14px;
+        border-radius:22px;
+        background:
+          radial-gradient(900px 340px at 12% 10%, rgba(255,43,214,0.14), transparent 60%),
+          radial-gradient(820px 340px at 85% 25%, rgba(0,229,255,0.12), transparent 60%),
+          linear-gradient(180deg, rgba(14,15,22,0.60), rgba(0,0,0,0.30));
+        padding:16px;
         box-shadow:0 10px 30px rgba(0,0,0,0.28);
       }
       .wmGameHead{
@@ -779,6 +823,23 @@
         flex-wrap:wrap;
         margin-top:10px;
       }
+      .wmTiny{
+        font-size:12px;
+        color:rgba(166,168,179,0.95);
+        line-height:1.35;
+      }
+      .wmCountdown{
+        font-weight:700;
+        letter-spacing:0.06em;
+      }
+      .wmLbBox{
+        margin-top:10px;
+        border:1px solid rgba(255,255,255,0.10);
+        border-radius:14px;
+        padding:10px;
+        background:rgba(0,0,0,0.18);
+      }
+
       .wmMemGrid{
         display:grid;
         grid-template-columns:repeat(4, minmax(0, 1fr));
@@ -833,13 +894,13 @@
 
       .wmReactArena{
         position:relative;
-        height:260px;
+        height:360px;
         border-radius:16px;
         border:1px solid rgba(255,255,255,0.12);
         overflow:hidden;
         background:
-          radial-gradient(600px 240px at 20% 20%, rgba(255,43,214,0.16), transparent 60%),
-          radial-gradient(540px 240px at 80% 30%, rgba(0,229,255,0.14), transparent 60%),
+          radial-gradient(900px 360px at 18% 18%, rgba(255,43,214,0.18), transparent 62%),
+          radial-gradient(840px 360px at 82% 28%, rgba(0,229,255,0.16), transparent 62%),
           linear-gradient(180deg, rgba(14,15,22,0.65), rgba(0,0,0,0.35));
       }
       .wmReactTarget{
@@ -855,17 +916,17 @@
       .wmReactTarget::after{
         content:"";
         position:absolute;
-        inset:-10px;
+        inset:-12px;
         border-radius:999px;
-        background:radial-gradient(circle at 50% 50%, rgba(255,43,214,0.26), transparent 55%);
-        opacity:0.65;
+        background:radial-gradient(circle at 50% 50%, rgba(255,43,214,0.28), transparent 55%);
+        opacity:0.72;
         filter:blur(1px);
-        animation:wmPulse 0.9s ease-in-out infinite;
+        animation:wmPulse 0.85s ease-in-out infinite;
         pointer-events:none;
       }
       @keyframes wmPulse{
         0%{ transform:scale(0.90); opacity:0.45; }
-        50%{ transform:scale(1.08); opacity:0.85; }
+        50%{ transform:scale(1.10); opacity:0.95; }
         100%{ transform:scale(0.90); opacity:0.45; }
       }
       .wmSpark{
@@ -873,13 +934,13 @@
         width:6px;
         height:6px;
         border-radius:999px;
-        background:rgba(0,229,255,0.9);
+        background:rgba(0,229,255,0.95);
         pointer-events:none;
         animation:wmSpark 0.55s ease-out forwards;
       }
       @keyframes wmSpark{
         0%{ transform:translate(0,0) scale(1); opacity:1; }
-        100%{ transform:translate(var(--dx), var(--dy)) scale(0.2); opacity:0; }
+        100%{ transform:translate(var(--dx), var(--dy)) scale(0.15); opacity:0; }
       }
 
       .wmCanvasWrap{
@@ -893,16 +954,63 @@
         height:auto;
         display:block;
       }
-      .wmTiny{
-        font-size:12px;
-        color:rgba(166,168,179,0.95);
-        line-height:1.35;
+
+      .wmBigGo{
+        position:absolute;
+        inset:0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:44px;
+        font-weight:800;
+        letter-spacing:0.08em;
+        text-transform:uppercase;
+        color:rgba(242,243,247,0.92);
+        background:rgba(0,0,0,0.40);
+        backdrop-filter:blur(2px);
+        pointer-events:none;
       }
     `;
     document.head.appendChild(style);
   }
 
-  let activeGame = "";
+  function spawnSparks(root, cx, cy) {
+    const count = 16;
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement("div");
+      s.className = "wmSpark";
+      s.style.left = `${cx}px`;
+      s.style.top = `${cy}px`;
+
+      const ang = Math.random() * Math.PI * 2;
+      const mag = 26 + Math.random() * 44;
+      const dx = Math.cos(ang) * mag;
+      const dy = Math.sin(ang) * mag;
+
+      s.style.setProperty("--dx", `${dx}px`);
+      s.style.setProperty("--dy", `${dy}px`);
+
+      root.appendChild(s);
+
+      setTimeout(function () {
+        if (s && s.parentNode) s.parentNode.removeChild(s);
+      }, 560);
+    }
+  }
+
+  function showOverlay(root, text) {
+    const overlay = document.createElement("div");
+    overlay.className = "wmBigGo";
+    overlay.textContent = text;
+    root.appendChild(overlay);
+    return overlay;
+  }
+
+  function pickRandomCoverUrl() {
+    if (!TRACKS.length) return "";
+    const t = TRACKS[Math.floor(Math.random() * TRACKS.length)];
+    return t.cover || "";
+  }
 
   function renderGames() {
     const mount = document.getElementById("wmGames");
@@ -929,7 +1037,7 @@
         <div class="wmGameHead">
           <div>
             <h3 class="wmGameTitle">Neon Reaction</h3>
-            <div class="wmGameSub">Hit the target. Spark on contact. No waiting</div>
+            <div class="wmGameSub">19 targets. 15 seconds. PB leaderboard</div>
           </div>
           <div class="wmGameRow">
             <button class="btn btnPrimary" type="button" data-game="reaction">Play</button>
@@ -942,21 +1050,66 @@
       <div class="wmGameWrap">
         <div class="wmGameHead">
           <div>
-            <h3 class="wmGameTitle">Curve Ball</h3>
-            <div class="wmGameSub">Paddle control. Add curve by moving as you hit</div>
+            <h3 class="wmGameTitle">Brick Breaker</h3>
+            <div class="wmGameSub">Ready set go. 15 seconds plus +1s per top row brick. PB leaderboard</div>
           </div>
           <div class="wmGameRow">
-            <button class="btn btnPrimary" type="button" data-game="curve">Play</button>
-            <button class="btn" type="button" data-game="curve-reset">Reset</button>
+            <button class="btn btnPrimary" type="button" data-game="breaker">Play</button>
+            <button class="btn" type="button" data-game="breaker-reset">Reset</button>
           </div>
         </div>
-        <div id="wmGameCurve"></div>
+        <div id="wmGameBreaker"></div>
+      </div>
+
+      <div class="wmGameWrap">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">Dive Kick</h3>
+            <div class="wmGameSub">15 seconds. Tag the bot. Arrow keys move. D dives. Space kicks. PB leaderboard</div>
+          </div>
+          <div class="wmGameRow">
+            <button class="btn btnPrimary" type="button" data-game="divekick">Play</button>
+            <button class="btn" type="button" data-game="divekick-reset">Reset</button>
+          </div>
+        </div>
+        <div id="wmGameDiveKick"></div>
+      </div>
+
+      <div class="wmGameWrap">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">Lane Dodge</h3>
+            <div class="wmGameSub">15 seconds. Survive. Score climbs. PB leaderboard</div>
+          </div>
+          <div class="wmGameRow">
+            <button class="btn btnPrimary" type="button" data-game="dodge">Play</button>
+            <button class="btn" type="button" data-game="dodge-reset">Reset</button>
+          </div>
+        </div>
+        <div id="wmGameDodge"></div>
+      </div>
+
+      <div class="wmGameWrap">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">Tap Rush</h3>
+            <div class="wmGameSub">15 seconds. Hit the target. Miss costs. PB leaderboard</div>
+          </div>
+          <div class="wmGameRow">
+            <button class="btn btnPrimary" type="button" data-game="tap">Play</button>
+            <button class="btn" type="button" data-game="tap-reset">Reset</button>
+          </div>
+        </div>
+        <div id="wmGameTap"></div>
       </div>
     `;
 
     initMemory(true);
     initReaction(true);
-    initCurve(true);
+    initBreaker(true);
+    initDiveKick(true);
+    initDodge(true);
+    initTap(true);
   }
 
   function sampleTracksForMemory(pairCount) {
@@ -1025,7 +1178,7 @@
       grid.appendChild(card);
     }
 
-    if (!silent) activeGame = "memory";
+    if (!silent) {}
   }
 
   function memFlip(idx) {
@@ -1089,33 +1242,49 @@
     reactState = {
       running: false,
       score: 0,
-      hits: 0
+      hits: 0,
+      targetsLeft: 19,
+      endAt: 0,
+      timerId: 0
     };
 
     mount.innerHTML = `
       <div class="wmTiny" style="margin-bottom:10px;">
-        Score: <span id="wmReactScore">0</span>
+        Targets: <span id="wmReactTargets">19</span>
         <span style="margin-left:10px;">Hits: <span id="wmReactHits">0</span></span>
+        <span style="margin-left:10px;">Score: <span id="wmReactScore">0</span></span>
+        <span style="margin-left:10px;" class="wmCountdown">Time: <span id="wmReactTime">15.0</span></span>
       </div>
       <div class="wmReactArena" id="wmReactArena"></div>
+      <div class="wmLbBox">
+        <div class="wmTiny" style="margin-bottom:6px;">Top 5</div>
+        <div id="wmReactLb"></div>
+      </div>
     `;
 
-    if (!silent) activeGame = "reaction";
+    const lbEl = document.getElementById("wmReactLb");
+    if (lbEl) lbEl.innerHTML = renderLeaderboard(readJson("wamsmash_lb_reaction", []).slice(0, 5));
+
+    if (!silent) {}
   }
 
   function spawnReactionTarget() {
     const arena = document.getElementById("wmReactArena");
     const scoreEl = document.getElementById("wmReactScore");
     const hitsEl = document.getElementById("wmReactHits");
-    if (!arena || !scoreEl || !hitsEl) return;
+    const targetsEl = document.getElementById("wmReactTargets");
+    if (!arena || !scoreEl || !hitsEl || !targetsEl) return;
+    if (!reactState || !reactState.running) return;
+    if (reactState.targetsLeft <= 0) return;
 
     arena.innerHTML = "";
 
     const w = arena.clientWidth;
     const h = arena.clientHeight;
 
-    const x = Math.floor(Math.random() * Math.max(1, w - 56));
-    const y = Math.floor(Math.random() * Math.max(1, h - 56));
+    const size = 56;
+    const x = Math.floor(Math.random() * Math.max(1, w - size));
+    const y = Math.floor(Math.random() * Math.max(1, h - size));
 
     const t = document.createElement("button");
     t.type = "button";
@@ -1125,216 +1294,1042 @@
 
     const born = performance.now();
 
-    t.addEventListener("click", function (e) {
+    t.addEventListener("click", function () {
       if (!reactState || !reactState.running) return;
 
       const now = performance.now();
-      const dt = clamp(now - born, 40, 1800);
-      const pts = Math.floor(1200 / dt * 100);
+      const dt = clamp(now - born, 40, 1500);
 
+      const pts = Math.max(50, Math.floor(1100 - dt));
       reactState.score += pts;
       reactState.hits += 1;
+      reactState.targetsLeft -= 1;
 
       scoreEl.textContent = String(reactState.score);
       hitsEl.textContent = String(reactState.hits);
+      targetsEl.textContent = String(reactState.targetsLeft);
 
-      spawnSparks(arena, x + 28, y + 28);
+      spawnSparks(arena, x + size / 2, y + size / 2);
+
+      if (reactState.targetsLeft <= 0) {
+        endReaction("All targets cleared");
+        return;
+      }
+
       spawnReactionTarget();
     });
 
     arena.appendChild(t);
   }
 
-  function spawnSparks(root, cx, cy) {
-    const count = 12;
-    for (let i = 0; i < count; i++) {
-      const s = document.createElement("div");
-      s.className = "wmSpark";
-      s.style.left = `${cx}px`;
-      s.style.top = `${cy}px`;
+  function tickReaction() {
+    const timeEl = document.getElementById("wmReactTime");
+    if (!timeEl || !reactState) return;
 
-      const ang = Math.random() * Math.PI * 2;
-      const mag = 22 + Math.random() * 34;
-      const dx = Math.cos(ang) * mag;
-      const dy = Math.sin(ang) * mag;
+    const leftMs = reactState.endAt - performance.now();
+    const left = Math.max(0, leftMs / 1000);
+    timeEl.textContent = left.toFixed(1);
 
-      s.style.setProperty("--dx", `${dx}px`);
-      s.style.setProperty("--dy", `${dy}px`);
-
-      root.appendChild(s);
-
-      setTimeout(function () {
-        if (s && s.parentNode) s.parentNode.removeChild(s);
-      }, 560);
+    if (leftMs <= 0) {
+      endReaction("Time");
+      return;
     }
+
+    reactState.timerId = window.setTimeout(tickReaction, 80);
   }
 
   function startReaction() {
     if (!reactState) return;
-    reactState.running = true;
-    spawnReactionTarget();
+
+    const arena = document.getElementById("wmReactArena");
+    if (!arena) return;
+
+    reactState.running = false;
+    reactState.score = 0;
+    reactState.hits = 0;
+    reactState.targetsLeft = 19;
+
+    const scoreEl = document.getElementById("wmReactScore");
+    const hitsEl = document.getElementById("wmReactHits");
+    const targetsEl = document.getElementById("wmReactTargets");
+    const timeEl = document.getElementById("wmReactTime");
+
+    if (scoreEl) scoreEl.textContent = "0";
+    if (hitsEl) hitsEl.textContent = "0";
+    if (targetsEl) targetsEl.textContent = "19";
+    if (timeEl) timeEl.textContent = "15.0";
+
+    arena.innerHTML = "";
+
+    const ready = showOverlay(arena, "READY");
+    setTimeout(function () {
+      if (ready && ready.parentNode) ready.parentNode.removeChild(ready);
+      const set = showOverlay(arena, "SET");
+      setTimeout(function () {
+        if (set && set.parentNode) set.parentNode.removeChild(set);
+        const go = showOverlay(arena, "GO");
+        setTimeout(function () {
+          if (go && go.parentNode) go.parentNode.removeChild(go);
+
+          reactState.running = true;
+          reactState.endAt = performance.now() + 15000;
+          if (reactState.timerId) clearTimeout(reactState.timerId);
+          tickReaction();
+          spawnReactionTarget();
+        }, 260);
+      }, 420);
+    }, 520);
   }
 
-  let curveState = null;
+  function endReaction(reason) {
+    if (!reactState) return;
 
-  function initCurve(silent) {
-    const mount = document.getElementById("wmGameCurve");
+    reactState.running = false;
+    if (reactState.timerId) clearTimeout(reactState.timerId);
+
+    const arena = document.getElementById("wmReactArena");
+    if (arena) {
+      arena.innerHTML = "";
+      const done = showOverlay(arena, `${reason}`);
+      setTimeout(function () {
+        if (done && done.parentNode) done.parentNode.removeChild(done);
+      }, 900);
+    }
+
+    const lbEl = document.getElementById("wmReactLb");
+    const top5 = updateLeaderboard("reaction", reactState.score);
+    if (lbEl) lbEl.innerHTML = renderLeaderboard(top5);
+  }
+
+  let breakerState = null;
+
+  function initBreaker(silent) {
+    const mount = document.getElementById("wmGameBreaker");
     if (!mount) return;
 
     mount.innerHTML = `
       <div class="wmTiny" style="margin-bottom:10px;">
-        Move mouse or finger. Curve comes from paddle motion at impact
+        Bricks: <span id="wmBrBricks">0</span>
+        <span style="margin-left:10px;">Score: <span id="wmBrScore">0</span></span>
+        <span style="margin-left:10px;" class="wmCountdown">Time: <span id="wmBrTime">15.0</span></span>
       </div>
-      <div class="wmCanvasWrap">
-        <canvas id="wmCurveCanvas" width="720" height="360"></canvas>
+      <div class="wmCanvasWrap" style="position:relative;">
+        <canvas id="wmBreakerCanvas" width="960" height="480"></canvas>
       </div>
-      <div class="wmGameRow" style="margin-top:10px;">
-        <button class="btn" type="button" id="wmCurveServe">Serve</button>
+      <div class="wmLbBox">
+        <div class="wmTiny" style="margin-bottom:6px;">Top 5</div>
+        <div id="wmBrLb"></div>
       </div>
     `;
 
-    const canvas = document.getElementById("wmCurveCanvas");
-    const serveBtn = document.getElementById("wmCurveServe");
-    if (!canvas || !serveBtn) return;
+    const lbEl = document.getElementById("wmBrLb");
+    if (lbEl) lbEl.innerHTML = renderLeaderboard(readJson("wamsmash_lb_breaker", []).slice(0, 5));
+
+    const canvas = document.getElementById("wmBreakerCanvas");
+    if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
 
-    curveState = {
+    const bgUrl = pickRandomCoverUrl();
+    const bgImg = new Image();
+    if (bgUrl) bgImg.src = bgUrl;
+
+    breakerState = {
       canvas,
       ctx,
+      bgImg,
+      bgReady: false,
       running: false,
-      paddleX: 360,
-      paddleVX: 0,
-      lastPaddleX: 360,
-      ballX: 360,
-      ballY: 180,
-      ballVX: 3.2,
-      ballVY: 2.6,
-      radius: 10,
-      paddleW: 120,
+      endAt: 0,
+      lastT: 0,
+      paddleX: canvas.width / 2,
+      paddleW: 160,
       paddleH: 14,
-      paddleY: 330,
-      score: 0,
-      lastT: 0
+      paddleY: canvas.height - 26,
+      ballX: canvas.width / 2,
+      ballY: canvas.height - 60,
+      ballVX: 5.2,
+      ballVY: -5.6,
+      r: 10,
+      bricks: [],
+      bricksLeft: 0,
+      score: 0
     };
 
-    function setPaddleX(px) {
-      const nx = clamp(px, curveState.paddleW * 0.5, canvas.width - curveState.paddleW * 0.5);
-      curveState.paddleX = nx;
+    bgImg.onload = function () {
+      breakerState.bgReady = true;
+    };
+
+    const cols = 10;
+    const rows = 4;
+    const pad = 10;
+    const top = 18;
+    const side = 18;
+    const bw = Math.floor((canvas.width - side * 2 - pad * (cols - 1)) / cols);
+    const bh = 20;
+
+    const brickColors = [
+      "rgba(0,229,255,0.55)",
+      "rgba(255,43,214,0.50)",
+      "rgba(0,255,160,0.45)",
+      "rgba(255,180,0,0.45)"
+    ];
+
+    const bricks = [];
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        bricks.push({
+          x: side + c * (bw + pad),
+          y: top + r * (bh + pad),
+          w: bw,
+          h: bh,
+          row: r,
+          alive: true,
+          color: brickColors[r % brickColors.length]
+        });
+      }
+    }
+
+    breakerState.bricks = bricks;
+    breakerState.bricksLeft = bricks.length;
+
+    function setPaddleFromClientX(clientX) {
+      const rect = canvas.getBoundingClientRect();
+      const px = (clientX - rect.left) * (canvas.width / rect.width);
+      breakerState.paddleX = clamp(px, breakerState.paddleW / 2, canvas.width - breakerState.paddleW / 2);
     }
 
     canvas.addEventListener("mousemove", function (e) {
-      const r = canvas.getBoundingClientRect();
-      const px = (e.clientX - r.left) * (canvas.width / r.width);
-      setPaddleX(px);
+      setPaddleFromClientX(e.clientX);
     });
 
     canvas.addEventListener("touchmove", function (e) {
       if (!e.touches || !e.touches.length) return;
-      const r = canvas.getBoundingClientRect();
-      const px = (e.touches[0].clientX - r.left) * (canvas.width / r.width);
-      setPaddleX(px);
+      setPaddleFromClientX(e.touches[0].clientX);
       e.preventDefault();
     }, { passive: false });
 
-    function draw() {
-      const s = curveState;
-      const g = s.ctx;
+    if (!silent) {}
+  }
 
-      g.clearRect(0, 0, canvas.width, canvas.height);
+  function drawBreaker() {
+    const s = breakerState;
+    if (!s) return;
 
-      g.fillStyle = "rgba(242,243,247,0.9)";
-      g.font = "12px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
-      g.fillText(`Score: ${s.score}`, 12, 20);
+    const g = s.ctx;
+    const w = s.canvas.width;
+    const h = s.canvas.height;
 
-      g.fillStyle = "rgba(0,0,0,0.25)";
-      g.fillRect(0, 0, canvas.width, canvas.height);
+    g.clearRect(0, 0, w, h);
 
-      g.fillStyle = "rgba(255,255,255,0.10)";
-      for (let i = 0; i < 24; i++) {
-        const x = (i * 31 + 17) % canvas.width;
-        const y = (i * 19 + 33) % canvas.height;
-        g.beginPath();
-        g.arc(x, y, 2.2, 0, Math.PI * 2);
-        g.fill();
+    if (s.bgReady) {
+      g.globalAlpha = 0.18;
+      g.drawImage(s.bgImg, 0, 0, w, h);
+      g.globalAlpha = 1;
+    }
+
+    g.fillStyle = "rgba(0,0,0,0.22)";
+    g.fillRect(0, 0, w, h);
+
+    for (const b of s.bricks) {
+      if (!b.alive) continue;
+      g.fillStyle = b.color;
+      g.fillRect(b.x, b.y, b.w, b.h);
+      g.strokeStyle = "rgba(255,255,255,0.12)";
+      g.strokeRect(b.x, b.y, b.w, b.h);
+    }
+
+    g.fillStyle = "rgba(255,255,255,0.88)";
+    g.fillRect(s.paddleX - s.paddleW / 2, s.paddleY, s.paddleW, s.paddleH);
+
+    g.beginPath();
+    g.arc(s.ballX, s.ballY, s.r, 0, Math.PI * 2);
+    g.fill();
+
+    g.strokeStyle = "rgba(0,229,255,0.18)";
+    g.strokeRect(1, 1, w - 2, h - 2);
+  }
+
+  function tickBreaker() {
+    const timeEl = document.getElementById("wmBrTime");
+    const scoreEl = document.getElementById("wmBrScore");
+    const bricksEl = document.getElementById("wmBrBricks");
+
+    if (!breakerState || !timeEl || !scoreEl || !bricksEl) return;
+    if (!breakerState.running) return;
+
+    const now = performance.now();
+    const dt = breakerState.lastT ? clamp((now - breakerState.lastT) / 16.666, 0.7, 1.6) : 1;
+    breakerState.lastT = now;
+
+    breakerState.ballX += breakerState.ballVX * dt;
+    breakerState.ballY += breakerState.ballVY * dt;
+
+    if (breakerState.ballX < breakerState.r) {
+      breakerState.ballX = breakerState.r;
+      breakerState.ballVX *= -1;
+    }
+    if (breakerState.ballX > breakerState.canvas.width - breakerState.r) {
+      breakerState.ballX = breakerState.canvas.width - breakerState.r;
+      breakerState.ballVX *= -1;
+    }
+    if (breakerState.ballY < breakerState.r) {
+      breakerState.ballY = breakerState.r;
+      breakerState.ballVY *= -1;
+    }
+
+    const pLeft = breakerState.paddleX - breakerState.paddleW / 2;
+    const pRight = breakerState.paddleX + breakerState.paddleW / 2;
+    const pTop = breakerState.paddleY;
+
+    const hitPaddleY = breakerState.ballY + breakerState.r >= pTop && breakerState.ballY + breakerState.r <= pTop + breakerState.paddleH;
+    const hitPaddleX = breakerState.ballX >= pLeft && breakerState.ballX <= pRight;
+
+    if (hitPaddleY && hitPaddleX && breakerState.ballVY > 0) {
+      const rel = (breakerState.ballX - breakerState.paddleX) / (breakerState.paddleW / 2);
+      breakerState.ballVY = -Math.abs(breakerState.ballVY) * 1.01;
+      breakerState.ballVX += rel * 1.4;
+    }
+
+    for (const b of breakerState.bricks) {
+      if (!b.alive) continue;
+
+      const bx = breakerState.ballX;
+      const by = breakerState.ballY;
+
+      const withinX = bx + breakerState.r >= b.x && bx - breakerState.r <= b.x + b.w;
+      const withinY = by + breakerState.r >= b.y && by - breakerState.r <= b.y + b.h;
+
+      if (withinX && withinY) {
+        b.alive = false;
+        breakerState.bricksLeft -= 1;
+        breakerState.score += 10;
+
+        if (b.row === 0) breakerState.endAt += 1000;
+
+        breakerState.ballVY *= -1;
+        break;
       }
+    }
 
-      g.fillStyle = "rgba(255,255,255,0.85)";
-      g.fillRect(s.paddleX - s.paddleW / 2, s.paddleY, s.paddleW, s.paddleH);
+    scoreEl.textContent = String(breakerState.score);
+    bricksEl.textContent = String((breakerState.bricks.length - breakerState.bricksLeft));
 
+    const leftMs = breakerState.endAt - now;
+    const left = Math.max(0, leftMs / 1000);
+    timeEl.textContent = left.toFixed(1);
+
+    drawBreaker();
+
+    if (leftMs <= 0) {
+      endBreaker();
+      return;
+    }
+
+    requestAnimationFrame(tickBreaker);
+  }
+
+  function startBreaker() {
+    if (!breakerState) return;
+
+    breakerState.running = false;
+    breakerState.lastT = 0;
+    breakerState.score = 0;
+
+    for (const b of breakerState.bricks) b.alive = true;
+    breakerState.bricksLeft = breakerState.bricks.length;
+
+    breakerState.ballX = breakerState.canvas.width / 2;
+    breakerState.ballY = breakerState.canvas.height - 60;
+    breakerState.ballVX = 5.2 * (Math.random() < 0.5 ? -1 : 1);
+    breakerState.ballVY = -5.6;
+
+    const timeEl = document.getElementById("wmBrTime");
+    const scoreEl = document.getElementById("wmBrScore");
+    const bricksEl = document.getElementById("wmBrBricks");
+    if (timeEl) timeEl.textContent = "15.0";
+    if (scoreEl) scoreEl.textContent = "0";
+    if (bricksEl) bricksEl.textContent = "0";
+
+    drawBreaker();
+
+    const wrap = breakerState.canvas.parentElement;
+    if (!wrap) return;
+
+    const overlay = showOverlay(wrap, "READY");
+    setTimeout(function () {
+      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      const set = showOverlay(wrap, "SET");
+      setTimeout(function () {
+        if (set && set.parentNode) set.parentNode.removeChild(set);
+        const go = showOverlay(wrap, "GO");
+        setTimeout(function () {
+          if (go && go.parentNode) go.parentNode.removeChild(go);
+          breakerState.running = true;
+          breakerState.endAt = performance.now() + 15000;
+          requestAnimationFrame(tickBreaker);
+        }, 260);
+      }, 420);
+    }, 520);
+  }
+
+  function endBreaker() {
+    if (!breakerState) return;
+    breakerState.running = false;
+
+    const lbEl = document.getElementById("wmBrLb");
+    const top5 = updateLeaderboard("breaker", breakerState.score);
+    if (lbEl) lbEl.innerHTML = renderLeaderboard(top5);
+  }
+
+  let dodgeState = null;
+
+  function initDodge(silent) {
+    const mount = document.getElementById("wmGameDodge");
+    if (!mount) return;
+
+    mount.innerHTML = `
+      <div class="wmTiny" style="margin-bottom:10px;">
+        Score: <span id="wmDodgeScore">0</span>
+        <span style="margin-left:10px;" class="wmCountdown">Time: <span id="wmDodgeTime">15.0</span></span>
+      </div>
+      <div class="wmCanvasWrap" style="position:relative;">
+        <canvas id="wmDodgeCanvas" width="960" height="440"></canvas>
+      </div>
+      <div class="wmLbBox">
+        <div class="wmTiny" style="margin-bottom:6px;">Top 5</div>
+        <div id="wmDodgeLb"></div>
+      </div>
+    `;
+
+    const lbEl = document.getElementById("wmDodgeLb");
+    if (lbEl) lbEl.innerHTML = renderLeaderboard(readJson("wamsmash_lb_dodge", []).slice(0, 5));
+
+    const canvas = document.getElementById("wmDodgeCanvas");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    const bgUrl = pickRandomCoverUrl();
+    const bg = new Image();
+    if (bgUrl) bg.src = bgUrl;
+
+    dodgeState = {
+      canvas,
+      ctx,
+      bg,
+      bgReady: false,
+      running: false,
+      endAt: 0,
+      lastT: 0,
+      x: canvas.width / 2,
+      y: canvas.height - 64,
+      score: 0,
+      hazards: []
+    };
+
+    bg.onload = function () { dodgeState.bgReady = true; };
+
+    function setX(clientX) {
+      const r = canvas.getBoundingClientRect();
+      const px = (clientX - r.left) * (canvas.width / r.width);
+      dodgeState.x = clamp(px, 18, canvas.width - 18);
+    }
+
+    canvas.addEventListener("mousemove", e => setX(e.clientX));
+    canvas.addEventListener("touchmove", function (e) {
+      if (!e.touches || !e.touches.length) return;
+      setX(e.touches[0].clientX);
+      e.preventDefault();
+    }, { passive: false });
+
+    if (!silent) {}
+  }
+
+  function startDodge() {
+    if (!dodgeState) return;
+
+    dodgeState.running = false;
+    dodgeState.lastT = 0;
+    dodgeState.score = 0;
+    dodgeState.hazards = [];
+
+    const scoreEl = document.getElementById("wmDodgeScore");
+    const timeEl = document.getElementById("wmDodgeTime");
+    if (scoreEl) scoreEl.textContent = "0";
+    if (timeEl) timeEl.textContent = "15.0";
+
+    const wrap = dodgeState.canvas.parentElement;
+    if (!wrap) return;
+
+    const overlay = showOverlay(wrap, "READY");
+    setTimeout(function () {
+      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      const set = showOverlay(wrap, "SET");
+      setTimeout(function () {
+        if (set && set.parentNode) set.parentNode.removeChild(set);
+        const go = showOverlay(wrap, "GO");
+        setTimeout(function () {
+          if (go && go.parentNode) go.parentNode.removeChild(go);
+          dodgeState.running = true;
+          dodgeState.endAt = performance.now() + 15000;
+          requestAnimationFrame(tickDodge);
+        }, 260);
+      }, 420);
+    }, 520);
+  }
+
+  function tickDodge(t) {
+    if (!dodgeState || !dodgeState.running) return;
+
+    const dt = dodgeState.lastT ? clamp((t - dodgeState.lastT) / 16.666, 0.7, 1.6) : 1;
+    dodgeState.lastT = t;
+
+    if (Math.random() < 0.10) {
+      dodgeState.hazards.push({
+        x: Math.random() * dodgeState.canvas.width,
+        y: -20,
+        r: 10 + Math.random() * 12,
+        vy: 3.6 + Math.random() * 2.8
+      });
+    }
+
+    for (const h of dodgeState.hazards) h.y += h.vy * dt;
+    dodgeState.hazards = dodgeState.hazards.filter(h => h.y < dodgeState.canvas.height + 40);
+
+    for (const h of dodgeState.hazards) {
+      const dx = h.x - dodgeState.x;
+      const dy = h.y - dodgeState.y;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < h.r + 14) {
+        endDodge();
+        return;
+      }
+    }
+
+    dodgeState.score += Math.floor(3 * dt);
+
+    const leftMs = dodgeState.endAt - t;
+    const left = Math.max(0, leftMs / 1000);
+
+    const scoreEl = document.getElementById("wmDodgeScore");
+    const timeEl = document.getElementById("wmDodgeTime");
+    if (scoreEl) scoreEl.textContent = String(dodgeState.score);
+    if (timeEl) timeEl.textContent = left.toFixed(1);
+
+    drawDodge();
+
+    if (leftMs <= 0) {
+      endDodge();
+      return;
+    }
+
+    requestAnimationFrame(tickDodge);
+  }
+
+  function drawDodge() {
+    const s = dodgeState;
+    if (!s) return;
+    const g = s.ctx;
+    const w = s.canvas.width;
+    const h = s.canvas.height;
+
+    g.clearRect(0, 0, w, h);
+
+    if (s.bgReady) {
+      g.globalAlpha = 0.14;
+      g.drawImage(s.bg, 0, 0, w, h);
+      g.globalAlpha = 1;
+    }
+
+    g.fillStyle = "rgba(0,0,0,0.24)";
+    g.fillRect(0, 0, w, h);
+
+    g.strokeStyle = "rgba(255,255,255,0.08)";
+    for (let i = 1; i < 6; i++) {
+      const x = (w / 6) * i;
       g.beginPath();
-      g.arc(s.ballX, s.ballY, s.radius, 0, Math.PI * 2);
+      g.moveTo(x, 0);
+      g.lineTo(x, h);
+      g.stroke();
+    }
+
+    for (const hz of s.hazards) {
+      g.fillStyle = "rgba(255,43,214,0.55)";
+      g.beginPath();
+      g.arc(hz.x, hz.y, hz.r, 0, Math.PI * 2);
       g.fill();
     }
 
-    function step(t) {
-      const s = curveState;
-      if (!s.running) return;
+    g.fillStyle = "rgba(0,229,255,0.85)";
+    g.beginPath();
+    g.arc(s.x, s.y, 14, 0, Math.PI * 2);
+    g.fill();
+  }
 
-      const dt = s.lastT ? clamp((t - s.lastT) / 16.666, 0.6, 1.6) : 1;
-      s.lastT = t;
+  function endDodge() {
+    if (!dodgeState) return;
+    dodgeState.running = false;
 
-      const px = s.paddleX;
-      s.paddleVX = (px - s.lastPaddleX);
-      s.lastPaddleX = px;
+    const lbEl = document.getElementById("wmDodgeLb");
+    const top5 = updateLeaderboard("dodge", dodgeState.score);
+    if (lbEl) lbEl.innerHTML = renderLeaderboard(top5);
+  }
 
-      s.ballX += s.ballVX * dt;
-      s.ballY += s.ballVY * dt;
+  let tapState = null;
 
-      if (s.ballX < s.radius) {
-        s.ballX = s.radius;
-        s.ballVX *= -1;
-      }
-      if (s.ballX > s.canvas.width - s.radius) {
-        s.ballX = s.canvas.width - s.radius;
-        s.ballVX *= -1;
-      }
-      if (s.ballY < s.radius) {
-        s.ballY = s.radius;
-        s.ballVY *= -1;
-      }
+  function initTap(silent) {
+    const mount = document.getElementById("wmGameTap");
+    if (!mount) return;
 
-      const paddleTop = s.paddleY;
-      const paddleLeft = s.paddleX - s.paddleW / 2;
-      const paddleRight = s.paddleX + s.paddleW / 2;
+    tapState = {
+      running: false,
+      score: 0,
+      misses: 0,
+      endAt: 0,
+      timerId: 0,
+      bornAt: 0
+    };
 
-      const hitY = s.ballY + s.radius >= paddleTop && s.ballY + s.radius <= paddleTop + s.paddleH;
-      const hitX = s.ballX >= paddleLeft && s.ballX <= paddleRight;
+    mount.innerHTML = `
+      <div class="wmTiny" style="margin-bottom:10px;">
+        Score: <span id="wmTapScore">0</span>
+        <span style="margin-left:10px;">Miss: <span id="wmTapMiss">0</span></span>
+        <span style="margin-left:10px;" class="wmCountdown">Time: <span id="wmTapTime">15.0</span></span>
+      </div>
+      <div class="wmReactArena" id="wmTapArena"></div>
+      <div class="wmLbBox">
+        <div class="wmTiny" style="margin-bottom:6px;">Top 5</div>
+        <div id="wmTapLb"></div>
+      </div>
+    `;
 
-      if (hitY && hitX && s.ballVY > 0) {
-        const rel = (s.ballX - s.paddleX) / (s.paddleW / 2);
-        s.ballVY = -Math.abs(s.ballVY) * 1.02;
-        s.ballVX += rel * 1.8;
+    const lbEl = document.getElementById("wmTapLb");
+    if (lbEl) lbEl.innerHTML = renderLeaderboard(readJson("wamsmash_lb_tap", []).slice(0, 5));
 
-        const curve = clamp(s.paddleVX / 18, -1.2, 1.2);
-        s.ballVX += curve * 1.6;
+    if (!silent) {}
+  }
 
-        s.score += 1;
-      }
+  function spawnTapTarget() {
+    const arena = document.getElementById("wmTapArena");
+    if (!arena || !tapState || !tapState.running) return;
 
-      if (s.ballY > s.canvas.height + 40) {
-        s.running = false;
-      }
+    arena.innerHTML = "";
 
-      draw();
-      requestAnimationFrame(step);
-    }
+    const w = arena.clientWidth;
+    const h = arena.clientHeight;
+    const size = 56;
 
-    serveBtn.addEventListener("click", function () {
-      const s = curveState;
-      s.ballX = s.canvas.width / 2;
-      s.ballY = s.canvas.height / 2;
-      s.ballVX = 3.2 * (Math.random() < 0.5 ? -1 : 1);
-      s.ballVY = 2.6;
-      s.score = 0;
-      s.lastT = 0;
-      s.running = true;
-      requestAnimationFrame(step);
+    const x = Math.floor(Math.random() * Math.max(1, w - size));
+    const y = Math.floor(Math.random() * Math.max(1, h - size));
+
+    const t = document.createElement("button");
+    t.type = "button";
+    t.className = "wmReactTarget";
+    t.style.left = `${x}px`;
+    t.style.top = `${y}px`;
+
+    tapState.bornAt = performance.now();
+
+    t.addEventListener("click", function () {
+      if (!tapState || !tapState.running) return;
+
+      const dt = clamp(performance.now() - tapState.bornAt, 40, 1500);
+      const pts = Math.max(10, Math.floor(900 - dt));
+      tapState.score += pts;
+
+      const scoreEl = document.getElementById("wmTapScore");
+      if (scoreEl) scoreEl.textContent = String(tapState.score);
+
+      spawnSparks(arena, x + size / 2, y + size / 2);
+      spawnTapTarget();
     });
 
-    draw();
+    arena.addEventListener("click", function missHandler(e) {
+      const hit = e.target === t;
+      if (hit) {
+        arena.removeEventListener("click", missHandler);
+        return;
+      }
+      arena.removeEventListener("click", missHandler);
+      if (!tapState || !tapState.running) return;
+      tapState.misses += 1;
 
-    if (!silent) activeGame = "curve";
+      const missEl = document.getElementById("wmTapMiss");
+      if (missEl) missEl.textContent = String(tapState.misses);
+
+      tapState.score = Math.max(0, tapState.score - 60);
+      const scoreEl = document.getElementById("wmTapScore");
+      if (scoreEl) scoreEl.textContent = String(tapState.score);
+
+      spawnTapTarget();
+    });
+
+    arena.appendChild(t);
+  }
+
+  function tickTap() {
+    if (!tapState) return;
+    const timeEl = document.getElementById("wmTapTime");
+    if (!timeEl) return;
+
+    const leftMs = tapState.endAt - performance.now();
+    const left = Math.max(0, leftMs / 1000);
+    timeEl.textContent = left.toFixed(1);
+
+    if (leftMs <= 0) {
+      endTap();
+      return;
+    }
+
+    tapState.timerId = window.setTimeout(tickTap, 80);
+  }
+
+  function startTap() {
+    if (!tapState) return;
+
+    const arena = document.getElementById("wmTapArena");
+    if (!arena) return;
+
+    tapState.running = false;
+    tapState.score = 0;
+    tapState.misses = 0;
+
+    const scoreEl = document.getElementById("wmTapScore");
+    const missEl = document.getElementById("wmTapMiss");
+    const timeEl = document.getElementById("wmTapTime");
+
+    if (scoreEl) scoreEl.textContent = "0";
+    if (missEl) missEl.textContent = "0";
+    if (timeEl) timeEl.textContent = "15.0";
+
+    arena.innerHTML = "";
+
+    const ready = showOverlay(arena, "READY");
+    setTimeout(function () {
+      if (ready && ready.parentNode) ready.parentNode.removeChild(ready);
+      const set = showOverlay(arena, "SET");
+      setTimeout(function () {
+        if (set && set.parentNode) set.parentNode.removeChild(set);
+        const go = showOverlay(arena, "GO");
+        setTimeout(function () {
+          if (go && go.parentNode) go.parentNode.removeChild(go);
+
+          tapState.running = true;
+          tapState.endAt = performance.now() + 15000;
+          if (tapState.timerId) clearTimeout(tapState.timerId);
+          tickTap();
+          spawnTapTarget();
+        }, 260);
+      }, 420);
+    }, 520);
+  }
+
+  function endTap() {
+    if (!tapState) return;
+
+    tapState.running = false;
+    if (tapState.timerId) clearTimeout(tapState.timerId);
+
+    const lbEl = document.getElementById("wmTapLb");
+    const top5 = updateLeaderboard("tap", tapState.score);
+    if (lbEl) lbEl.innerHTML = renderLeaderboard(top5);
+  }
+
+  let dkState = null;
+
+  function initDiveKick(silent) {
+    const mount = document.getElementById("wmGameDiveKick");
+    if (!mount) return;
+
+    mount.innerHTML = `
+      <div class="wmTiny" style="margin-bottom:10px;">
+        Score: <span id="wmDkScore">0</span>
+        <span style="margin-left:10px;">Hits: <span id="wmDkHits">0</span></span>
+        <span style="margin-left:10px;" class="wmCountdown">Time: <span id="wmDkTime">15.0</span></span>
+      </div>
+      <div class="wmCanvasWrap" style="position:relative;">
+        <canvas id="wmDkCanvas" width="960" height="440"></canvas>
+      </div>
+      <div class="wmLbBox">
+        <div class="wmTiny" style="margin-bottom:6px;">Top 5</div>
+        <div id="wmDkLb"></div>
+      </div>
+    `;
+
+    const lbEl = document.getElementById("wmDkLb");
+    if (lbEl) lbEl.innerHTML = renderLeaderboard(readJson("wamsmash_lb_divekick", []).slice(0, 5));
+
+    const canvas = document.getElementById("wmDkCanvas");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    const bgUrl = pickRandomCoverUrl();
+    const bg = new Image();
+    if (bgUrl) bg.src = bgUrl;
+
+    dkState = {
+      canvas,
+      ctx,
+      bg,
+      bgReady: false,
+      running: false,
+      endAt: 0,
+      lastT: 0,
+      score: 0,
+      hits: 0,
+      keys: {},
+      player: { x: 240, y: 320, vx: 0, vy: 0, r: 16, grounded: true, diving: false },
+      bot: { x: 720, y: 320, vx: 0, vy: 0, r: 16, grounded: true, diving: false, dir: -1, t: 0 }
+    };
+
+    bg.onload = function () { dkState.bgReady = true; };
+
+    if (!silent) {}
+  }
+
+  function startDiveKick() {
+    if (!dkState) return;
+
+    dkState.running = false;
+    dkState.lastT = 0;
+    dkState.score = 0;
+    dkState.hits = 0;
+    dkState.keys = {};
+    dkState.player.x = 240;
+    dkState.player.y = 320;
+    dkState.player.vx = 0;
+    dkState.player.vy = 0;
+    dkState.player.grounded = true;
+    dkState.player.diving = false;
+    dkState.bot.x = 720;
+    dkState.bot.y = 320;
+    dkState.bot.vx = 0;
+    dkState.bot.vy = 0;
+    dkState.bot.grounded = true;
+    dkState.bot.diving = false;
+    dkState.bot.t = 0;
+
+    const scoreEl = document.getElementById("wmDkScore");
+    const hitsEl = document.getElementById("wmDkHits");
+    const timeEl = document.getElementById("wmDkTime");
+    if (scoreEl) scoreEl.textContent = "0";
+    if (hitsEl) hitsEl.textContent = "0";
+    if (timeEl) timeEl.textContent = "15.0";
+
+    drawDiveKick();
+
+    const wrap = dkState.canvas.parentElement;
+    if (!wrap) return;
+
+    const overlay = showOverlay(wrap, "READY");
+    setTimeout(function () {
+      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      const set = showOverlay(wrap, "SET");
+      setTimeout(function () {
+        if (set && set.parentNode) set.parentNode.removeChild(set);
+        const go = showOverlay(wrap, "GO");
+        setTimeout(function () {
+          if (go && go.parentNode) go.parentNode.removeChild(go);
+          dkState.running = true;
+          dkState.endAt = performance.now() + 15000;
+          requestAnimationFrame(tickDiveKick);
+        }, 260);
+      }, 420);
+    }, 520);
+  }
+
+  function tickDiveKick(t) {
+    if (!dkState || !dkState.running) return;
+
+    const s = dkState;
+    const dt = s.lastT ? clamp((t - s.lastT) / 16.666, 0.7, 1.6) : 1;
+    s.lastT = t;
+
+    const floorY = 340;
+    const grav = 0.55;
+
+    const p = s.player;
+
+    const left = !!(s.keys["ArrowLeft"] || s.keys["KeyA"]);
+    const right = !!(s.keys["ArrowRight"] || s.keys["KeyD"]);
+    const dive = !!(s.keys["Space"]);
+    const diveKey = !!(s.keys["KeyF"]);
+
+    p.vx = 0;
+    if (left) p.vx = -5.0;
+    if (right) p.vx = 5.0;
+
+    if ((dive || diveKey) && p.grounded) {
+      p.grounded = false;
+      p.diving = true;
+      p.vy = -9.5;
+    }
+
+    if (!p.grounded) {
+      if (p.diving && (dive || diveKey)) {
+        p.vy += 1.05;
+      } else {
+        p.vy += grav;
+      }
+      p.y += p.vy * dt;
+    }
+
+    p.x = clamp(p.x + p.vx * dt, 40, s.canvas.width - 40);
+
+    if (p.y >= floorY) {
+      p.y = floorY;
+      p.vy = 0;
+      p.grounded = true;
+      p.diving = false;
+    }
+
+    const b = s.bot;
+    b.t += dt;
+
+    if (b.grounded && b.t > 22) {
+      b.t = 0;
+      b.dir = (p.x < b.x) ? -1 : 1;
+
+      if (Math.random() < 0.75) {
+        b.grounded = false;
+        b.diving = true;
+        b.vy = -9.0;
+      }
+    }
+
+    b.vx = b.dir * 3.0;
+    b.x = clamp(b.x + b.vx * dt, 40, s.canvas.width - 40);
+
+    if (!b.grounded) {
+      b.vy += grav;
+      if (b.diving) b.vy += 0.55;
+      b.y += b.vy * dt;
+
+      if (b.y >= floorY) {
+        b.y = floorY;
+        b.vy = 0;
+        b.grounded = true;
+        b.diving = false;
+      }
+    }
+
+    const dx = p.x - b.x;
+    const dy = p.y - b.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist < p.r + b.r) {
+      const playerAttack = p.diving && !p.grounded;
+      const botAttack = b.diving && !b.grounded;
+
+      if (playerAttack && !botAttack) {
+        s.hits += 1;
+        s.score += 120;
+        b.x = 720;
+        b.y = floorY;
+        b.grounded = true;
+        b.diving = false;
+        b.vy = 0;
+      } else if (botAttack && !playerAttack) {
+        s.score = Math.max(0, s.score - 80);
+        p.x = 240;
+        p.y = floorY;
+        p.grounded = true;
+        p.diving = false;
+        p.vy = 0;
+      } else {
+        s.score = Math.max(0, s.score - 30);
+      }
+    }
+
+    const leftMs = s.endAt - t;
+    const left = Math.max(0, leftMs / 1000);
+
+    const scoreEl = document.getElementById("wmDkScore");
+    const hitsEl = document.getElementById("wmDkHits");
+    const timeEl = document.getElementById("wmDkTime");
+    if (scoreEl) scoreEl.textContent = String(s.score);
+    if (hitsEl) hitsEl.textContent = String(s.hits);
+    if (timeEl) timeEl.textContent = left.toFixed(1);
+
+    drawDiveKick();
+
+    if (leftMs <= 0) {
+      endDiveKick();
+      return;
+    }
+
+    requestAnimationFrame(tickDiveKick);
+  }
+
+  function drawDiveKick() {
+    const s = dkState;
+    if (!s) return;
+
+    const g = s.ctx;
+    const w = s.canvas.width;
+    const h = s.canvas.height;
+
+    g.clearRect(0, 0, w, h);
+
+    if (s.bgReady) {
+      g.globalAlpha = 0.16;
+      g.drawImage(s.bg, 0, 0, w, h);
+      g.globalAlpha = 1;
+    }
+
+    g.fillStyle = "rgba(0,0,0,0.24)";
+    g.fillRect(0, 0, w, h);
+
+    g.fillStyle = "rgba(255,255,255,0.06)";
+    g.fillRect(0, 360, w, 2);
+
+    g.fillStyle = "rgba(0,229,255,0.85)";
+    g.beginPath();
+    g.arc(s.player.x, s.player.y, s.player.r, 0, Math.PI * 2);
+    g.fill();
+
+    if (s.player.diving && !s.player.grounded) {
+      g.fillStyle = "rgba(0,229,255,0.20)";
+      g.beginPath();
+      g.arc(s.player.x, s.player.y, 34, 0, Math.PI * 2);
+      g.fill();
+    }
+
+    g.fillStyle = "rgba(255,43,214,0.85)";
+    g.beginPath();
+    g.arc(s.bot.x, s.bot.y, s.bot.r, 0, Math.PI * 2);
+    g.fill();
+
+    if (s.bot.diving && !s.bot.grounded) {
+      g.fillStyle = "rgba(255,43,214,0.20)";
+      g.beginPath();
+      g.arc(s.bot.x, s.bot.y, 34, 0, Math.PI * 2);
+      g.fill();
+    }
+
+    g.strokeStyle = "rgba(0,229,255,0.18)";
+    g.strokeRect(1, 1, w - 2, h - 2);
+  }
+
+  function endDiveKick() {
+    if (!dkState) return;
+    dkState.running = false;
+
+    const lbEl = document.getElementById("wmDkLb");
+    const top5 = updateLeaderboard("divekick", dkState.score);
+    if (lbEl) lbEl.innerHTML = renderLeaderboard(top5);
+  }
+
+  function wireDiveKickKeys() {
+    document.addEventListener("keydown", function (e) {
+      if (!dkState) return;
+      dkState.keys[e.code] = true;
+    });
+
+    document.addEventListener("keyup", function (e) {
+      if (!dkState) return;
+      dkState.keys[e.code] = false;
+    });
   }
 
   function wireGamesControls() {
@@ -1345,33 +2340,23 @@
       const key = btn.getAttribute("data-game");
       if (!key) return;
 
-      if (key === "memory") {
-        initMemory(false);
-        return;
-      }
-      if (key === "memory-reset") {
-        initMemory(true);
-        return;
-      }
+      if (key === "memory") { initMemory(false); return; }
+      if (key === "memory-reset") { initMemory(true); return; }
 
-      if (key === "reaction") {
-        initReaction(false);
-        startReaction();
-        return;
-      }
-      if (key === "reaction-reset") {
-        initReaction(true);
-        return;
-      }
+      if (key === "reaction") { initReaction(false); startReaction(); return; }
+      if (key === "reaction-reset") { initReaction(true); return; }
 
-      if (key === "curve") {
-        initCurve(false);
-        return;
-      }
-      if (key === "curve-reset") {
-        initCurve(true);
-        return;
-      }
+      if (key === "breaker") { initBreaker(false); startBreaker(); return; }
+      if (key === "breaker-reset") { initBreaker(true); return; }
+
+      if (key === "divekick") { initDiveKick(false); startDiveKick(); return; }
+      if (key === "divekick-reset") { initDiveKick(true); return; }
+
+      if (key === "dodge") { initDodge(false); startDodge(); return; }
+      if (key === "dodge-reset") { initDodge(true); return; }
+
+      if (key === "tap") { initTap(false); startTap(); return; }
+      if (key === "tap-reset") { initTap(true); return; }
     });
 
     document.addEventListener("click", function (e) {
@@ -1396,6 +2381,7 @@
     wireNavigation();
     wirePlayerControls();
     wireGamesControls();
+    wireDiveKickKeys();
 
     renderFeaturedGrid();
     renderMusicList();
