@@ -777,24 +777,25 @@
     });
   }
 
-  function switchView(view) {
-    const home = document.getElementById("homeView");
-    const music = document.getElementById("musicView");
-    const links = document.getElementById("linksView");
-    const games = document.getElementById("gamesView");
-    const hero = document.querySelector(".heroIntro");
+function switchView(view) {
+  const home = document.getElementById("homeView");
+  const music = document.getElementById("musicView");
+  const links = document.getElementById("linksView");
+  const games = document.getElementById("gamesView");
+  const hero = document.querySelector(".heroIntro");
 
-    if (!home || !music || !links || !games) return;
+  if (!home || !music || !links) return;
 
-    home.style.display = view === "home" ? "block" : "none";
-    music.style.display = view === "music" ? "block" : "none";
-    links.style.display = view === "links" ? "block" : "none";
-    games.style.display = view === "games" ? "block" : "none";
+  home.style.display = view === "home" ? "block" : "none";
+  music.style.display = view === "music" ? "block" : "none";
+  links.style.display = view === "links" ? "block" : "none";
 
-    if (hero) hero.style.display = view === "home" ? "block" : "none";
+  if (games) games.style.display = view === "games" ? "block" : "none";
 
-    setActiveNav(view);
-  }
+  if (hero) hero.style.display = view === "home" ? "block" : "none";
+
+  setActiveNav(view);
+}
 
   function setActiveNav(view) {
     const navRoot = document.querySelector("header nav");
@@ -1818,11 +1819,10 @@ if (Math.random() < spawnChance) {
     wireNavigation();
     wirePlayerControls();
 
-    renderFeaturedGrid();
-    renderMusicList();
-    renderLinks();
-    renderPress();
-    renderGames();
+renderFeaturedGrid();
+renderMusicList();
+renderLinks();
+renderPress();
 
     window.addEventListener("hashchange", applyRoute);
     applyRoute();
