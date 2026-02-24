@@ -1,4 +1,4 @@
-```js
+/* jshint esversion: 6 */
 (function () {
   const STORAGE_KEY = "wamsmash_player_state_v1";
   const FEATURED_COUNT = 6;
@@ -892,10 +892,14 @@
     const style = document.createElement("style");
     style.id = "wmGameStyles";
     style.textContent = `
+      #wmGames{ width:100%; }
+      #wmGames .wmGamesGrid{ width:100%; }
+
       .wmGamesGrid{
         display:grid;
         grid-template-columns:repeat(2, minmax(0, 1fr));
         gap:14px;
+        align-items:start;
       }
       .wmGamesGrid .wmGameWrap.isFull{
         grid-column:1 / span 2;
@@ -906,6 +910,7 @@
       }
 
       .wmGameWrap{
+        min-width:0;
         border:1px solid rgba(255,255,255,0.12);
         border-radius:22px;
         background:
@@ -1011,7 +1016,7 @@
 
       .wmReactArena{
         position:relative;
-        height:360px;
+        height:380px;
         border-radius:16px;
         border:1px solid rgba(255,255,255,0.12);
         overflow:hidden;
@@ -1208,6 +1213,7 @@
           <div class="wmGameHead">
             <div>
               <h3 class="wmGameTitle">Lane Dodge</h3>
+              <div class="wmGameSub">Slower fall, longer reads</div>
             </div>
             <div class="wmGameRow">
               <button class="btn btnPrimary" type="button" data-game="dodge">Play</button>
@@ -1216,34 +1222,6 @@
           </div>
           <div id="wmGameDodge"></div>
         </div>
-
-        <div class="wmGameWrap isFull">
-          <div class="wmGameHead">
-            <div>
-              <h3 class="wmGameTitle">Crow Cannon</h3>
-              <div class="wmGameSub">Hold Space to charge. Release to fire</div>
-            </div>
-            <div class="wmGameRow">
-              <button class="btn btnPrimary" type="button" data-game="cannon">Play</button>
-              <button class="btn" type="button" data-game="cannon-reset">Reset</button>
-            </div>
-          </div>
-          <div id="wmGameCannon"></div>
-        </div>
-
-        <div class="wmGameWrap isFull">
-          <div class="wmGameHead">
-            <div>
-              <h3 class="wmGameTitle">Mini Golf</h3>
-              <div class="wmGameSub">Drag to aim. Release to hit</div>
-            </div>
-            <div class="wmGameRow">
-              <button class="btn btnPrimary" type="button" data-game="golf">Play</button>
-              <button class="btn" type="button" data-game="golf-reset">Reset</button>
-            </div>
-          </div>
-          <div id="wmGameGolf"></div>
-        </div>
       </div>
     `;
 
@@ -1251,8 +1229,6 @@
     initReaction(true);
     initBreaker(true);
     initDodge(true);
-    initCannon(true);
-    initGolf(true);
   }
 
   function sampleTracksForMemory(pairCount) {
@@ -1663,8 +1639,7 @@
       r: 10,
       bricks: [],
       bricksLeft: 0,
-      score: 0,
-      wired: false
+      score: 0
     };
 
     bgImg.onload = function () { breakerState.bgReady = true; };
@@ -1708,21 +1683,17 @@
       breakerState.paddleX = clamp(px, breakerState.paddleW / 2, canvas.width - breakerState.paddleW / 2);
     }
 
-    if (!breakerState.wired) {
-      breakerState.wired = true;
+    canvas.addEventListener("mousemove", function (e) {
+      if (!breakerState) return;
+      setPaddleFromClientX(e.clientX);
+    });
 
-      canvas.addEventListener("mousemove", function (e) {
-        if (!breakerState) return;
-        setPaddleFromClientX(e.clientX);
-      });
-
-      canvas.addEventListener("touchmove", function (e) {
-        if (!breakerState) return;
-        if (!e.touches || !e.touches.length) return;
-        setPaddleFromClientX(e.touches[0].clientX);
-        e.preventDefault();
-      }, { passive: false });
-    }
+    canvas.addEventListener("touchmove", function (e) {
+      if (!breakerState) return;
+      if (!e.touches || !e.touches.length) return;
+      setPaddleFromClientX(e.touches[0].clientX);
+      e.preventDefault();
+    }, { passive: false });
 
     if (!silent) {}
   }
@@ -1936,11 +1907,11 @@
       running: false,
       endAt: 0,
       lastT: 0,
+      startAt: 0,
       x: canvas.width / 2,
       y: canvas.height - 64,
       score: 0,
-      hazards: [],
-      wired: false
+      hazards: []
     };
 
     bg.onload = function () { dodgeState.bgReady = true; };
@@ -1951,21 +1922,17 @@
       dodgeState.x = clamp(px, 18, canvas.width - 18);
     }
 
-    if (!dodgeState.wired) {
-      dodgeState.wired = true;
+    canvas.addEventListener("mousemove", function (e) {
+      if (!dodgeState) return;
+      setX(e.clientX);
+    });
 
-      canvas.addEventListener("mousemove", function (e) {
-        if (!dodgeState) return;
-        setX(e.clientX);
-      });
-
-      canvas.addEventListener("touchmove", function (e) {
-        if (!dodgeState) return;
-        if (!e.touches || !e.touches.length) return;
-        setX(e.touches[0].clientX);
-        e.preventDefault();
-      }, { passive: false });
-    }
+    canvas.addEventListener("touchmove", function (e) {
+      if (!dodgeState) return;
+      if (!e.touches || !e.touches.length) return;
+      setX(e.touches[0].clientX);
+      e.preventDefault();
+    }, { passive: false });
 
     if (!silent) {}
   }
@@ -1977,6 +1944,7 @@
     dodgeState.lastT = 0;
     dodgeState.score = 0;
     dodgeState.hazards = [];
+    dodgeState.startAt = performance.now();
 
     const scoreEl = document.getElementById("wmDodgeScore");
     const timeEl = document.getElementById("wmDodgeTime");
@@ -2009,17 +1977,21 @@
     const dt = dodgeState.lastT ? clamp((t - dodgeState.lastT) / 16.666, 0.7, 1.6) : 1;
     dodgeState.lastT = t;
 
-    if (Math.random() < 0.10) {
+    const sinceStart = t - dodgeState.startAt;
+
+    const graceMs = 1100;
+    const spawnChance = sinceStart < graceMs ? 0 : 0.045;
+    if (Math.random() < spawnChance) {
       dodgeState.hazards.push({
         x: Math.random() * dodgeState.canvas.width,
-        y: -20,
-        r: 10 + Math.random() * 12,
-        vy: 3.6 + Math.random() * 2.8
+        y: -24,
+        r: 10 + Math.random() * 10,
+        vy: 2.2 + Math.random() * 2.0
       });
     }
 
     for (const h of dodgeState.hazards) h.y += h.vy * dt;
-    dodgeState.hazards = dodgeState.hazards.filter(h => h.y < dodgeState.canvas.height + 40);
+    dodgeState.hazards = dodgeState.hazards.filter(h => h.y < dodgeState.canvas.height + 50);
 
     for (const h of dodgeState.hazards) {
       const dx = h.x - dodgeState.x;
@@ -2100,516 +2072,6 @@
     if (lbEl) lbEl.innerHTML = renderLeaderboard(top5);
   }
 
-  let cannonState = null;
-  let cannonListenersAdded = false;
-
-  function initCannon(silent) {
-    const mount = document.getElementById("wmGameCannon");
-    if (!mount) return;
-
-    mount.innerHTML = `
-      <div class="wmTiny" style="margin-bottom:10px;">
-        Score: <span id="wmCanScore">0</span>
-        <span style="margin-left:10px;">Power: <span id="wmCanPow">0</span></span>
-      </div>
-      <div class="wmCanvasWrap" style="position:relative;">
-        <canvas id="wmCanCanvas" width="960" height="480"></canvas>
-      </div>
-      <div class="wmLbBox">
-        <div class="wmTiny" style="margin-bottom:6px;">Top 5</div>
-        <div id="wmCanLb"></div>
-      </div>
-    `;
-
-    const lbEl = document.getElementById("wmCanLb");
-    if (lbEl) lbEl.innerHTML = renderLeaderboard(readJson("wamsmash_lb_cannon", []).slice(0, 5));
-
-    const canvas = document.getElementById("wmCanCanvas");
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-
-    cannonState = {
-      canvas,
-      ctx,
-      running: false,
-      fired: false,
-      charge: 0,
-      charging: false,
-      angle: -0.55,
-      score: 0,
-      crow: { x: 120, y: 380, vx: 0, vy: 0, r: 12, alive: false },
-      wind: (Math.random() * 0.6 - 0.3)
-    };
-
-    if (!cannonListenersAdded) {
-      cannonListenersAdded = true;
-      document.addEventListener("keydown", cannonKeyDown);
-      document.addEventListener("keyup", cannonKeyUp);
-    }
-
-    if (!silent) {}
-  }
-
-  function cannonKeyDown(e) {
-    if (!cannonState) return;
-    if (!cannonState.running) return;
-
-    if (e.code === "ArrowUp") cannonState.angle = clamp(cannonState.angle - 0.03, -1.25, -0.10);
-    if (e.code === "ArrowDown") cannonState.angle = clamp(cannonState.angle + 0.03, -1.25, -0.10);
-
-    if (e.code === "Space") {
-      e.preventDefault();
-      cannonState.charging = true;
-    }
-  }
-
-  function cannonKeyUp(e) {
-    if (!cannonState) return;
-    if (!cannonState.running) return;
-
-    if (e.code === "Space") {
-      e.preventDefault();
-      if (!cannonState.fired) fireCrow();
-      cannonState.charging = false;
-    }
-  }
-
-  function startCannon() {
-    if (!cannonState) return;
-
-    cannonState.running = true;
-    cannonState.fired = false;
-    cannonState.charge = 0;
-    cannonState.charging = false;
-    cannonState.angle = -0.55;
-    cannonState.score = 0;
-    cannonState.crow = { x: 120, y: 380, vx: 0, vy: 0, r: 12, alive: false };
-    cannonState.wind = (Math.random() * 0.6 - 0.3);
-
-    const scoreEl = document.getElementById("wmCanScore");
-    const powEl = document.getElementById("wmCanPow");
-    if (scoreEl) scoreEl.textContent = "0";
-    if (powEl) powEl.textContent = "0";
-
-    const wrap = cannonState.canvas.parentElement;
-    if (!wrap) return;
-
-    const overlay = showOverlay(wrap, "READY");
-    setTimeout(function () {
-      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      const set = showOverlay(wrap, "SET");
-      setTimeout(function () {
-        if (set && set.parentNode) set.parentNode.removeChild(set);
-        const go = showOverlay(wrap, "GO");
-        setTimeout(function () {
-          if (go && go.parentNode) go.parentNode.removeChild(go);
-          requestAnimationFrame(tickCannon);
-        }, 260);
-      }, 420);
-    }, 520);
-  }
-
-  function fireCrow() {
-    if (!cannonState || cannonState.fired) return;
-
-    const pow = clamp(cannonState.charge, 10, 100);
-    const spd = 6.5 + (pow / 100) * 16.5;
-
-    cannonState.crow.alive = true;
-    cannonState.crow.x = 120;
-    cannonState.crow.y = 380;
-
-    cannonState.crow.vx = Math.cos(cannonState.angle) * spd;
-    cannonState.crow.vy = Math.sin(cannonState.angle) * spd;
-
-    cannonState.fired = true;
-  }
-
-  function tickCannon() {
-    if (!cannonState || !cannonState.running) return;
-
-    const s = cannonState;
-    const g = s.ctx;
-    const w = s.canvas.width;
-    const h = s.canvas.height;
-
-    const powEl = document.getElementById("wmCanPow");
-    if (s.charging && !s.fired) {
-      s.charge = clamp(s.charge + 1.4, 0, 100);
-      if (powEl) powEl.textContent = String(Math.floor(s.charge));
-    }
-
-    if (s.crow.alive) {
-      s.crow.vx += s.wind * 0.02;
-      s.crow.vy += 0.38;
-      s.crow.x += s.crow.vx;
-      s.crow.y += s.crow.vy;
-
-      if (s.crow.y >= 402) {
-        s.crow.y = 402;
-        s.crow.vx *= 0.88;
-        s.crow.vy *= -0.25;
-
-        if (Math.abs(s.crow.vx) < 0.35 && Math.abs(s.crow.vy) < 0.35) {
-          s.crow.alive = false;
-          endCannon();
-          return;
-        }
-      }
-
-      if (s.crow.x > s.score) s.score = Math.floor(s.crow.x);
-      const scoreEl = document.getElementById("wmCanScore");
-      if (scoreEl) scoreEl.textContent = String(s.score);
-    }
-
-    g.clearRect(0, 0, w, h);
-
-    g.fillStyle = "rgba(0,0,0,0.22)";
-    g.fillRect(0, 0, w, h);
-
-    g.fillStyle = "rgba(255,255,255,0.06)";
-    g.fillRect(0, 412, w, 2);
-
-    g.fillStyle = "rgba(255,255,255,0.10)";
-    for (let x = 0; x <= w; x += 120) {
-      g.fillRect(x, 412, 1, 12);
-    }
-
-    const cannonX = 120;
-    const cannonY = 392;
-
-    g.save();
-    g.translate(cannonX, cannonY);
-    g.rotate(s.angle);
-    g.fillStyle = "rgba(0,229,255,0.55)";
-    g.fillRect(0, -10, 90, 20);
-    g.restore();
-
-    g.fillStyle = "rgba(255,255,255,0.25)";
-    g.beginPath();
-    g.arc(cannonX, cannonY, 22, 0, Math.PI * 2);
-    g.fill();
-
-    if (!s.fired) {
-      g.strokeStyle = "rgba(255,190,0,0.30)";
-      g.beginPath();
-      g.moveTo(cannonX, cannonY);
-      g.lineTo(cannonX + Math.cos(s.angle) * (90 + (s.charge * 0.9)), cannonY + Math.sin(s.angle) * (90 + (s.charge * 0.9)));
-      g.stroke();
-    }
-
-    if (s.crow.alive) {
-      g.fillStyle = "rgba(255,43,214,0.85)";
-      g.beginPath();
-      g.arc(s.crow.x, s.crow.y, s.crow.r, 0, Math.PI * 2);
-      g.fill();
-
-      g.fillStyle = "rgba(0,0,0,0.25)";
-      g.beginPath();
-      g.arc(s.crow.x + 4, s.crow.y - 2, 3, 0, Math.PI * 2);
-      g.fill();
-    }
-
-    requestAnimationFrame(tickCannon);
-  }
-
-  function endCannon() {
-    if (!cannonState) return;
-    cannonState.running = false;
-
-    const lbEl = document.getElementById("wmCanLb");
-    const top5 = updateLeaderboard("cannon", cannonState.score);
-    if (lbEl) lbEl.innerHTML = renderLeaderboard(top5);
-  }
-
-  let golfState = null;
-  let golfListenersAdded = false;
-
-  function initGolf(silent) {
-    const mount = document.getElementById("wmGameGolf");
-    if (!mount) return;
-
-    mount.innerHTML = `
-      <div class="wmTiny" style="margin-bottom:10px;">
-        Strokes: <span id="wmGolfStrokes">0</span>
-        <span style="margin-left:10px;">Score: <span id="wmGolfScore">0</span></span>
-      </div>
-      <div class="wmCanvasWrap" style="position:relative;">
-        <canvas id="wmGolfCanvas" width="960" height="480"></canvas>
-      </div>
-      <div class="wmLbBox">
-        <div class="wmTiny" style="margin-bottom:6px;">Top 5</div>
-        <div id="wmGolfLb"></div>
-      </div>
-    `;
-
-    const lbEl = document.getElementById("wmGolfLb");
-    if (lbEl) lbEl.innerHTML = renderLeaderboard(readJson("wamsmash_lb_golf", []).slice(0, 5));
-
-    const canvas = document.getElementById("wmGolfCanvas");
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-
-    golfState = {
-      canvas,
-      ctx,
-      running: false,
-      aiming: false,
-      strokes: 0,
-      score: 0,
-      ball: { x: 160, y: 360, vx: 0, vy: 0, r: 10 },
-      hole: { x: 800, y: 140, r: 14 },
-      drag: { x0: 0, y0: 0, x1: 0, y1: 0 },
-      obstacles: [
-        { x: 420, y: 190, w: 26, h: 220 },
-        { x: 620, y: 0, w: 26, h: 220 },
-      ],
-      startAt: 0
-    };
-
-    canvas.addEventListener("mousedown", golfDown);
-    canvas.addEventListener("mousemove", golfMove);
-
-    canvas.addEventListener("touchstart", golfTouchDown, { passive: false });
-    canvas.addEventListener("touchmove", golfTouchMove, { passive: false });
-
-    if (!golfListenersAdded) {
-      golfListenersAdded = true;
-      window.addEventListener("mouseup", golfUp);
-      window.addEventListener("touchend", golfTouchUp, { passive: false });
-    }
-
-    if (!silent) {}
-  }
-
-  function golfDown(e) {
-    if (!golfState || !golfState.running) return;
-    if (Math.hypot(e.offsetX - golfState.ball.x, e.offsetY - golfState.ball.y) > 36) return;
-    if (Math.hypot(golfState.ball.vx, golfState.ball.vy) > 0.15) return;
-
-    golfState.aiming = true;
-    golfState.drag.x0 = golfState.ball.x;
-    golfState.drag.y0 = golfState.ball.y;
-    golfState.drag.x1 = e.offsetX;
-    golfState.drag.y1 = e.offsetY;
-  }
-
-  function golfMove(e) {
-    if (!golfState || !golfState.running) return;
-    if (!golfState.aiming) return;
-    golfState.drag.x1 = e.offsetX;
-    golfState.drag.y1 = e.offsetY;
-  }
-
-  function golfUp() {
-    if (!golfState || !golfState.running) return;
-    if (!golfState.aiming) return;
-
-    golfState.aiming = false;
-
-    const dx = golfState.drag.x0 - golfState.drag.x1;
-    const dy = golfState.drag.y0 - golfState.drag.y1;
-
-    const mag = clamp(Math.hypot(dx, dy), 0, 180);
-    const p = (mag / 180) * 18;
-
-    golfState.ball.vx = (dx / (mag || 1)) * p;
-    golfState.ball.vy = (dy / (mag || 1)) * p;
-
-    golfState.strokes += 1;
-    const st = document.getElementById("wmGolfStrokes");
-    if (st) st.textContent = String(golfState.strokes);
-  }
-
-  function golfTouchDown(e) {
-    if (!golfState || !golfState.running) return;
-    if (!e.touches || !e.touches.length) return;
-    const t = e.touches[0];
-    const rect = golfState.canvas.getBoundingClientRect();
-    const x = (t.clientX - rect.left) * (golfState.canvas.width / rect.width);
-    const y = (t.clientY - rect.top) * (golfState.canvas.height / rect.height);
-
-    if (Math.hypot(x - golfState.ball.x, y - golfState.ball.y) > 36) return;
-    if (Math.hypot(golfState.ball.vx, golfState.ball.vy) > 0.15) return;
-
-    e.preventDefault();
-    golfState.aiming = true;
-    golfState.drag.x0 = golfState.ball.x;
-    golfState.drag.y0 = golfState.ball.y;
-    golfState.drag.x1 = x;
-    golfState.drag.y1 = y;
-  }
-
-  function golfTouchMove(e) {
-    if (!golfState || !golfState.running) return;
-    if (!golfState.aiming) return;
-    if (!e.touches || !e.touches.length) return;
-    e.preventDefault();
-
-    const t = e.touches[0];
-    const rect = golfState.canvas.getBoundingClientRect();
-    const x = (t.clientX - rect.left) * (golfState.canvas.width / rect.width);
-    const y = (t.clientY - rect.top) * (golfState.canvas.height / rect.height);
-
-    golfState.drag.x1 = x;
-    golfState.drag.y1 = y;
-  }
-
-  function golfTouchUp(e) {
-    if (!golfState || !golfState.running) return;
-    if (!golfState.aiming) return;
-    e.preventDefault();
-    golfUp();
-  }
-
-  function startGolf() {
-    if (!golfState) return;
-
-    golfState.running = true;
-    golfState.aiming = false;
-    golfState.strokes = 0;
-    golfState.score = 0;
-    golfState.ball.x = 160;
-    golfState.ball.y = 360;
-    golfState.ball.vx = 0;
-    golfState.ball.vy = 0;
-    golfState.startAt = performance.now();
-
-    const st = document.getElementById("wmGolfStrokes");
-    const sc = document.getElementById("wmGolfScore");
-    if (st) st.textContent = "0";
-    if (sc) sc.textContent = "0";
-
-    const wrap = golfState.canvas.parentElement;
-    if (!wrap) return;
-
-    const overlay = showOverlay(wrap, "READY");
-    setTimeout(function () {
-      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      const set = showOverlay(wrap, "SET");
-      setTimeout(function () {
-        if (set && set.parentNode) set.parentNode.removeChild(set);
-        const go = showOverlay(wrap, "GO");
-        setTimeout(function () {
-          if (go && go.parentNode) go.parentNode.removeChild(go);
-          requestAnimationFrame(tickGolf);
-        }, 260);
-      }, 420);
-    }, 520);
-  }
-
-  function tickGolf() {
-    if (!golfState || !golfState.running) return;
-
-    const s = golfState;
-    const g = s.ctx;
-    const w = s.canvas.width;
-    const h = s.canvas.height;
-
-    const friction = 0.985;
-
-    s.ball.x += s.ball.vx;
-    s.ball.y += s.ball.vy;
-
-    s.ball.vx *= friction;
-    s.ball.vy *= friction;
-
-    if (Math.abs(s.ball.vx) < 0.02) s.ball.vx = 0;
-    if (Math.abs(s.ball.vy) < 0.02) s.ball.vy = 0;
-
-    if (s.ball.x < s.ball.r) { s.ball.x = s.ball.r; s.ball.vx *= -0.75; }
-    if (s.ball.x > w - s.ball.r) { s.ball.x = w - s.ball.r; s.ball.vx *= -0.75; }
-    if (s.ball.y < s.ball.r) { s.ball.y = s.ball.r; s.ball.vy *= -0.75; }
-    if (s.ball.y > h - s.ball.r) { s.ball.y = h - s.ball.r; s.ball.vy *= -0.75; }
-
-    for (const o of s.obstacles) {
-      const bx = s.ball.x;
-      const by = s.ball.y;
-
-      const closestX = clamp(bx, o.x, o.x + o.w);
-      const closestY = clamp(by, o.y, o.y + o.h);
-
-      const dx = bx - closestX;
-      const dy = by - closestY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      if (dist < s.ball.r) {
-        if (Math.abs(dx) > Math.abs(dy)) {
-          s.ball.vx *= -0.85;
-          s.ball.x += Math.sign(dx) * (s.ball.r - dist + 1);
-        } else {
-          s.ball.vy *= -0.85;
-          s.ball.y += Math.sign(dy) * (s.ball.r - dist + 1);
-        }
-      }
-    }
-
-    const toHole = Math.hypot(s.ball.x - s.hole.x, s.ball.y - s.hole.y);
-    if (toHole < s.hole.r && Math.hypot(s.ball.vx, s.ball.vy) < 0.45) {
-      const timeMs = performance.now() - s.startAt;
-      const timeScore = Math.max(0, 12000 - Math.floor(timeMs));
-      const strokeScore = Math.max(0, 6000 - (s.strokes * 850));
-      s.score = Math.floor(timeScore + strokeScore);
-
-      const sc = document.getElementById("wmGolfScore");
-      if (sc) sc.textContent = String(s.score);
-
-      endGolf();
-      return;
-    }
-
-    g.clearRect(0, 0, w, h);
-
-    g.fillStyle = "rgba(0,0,0,0.22)";
-    g.fillRect(0, 0, w, h);
-
-    g.strokeStyle = "rgba(255,255,255,0.08)";
-    for (let i = 0; i < 5; i++) {
-      g.strokeRect(18 + i * 10, 18 + i * 10, w - 36 - i * 20, h - 36 - i * 20);
-    }
-
-    g.fillStyle = "rgba(255,255,255,0.10)";
-    for (const o of s.obstacles) {
-      g.fillRect(o.x, o.y, o.w, o.h);
-    }
-
-    g.fillStyle = "rgba(255,190,0,0.85)";
-    g.beginPath();
-    g.arc(s.hole.x, s.hole.y, s.hole.r, 0, Math.PI * 2);
-    g.fill();
-
-    g.fillStyle = "rgba(0,0,0,0.55)";
-    g.beginPath();
-    g.arc(s.hole.x, s.hole.y, s.hole.r - 6, 0, Math.PI * 2);
-    g.fill();
-
-    g.fillStyle = "rgba(0,229,255,0.85)";
-    g.beginPath();
-    g.arc(s.ball.x, s.ball.y, s.ball.r, 0, Math.PI * 2);
-    g.fill();
-
-    if (s.aiming) {
-      g.strokeStyle = "rgba(255,43,214,0.35)";
-      g.beginPath();
-      g.moveTo(s.drag.x0, s.drag.y0);
-      g.lineTo(s.drag.x1, s.drag.y1);
-      g.stroke();
-    }
-
-    requestAnimationFrame(tickGolf);
-  }
-
-  function endGolf() {
-    if (!golfState) return;
-    golfState.running = false;
-
-    const lbEl = document.getElementById("wmGolfLb");
-    const top5 = updateLeaderboard("golf", golfState.score);
-    if (lbEl) lbEl.innerHTML = renderLeaderboard(top5);
-  }
-
   function wireGamesControls() {
     document.addEventListener("click", function (e) {
       const btn = e.target.closest("[data-game]");
@@ -2629,12 +2091,6 @@
 
       if (key === "dodge") { initDodge(false); startDodge(); return; }
       if (key === "dodge-reset") { initDodge(true); return; }
-
-      if (key === "cannon") { initCannon(false); startCannon(); return; }
-      if (key === "cannon-reset") { initCannon(true); return; }
-
-      if (key === "golf") { initGolf(false); startGolf(); return; }
-      if (key === "golf-reset") { initGolf(true); return; }
     });
 
     document.addEventListener("click", function (e) {
@@ -2679,4 +2135,3 @@
     init();
   }
 })();
-```
