@@ -1,6 +1,5 @@
 (function () {
   const STORAGE_KEY = "wamsmash_player_state_v1";
-
   const FEATURED_COUNT = 6;
 
   const TRACKS = [
@@ -87,7 +86,7 @@
       lane: "iridescent",
       year: "2026",
       audio: "/assets/audio/breach.mp3",
-      cover: "/assets/img/covers/breach.mp3",
+      cover: "/assets/img/covers/breach.jpg",
       note: "",
       blurb: "Brick codes speak\nGrey wind through back lanes\nI’ll stand when the night gets rough",
       tags: "uk regional hiphop\nnorth east narrative\ncomfort chorus contrast\nbleak urban tension",
@@ -236,28 +235,6 @@
     },
   ];
 
-  const GAMES = [
-    {
-      id: "reaction",
-      title: "Neon Reaction",
-      note: "Reflex",
-      blurb: "Wait for the flash\nClick as soon as it flips\nNo false starts",
-      tags: "reaction time\nrepeatable loop\nclean input",
-    },
-    {
-      id: "memory",
-      title: "Lane Memory",
-      note: "Pairs",
-      blurb: "Match the lanes\nEmoji and label pairs\nFinish clean",
-      tags: "lane system\npattern recall\nshort session",
-    }
-  ];
-
-  const gameState = {
-    reaction: { stage: "idle", timerId: 0, startAt: 0, best: 0, last: 0, falseStarts: 0 },
-    memory: { deck: [], flipped: [], matched: 0, moves: 0, locked: false }
-  };
-
   function renderPress() {
     const mount = document.getElementById("wmPress");
     if (!mount) return;
@@ -289,8 +266,8 @@
     if (v === "green") return "🟢 GREEN LANE";
     if (v === "yellow") return "🟡 YELLOW LANE";
     if (v === "pink") return "🩷 PINK LANE";
-    if (v === "iridescent") return "🫧 IRIDESCENT LANE";
     if (v === "orange") return "🟠 ORANGE LANE";
+    if (v === "iridescent") return "🫧 IRIDESCENT";
     return (v ? v.toUpperCase() : "LANE");
   }
 
@@ -308,23 +285,12 @@
     youtube: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2a3 3 0 00-2.1-2.1C17.7 4.6 12 4.6 12 4.6s-5.7 0-7.5.5A3 3 0 002.4 7.2 31.4 31.4 0 002.4 12a31.4 31.4 0 00.0 4.8 3 3 0 002.1 2.1c1.8.5 7.5.5 7.5.5s5.7 0 7.5-.5a3 3 0 002.1-2.1A31.4 31.4 0 0021.6 12a31.4 31.4 0 000-4.8zM10.2 15.2V8.8L15.8 12l-5.6 3.2z"/></svg>`,
     instagram: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 2h9A5.5 5.5 0 0122 7.5v9A5.5 5.5 0 0116.5 22h-9A5.5 5.5 0 012 16.5v-9A5.5 5.5 0 017.5 2zm0 2A3.5 3.5 0 004 7.5v9A3.5 3.5 0 007.5 20h9a3.5 3.5 0 003.5-3.5v-9A3.5 3.5 0 0016.5 4h-9zM12 7a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6zm5.6-2.2a1 1 0 110 2 1 1 0 010-2z"/></svg>`,
     x: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.6l-5.2-6.5L5.6 22H2.5l7.3-8.4L1 2h6.8l4.7 5.9L18.9 2zm-1.2 18h1.7L6.1 3.9H4.3L17.7 20z"/></svg>`,
-    email: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2zm0 2v.3l8 5.3 8-5.3V7H4zm16 2.7l-8 5.3-8-5.3V17h16V9.7z"/></svg>`,
     bandcamp: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 7H22l-4.9 10H9.3L14.7 7zM2 7h9.1L6.2 17H2V7z"/></svg>`,
   };
 
   function iconMarkup(name) {
     const svg = ICONS[name] || "";
     return `<div class="linkIcon" aria-hidden="true">${svg}</div>`;
-  }
-
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return null;
-      return JSON.parse(raw);
-    } catch (e) {
-      return null;
-    }
   }
 
   function saveState(state) {
@@ -345,11 +311,28 @@
 
   function hardenAudioElement(audioEl) {
     if (!audioEl) return;
-
     audioEl.setAttribute("preload", "none");
     audioEl.setAttribute("playsinline", "");
     audioEl.setAttribute("controlsList", "nodownload noplaybackrate noremoteplayback");
     audioEl.setAttribute("disableRemotePlayback", "");
+  }
+
+  let wmAudio = null;
+  let currentTrackId = "";
+  let shuffleOn = true;
+  let recentQueue = [];
+
+  function pickNextTrackId() {
+    const ids = TRACKS.map(t => t.id);
+    if (!ids.length) return "";
+
+    const last = currentTrackId;
+    const avoid = new Set(recentQueue.slice(-6));
+    let pool = ids.filter(id => id !== last && !avoid.has(id));
+    if (!pool.length) pool = ids.filter(id => id !== last);
+    if (!pool.length) pool = ids.slice();
+
+    return pool[Math.floor(Math.random() * pool.length)];
   }
 
   function createPlayerBar() {
@@ -365,6 +348,9 @@
           <div class="playerNowSub" id="wmNowSub">Select a track</div>
         </div>
         <div class="playerControls">
+          <button class="btn" type="button" id="wmPrevBtn" aria-label="Previous track">Prev</button>
+          <button class="btn btnPrimary" type="button" id="wmNextBtn" aria-label="Next track">Next</button>
+          <button class="btn" type="button" id="wmShuffleBtn" aria-label="Shuffle toggle">Shuffle: On</button>
           <audio id="wmAudio" controls preload="none" playsinline controlsList="nodownload noplaybackrate noremoteplayback"></audio>
         </div>
       </div>
@@ -415,6 +401,91 @@
     } catch (e) {}
   }
 
+  function playTrackById(trackId) {
+    const track = findTrackById(trackId);
+    if (!wmAudio || !track) return;
+
+    currentTrackId = track.id;
+    recentQueue.push(track.id);
+    if (recentQueue.length > 20) recentQueue = recentQueue.slice(-20);
+
+    setNowPlayingUI(track);
+    setAudioSource(wmAudio, track);
+
+    wmAudio.play().catch(() => {});
+  }
+
+  function playNext() {
+    if (!TRACKS.length) return;
+    if (!currentTrackId) {
+      playTrackById(TRACKS[0].id);
+      return;
+    }
+    if (!shuffleOn) {
+      const idx = TRACKS.findIndex(t => t.id === currentTrackId);
+      const next = TRACKS[(idx + 1) % TRACKS.length];
+      playTrackById(next.id);
+      return;
+    }
+    playTrackById(pickNextTrackId());
+  }
+
+  function playPrev() {
+    if (!TRACKS.length) return;
+    if (recentQueue.length >= 2) {
+      recentQueue.pop();
+      const prevId = recentQueue.pop();
+      if (prevId) playTrackById(prevId);
+      return;
+    }
+    const idx = TRACKS.findIndex(t => t.id === currentTrackId);
+    const prev = TRACKS[(idx - 1 + TRACKS.length) % TRACKS.length];
+    playTrackById(prev.id);
+  }
+
+  function wirePlayerControls() {
+    const prevBtn = $("#wmPrevBtn");
+    const nextBtn = $("#wmNextBtn");
+    const shuffleBtn = $("#wmShuffleBtn");
+
+    if (prevBtn) prevBtn.addEventListener("click", playPrev);
+    if (nextBtn) nextBtn.addEventListener("click", playNext);
+
+    if (shuffleBtn) {
+      shuffleBtn.addEventListener("click", function () {
+        shuffleOn = !shuffleOn;
+        shuffleBtn.textContent = `Shuffle: ${shuffleOn ? "On" : "Off"}`;
+      });
+    }
+
+    if (wmAudio) {
+      wmAudio.addEventListener("ended", function () {
+        playNext();
+      });
+    }
+
+    document.addEventListener("keydown", function (e) {
+      const tag = (e.target && e.target.tagName) ? String(e.target.tagName).toLowerCase() : "";
+      const inInput = tag === "input" || tag === "textarea" || (e.target && e.target.isContentEditable);
+      if (inInput) return;
+
+      if (e.code === "Space") {
+        if (!wmAudio) return;
+        e.preventDefault();
+        if (wmAudio.paused) wmAudio.play().catch(() => {});
+        else wmAudio.pause();
+      }
+
+      if (e.code === "ArrowRight") {
+        playNext();
+      }
+
+      if (e.code === "ArrowLeft") {
+        playPrev();
+      }
+    });
+  }
+
   function wireAudioPersistence(audioEl) {
     if (!audioEl) return;
 
@@ -429,11 +500,6 @@
       if (!id) return;
       saveState({ trackId: id, time: 0, paused: false });
     });
-  }
-
-  function restoreAudio(audioEl) {
-    if (!audioEl) return;
-    setNowPlayingUI(null);
   }
 
   function imgTag(track, eager) {
@@ -468,25 +534,6 @@
 
       <div class="cardActions">
         <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
-      </div>
-    `;
-  }
-
-  function gameCardMarkup(game) {
-    return `
-      <div class="cardTop">
-        <div>
-          <h3 class="cardTitle">${game.title}</h3>
-          <div class="cardMeta">${game.note}</div>
-        </div>
-        <div class="badge">Game</div>
-      </div>
-
-      ${game.blurb ? `<div style="padding:0 14px 12px 14px; color:rgba(242,243,247,0.86); line-height:1.4; white-space:pre-line;">${game.blurb}</div>` : ``}
-      ${game.tags ? `<div style="padding:0 14px 12px 14px; color:rgba(166,168,179,0.95); line-height:1.35; white-space:pre-line; font-size:12px;">${game.tags}</div>` : ``}
-
-      <div class="cardActions">
-        <button class="btn btnPrimary" type="button" data-game-open="${game.id}">Open</button>
       </div>
     `;
   }
@@ -559,363 +606,13 @@
     }
   }
 
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const t = a[i];
-      a[i] = a[j];
-      a[j] = t;
-    }
-    return a;
-  }
-
-  function buildMemoryDeck() {
-    const pairs = [
-      { k: "red", label: laneLabel("red") },
-      { k: "blue", label: laneLabel("blue") },
-      { k: "green", label: laneLabel("green") },
-      { k: "yellow", label: laneLabel("yellow") },
-      { k: "pink", label: laneLabel("pink") },
-      { k: "iridescent", label: laneLabel("iridescent") },
-    ];
-
-    const deck = [];
-    for (let i = 0; i < pairs.length; i++) {
-      const p = pairs[i];
-      deck.push({ id: `${p.k}_a`, key: p.k, face: p.label });
-      deck.push({ id: `${p.k}_b`, key: p.k, face: p.label });
-    }
-    return shuffle(deck);
-  }
-
-  function renderGames() {
-    const mount = document.getElementById("wmGames");
-    if (!mount) return;
-
-    mount.innerHTML = "";
-
-    for (let i = 0; i < GAMES.length; i++) {
-      const g = GAMES[i];
-      const card = document.createElement("div");
-      card.className = "card";
-      card.setAttribute("data-game-card", g.id);
-      card.innerHTML = gameCardMarkup(g);
-      mount.appendChild(card);
-    }
-  }
-
-  function openGame(gameId) {
-    const card = document.querySelector(`[data-game-card="${gameId}"]`);
-    if (!card) return;
-
-    if (gameId === "reaction") {
-      const s = gameState.reaction;
-      if (s.timerId) clearTimeout(s.timerId);
-      s.stage = "idle";
-      s.startAt = 0;
-      s.last = 0;
-
-      card.innerHTML = `
-        <div class="cardTop">
-          <div>
-            <h3 class="cardTitle">Neon Reaction</h3>
-            <div class="cardMeta">Wait, then click</div>
-          </div>
-          <div class="badge">Game</div>
-        </div>
-
-        <div style="padding:0 14px 12px 14px; color:rgba(242,243,247,0.86); line-height:1.4; white-space:pre-line;">
-          Click Start\nWait for the signal\nClick the panel
-        </div>
-
-        <div style="padding:0 14px 12px 14px; color:rgba(166,168,179,0.95); line-height:1.35; white-space:pre-line; font-size:12px;">
-          Last: ${s.last ? `${s.last} ms` : `—`}\nBest: ${s.best ? `${s.best} ms` : `—`}\nFalse starts: ${s.falseStarts}
-        </div>
-
-        <div style="padding:0 14px 14px 14px;">
-          <div
-            data-reaction-panel="1"
-            style="
-              height:140px;
-              border:1px solid rgba(255,255,255,0.12);
-              border-radius:16px;
-              background:rgba(0,0,0,0.20);
-              display:flex;
-              align-items:center;
-              justify-content:center;
-              user-select:none;
-              -webkit-user-select:none;
-              cursor:pointer;
-              letter-spacing:0.06em;
-              text-transform:uppercase;
-              font-size:12px;
-              color:rgba(242,243,247,0.92);
-            "
-          >Idle</div>
-        </div>
-
-        <div class="cardActions">
-          <button class="btn btnPrimary" type="button" data-reaction-start="1">Start</button>
-          <button class="btn" type="button" data-game-back="1">Back</button>
-        </div>
-      `;
-      return;
-    }
-
-    if (gameId === "memory") {
-      const m = gameState.memory;
-      m.deck = buildMemoryDeck();
-      m.flipped = [];
-      m.matched = 0;
-      m.moves = 0;
-      m.locked = false;
-
-      const tiles = m.deck.map(function (t) {
-        return `
-          <button
-            type="button"
-            class="btn"
-            data-memory-tile="${t.id}"
-            style="
-              width:100%;
-              height:72px;
-              border-radius:14px;
-              display:flex;
-              align-items:center;
-              justify-content:center;
-              letter-spacing:0.06em;
-              text-transform:uppercase;
-              font-size:12px;
-              white-space:nowrap;
-              overflow:hidden;
-              text-overflow:ellipsis;
-            "
-          >?</button>
-        `;
-      }).join("");
-
-      card.innerHTML = `
-        <div class="cardTop">
-          <div>
-            <h3 class="cardTitle">Lane Memory</h3>
-            <div class="cardMeta">Match the pairs</div>
-          </div>
-          <div class="badge">Game</div>
-        </div>
-
-        <div style="padding:0 14px 12px 14px; color:rgba(166,168,179,0.95); line-height:1.35; white-space:pre-line; font-size:12px;">
-          Moves: <span data-memory-moves="1">0</span>\nMatched: <span data-memory-matched="1">0</span> / 6
-        </div>
-
-        <div style="padding:0 14px 14px 14px;">
-          <div
-            style="
-              display:grid;
-              grid-template-columns:repeat(3, minmax(0, 1fr));
-              gap:10px;
-            "
-          >
-            ${tiles}
-          </div>
-        </div>
-
-        <div class="cardActions">
-          <button class="btn btnPrimary" type="button" data-memory-reset="1">Reset</button>
-          <button class="btn" type="button" data-game-back="1">Back</button>
-        </div>
-      `;
-      return;
-    }
-  }
-
-  function closeGame(gameId) {
-    const card = document.querySelector(`[data-game-card="${gameId}"]`);
-    if (!card) return;
-
-    const g = GAMES.find(x => x.id === gameId);
-    if (!g) return;
-
-    if (gameId === "reaction") {
-      const s = gameState.reaction;
-      if (s.timerId) clearTimeout(s.timerId);
-      s.timerId = 0;
-      s.stage = "idle";
-      s.startAt = 0;
-    }
-
-    card.innerHTML = gameCardMarkup(g);
-  }
-
-  function startReaction() {
-    const s = gameState.reaction;
-    if (s.timerId) clearTimeout(s.timerId);
-
-    s.stage = "waiting";
-    s.startAt = 0;
-
-    const card = document.querySelector(`[data-game-card="reaction"]`);
-    if (!card) return;
-
-    const panel = card.querySelector("[data-reaction-panel]");
-    if (panel) {
-      panel.textContent = "Waiting";
-      panel.style.background = "rgba(0,0,0,0.20)";
-      panel.style.borderColor = "rgba(255,255,255,0.12)";
-    }
-
-    const delay = 700 + Math.floor(Math.random() * 1600);
-    s.timerId = setTimeout(function () {
-      s.timerId = 0;
-      s.stage = "go";
-      s.startAt = performance.now();
-
-      const c = document.querySelector(`[data-game-card="reaction"]`);
-      const p = c ? c.querySelector("[data-reaction-panel]") : null;
-      if (p) {
-        p.textContent = "Go";
-        p.style.background = "rgba(255,255,255,0.10)";
-        p.style.borderColor = "rgba(255,255,255,0.28)";
-      }
-    }, delay);
-  }
-
-  function clickReactionPanel() {
-    const s = gameState.reaction;
-    const card = document.querySelector(`[data-game-card="reaction"]`);
-    if (!card) return;
-
-    const panel = card.querySelector("[data-reaction-panel]");
-    if (!panel) return;
-
-    if (s.stage === "waiting") {
-      s.falseStarts += 1;
-      s.stage = "idle";
-      if (s.timerId) clearTimeout(s.timerId);
-      s.timerId = 0;
-      panel.textContent = "False start";
-      panel.style.background = "rgba(0,0,0,0.20)";
-      panel.style.borderColor = "rgba(255,255,255,0.12)";
-      openGame("reaction");
-      return;
-    }
-
-    if (s.stage !== "go" || !s.startAt) return;
-
-    const ms = Math.max(0, Math.round(performance.now() - s.startAt));
-    s.last = ms;
-    if (!s.best || ms < s.best) s.best = ms;
-    s.stage = "idle";
-    s.startAt = 0;
-
-    panel.textContent = `${ms} ms`;
-    panel.style.background = "rgba(0,0,0,0.20)";
-    panel.style.borderColor = "rgba(255,255,255,0.12)";
-
-    openGame("reaction");
-  }
-
-  function memoryFind(id) {
-    const m = gameState.memory;
-    return m.deck.find(x => x.id === id) || null;
-  }
-
-  function setMemoryCounters(root) {
-    const m = gameState.memory;
-    const movesEl = root.querySelector("[data-memory-moves]");
-    const matchedEl = root.querySelector("[data-memory-matched]");
-    if (movesEl) movesEl.textContent = String(m.moves);
-    if (matchedEl) matchedEl.textContent = String(m.matched);
-  }
-
-  function revealMemoryTile(btn, face) {
-    btn.textContent = face;
-    btn.style.borderColor = "rgba(255,255,255,0.30)";
-    btn.style.background = "rgba(255,255,255,0.10)";
-  }
-
-  function hideMemoryTile(btn) {
-    btn.textContent = "?";
-    btn.style.borderColor = "rgba(255,255,255,0.18)";
-    btn.style.background = "rgba(0,0,0,0.20)";
-  }
-
-  function lockMemoryTile(btn) {
-    btn.disabled = true;
-    btn.style.borderColor = "rgba(255,255,255,0.12)";
-    btn.style.background = "rgba(0,0,0,0.25)";
-    btn.style.opacity = "0.75";
-  }
-
-  function clickMemoryTile(tileId) {
-    const card = document.querySelector(`[data-game-card="memory"]`);
-    if (!card) return;
-
-    const m = gameState.memory;
-    if (m.locked) return;
-
-    const btn = card.querySelector(`[data-memory-tile="${tileId}"]`);
-    if (!btn || btn.disabled) return;
-
-    const item = memoryFind(tileId);
-    if (!item) return;
-
-    if (m.flipped.indexOf(tileId) >= 0) return;
-
-    m.flipped.push(tileId);
-    revealMemoryTile(btn, item.face);
-
-    if (m.flipped.length < 2) return;
-
-    m.moves += 1;
-    setMemoryCounters(card);
-
-    const aId = m.flipped[0];
-    const bId = m.flipped[1];
-    const a = memoryFind(aId);
-    const b = memoryFind(bId);
-
-    if (!a || !b) {
-      m.flipped = [];
-      return;
-    }
-
-    if (a.key === b.key) {
-      const aBtn = card.querySelector(`[data-memory-tile="${aId}"]`);
-      const bBtn = card.querySelector(`[data-memory-tile="${bId}"]`);
-      if (aBtn) lockMemoryTile(aBtn);
-      if (bBtn) lockMemoryTile(bBtn);
-
-      m.matched += 1;
-      m.flipped = [];
-      setMemoryCounters(card);
-
-      if (m.matched >= 6) {
-        const top = card.querySelector(".cardMeta");
-        if (top) top.textContent = "Complete";
-      }
-      return;
-    }
-
-    m.locked = true;
-    setTimeout(function () {
-      const aBtn = card.querySelector(`[data-memory-tile="${aId}"]`);
-      const bBtn = card.querySelector(`[data-memory-tile="${bId}"]`);
-      if (aBtn) hideMemoryTile(aBtn);
-      if (bBtn) hideMemoryTile(bBtn);
-      m.flipped = [];
-      m.locked = false;
-    }, 650);
-  }
-
-  function renderLinksAndPress() {
-    renderLinks();
-    renderPress();
-  }
-
   function playTrack(audioEl, trackId) {
     const track = findTrackById(trackId);
     if (!track) return;
+
+    currentTrackId = track.id;
+    recentQueue.push(track.id);
+    if (recentQueue.length > 20) recentQueue = recentQueue.slice(-20);
 
     setNowPlayingUI(track);
     setAudioSource(audioEl, track);
@@ -930,51 +627,6 @@
 
       const id = btn.getAttribute("data-play");
       playTrack(audioEl, id);
-    });
-  }
-
-  function wireGames() {
-    document.addEventListener("click", function (e) {
-      const openBtn = e.target.closest("[data-game-open]");
-      if (openBtn) {
-        const id = openBtn.getAttribute("data-game-open");
-        openGame(id);
-        return;
-      }
-
-      const backBtn = e.target.closest("[data-game-back]");
-      if (backBtn) {
-        const card = e.target.closest("[data-game-card]");
-        if (!card) return;
-        const id = card.getAttribute("data-game-card");
-        closeGame(id);
-        return;
-      }
-
-      const reactionStart = e.target.closest("[data-reaction-start]");
-      if (reactionStart) {
-        startReaction();
-        return;
-      }
-
-      const reactionPanel = e.target.closest("[data-reaction-panel]");
-      if (reactionPanel) {
-        clickReactionPanel();
-        return;
-      }
-
-      const memReset = e.target.closest("[data-memory-reset]");
-      if (memReset) {
-        openGame("memory");
-        return;
-      }
-
-      const memTile = e.target.closest("[data-memory-tile]");
-      if (memTile) {
-        const tileId = memTile.getAttribute("data-memory-tile");
-        clickMemoryTile(tileId);
-        return;
-      }
     });
   }
 
@@ -1086,30 +738,675 @@
     });
   }
 
+  function clamp(n, a, b) {
+    return Math.max(a, Math.min(b, n));
+  }
+
+  function ensureGameStyles() {
+    if (document.getElementById("wmGameStyles")) return;
+    const style = document.createElement("style");
+    style.id = "wmGameStyles";
+    style.textContent = `
+      .wmGameWrap{
+        border:1px solid rgba(255,255,255,0.12);
+        border-radius:20px;
+        background:rgba(14,15,22,0.50);
+        padding:14px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.28);
+      }
+      .wmGameHead{
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:10px;
+        margin-bottom:12px;
+      }
+      .wmGameTitle{
+        margin:0;
+        font-size:14px;
+        letter-spacing:0.06em;
+        text-transform:uppercase;
+      }
+      .wmGameSub{
+        margin-top:6px;
+        color:rgba(166,168,179,0.95);
+        font-size:12px;
+        line-height:1.35;
+      }
+      .wmGameRow{
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+        margin-top:10px;
+      }
+      .wmMemGrid{
+        display:grid;
+        grid-template-columns:repeat(4, minmax(0, 1fr));
+        gap:10px;
+      }
+      @media (max-width: 700px){
+        .wmMemGrid{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+      }
+      .wmMemCard{
+        position:relative;
+        aspect-ratio:1/1;
+        border-radius:14px;
+        border:1px solid rgba(255,255,255,0.12);
+        overflow:hidden;
+        background:rgba(0,0,0,0.25);
+        cursor:pointer;
+        user-select:none;
+      }
+      .wmMemCardFace{
+        position:absolute;
+        inset:0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:12px;
+        letter-spacing:0.06em;
+        text-transform:uppercase;
+        color:rgba(242,243,247,0.90);
+      }
+      .wmMemBack{
+        background:
+          radial-gradient(500px 280px at 15% 15%, rgba(255,43,214,0.20), transparent 55%),
+          radial-gradient(420px 280px at 85% 20%, rgba(0,229,255,0.16), transparent 55%),
+          linear-gradient(180deg, rgba(14,15,22,0.85), rgba(0,0,0,0.35));
+      }
+      .wmMemCard.isFlipped .wmMemBack{ opacity:0; }
+      .wmMemFront{
+        background-size:cover;
+        background-position:center;
+        opacity:0;
+        transform:scale(1.02);
+      }
+      .wmMemCard.isFlipped .wmMemFront{ opacity:1; }
+      .wmMemFront, .wmMemBack{
+        transition:opacity 0.14s ease, transform 0.14s ease;
+      }
+      .wmMemCard.isMatched{
+        border-color:rgba(0,229,255,0.42);
+        box-shadow:0 0 0 1px rgba(0,0,0,0.35) inset, 0 10px 28px rgba(0,0,0,0.28);
+        cursor:default;
+      }
+
+      .wmReactArena{
+        position:relative;
+        height:260px;
+        border-radius:16px;
+        border:1px solid rgba(255,255,255,0.12);
+        overflow:hidden;
+        background:
+          radial-gradient(600px 240px at 20% 20%, rgba(255,43,214,0.16), transparent 60%),
+          radial-gradient(540px 240px at 80% 30%, rgba(0,229,255,0.14), transparent 60%),
+          linear-gradient(180deg, rgba(14,15,22,0.65), rgba(0,0,0,0.35));
+      }
+      .wmReactTarget{
+        position:absolute;
+        width:56px;
+        height:56px;
+        border-radius:999px;
+        border:1px solid rgba(255,255,255,0.18);
+        background:rgba(0,0,0,0.20);
+        box-shadow:0 0 0 1px rgba(0,0,0,0.35) inset, 0 10px 28px rgba(0,0,0,0.28);
+        cursor:pointer;
+      }
+      .wmReactTarget::after{
+        content:"";
+        position:absolute;
+        inset:-10px;
+        border-radius:999px;
+        background:radial-gradient(circle at 50% 50%, rgba(255,43,214,0.26), transparent 55%);
+        opacity:0.65;
+        filter:blur(1px);
+        animation:wmPulse 0.9s ease-in-out infinite;
+        pointer-events:none;
+      }
+      @keyframes wmPulse{
+        0%{ transform:scale(0.90); opacity:0.45; }
+        50%{ transform:scale(1.08); opacity:0.85; }
+        100%{ transform:scale(0.90); opacity:0.45; }
+      }
+      .wmSpark{
+        position:absolute;
+        width:6px;
+        height:6px;
+        border-radius:999px;
+        background:rgba(0,229,255,0.9);
+        pointer-events:none;
+        animation:wmSpark 0.55s ease-out forwards;
+      }
+      @keyframes wmSpark{
+        0%{ transform:translate(0,0) scale(1); opacity:1; }
+        100%{ transform:translate(var(--dx), var(--dy)) scale(0.2); opacity:0; }
+      }
+
+      .wmCanvasWrap{
+        border-radius:16px;
+        border:1px solid rgba(255,255,255,0.12);
+        overflow:hidden;
+        background:rgba(0,0,0,0.20);
+      }
+      .wmCanvasWrap canvas{
+        width:100%;
+        height:auto;
+        display:block;
+      }
+      .wmTiny{
+        font-size:12px;
+        color:rgba(166,168,179,0.95);
+        line-height:1.35;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  let activeGame = "";
+
+  function renderGames() {
+    const mount = document.getElementById("wmGames");
+    if (!mount) return;
+
+    ensureGameStyles();
+
+    mount.innerHTML = `
+      <div class="wmGameWrap">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">Memory</h3>
+            <div class="wmGameSub">Match cover pairs. Clean loop. No filler</div>
+          </div>
+          <div class="wmGameRow">
+            <button class="btn btnPrimary" type="button" data-game="memory">Play</button>
+            <button class="btn" type="button" data-game="memory-reset">Reset</button>
+          </div>
+        </div>
+        <div id="wmGameMemory"></div>
+      </div>
+
+      <div class="wmGameWrap">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">Neon Reaction</h3>
+            <div class="wmGameSub">Hit the target. Spark on contact. No waiting</div>
+          </div>
+          <div class="wmGameRow">
+            <button class="btn btnPrimary" type="button" data-game="reaction">Play</button>
+            <button class="btn" type="button" data-game="reaction-reset">Reset</button>
+          </div>
+        </div>
+        <div id="wmGameReaction"></div>
+      </div>
+
+      <div class="wmGameWrap">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">Curve Ball</h3>
+            <div class="wmGameSub">Paddle control. Add curve by moving as you hit</div>
+          </div>
+          <div class="wmGameRow">
+            <button class="btn btnPrimary" type="button" data-game="curve">Play</button>
+            <button class="btn" type="button" data-game="curve-reset">Reset</button>
+          </div>
+        </div>
+        <div id="wmGameCurve"></div>
+      </div>
+    `;
+
+    initMemory(true);
+    initReaction(true);
+    initCurve(true);
+  }
+
+  function sampleTracksForMemory(pairCount) {
+    const list = TRACKS.slice();
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = list[i];
+      list[i] = list[j];
+      list[j] = tmp;
+    }
+    return list.slice(0, clamp(pairCount, 3, Math.min(10, list.length)));
+  }
+
+  let memState = null;
+
+  function initMemory(silent) {
+    const mount = document.getElementById("wmGameMemory");
+    if (!mount) return;
+
+    const pairs = sampleTracksForMemory(8);
+    const deck = [];
+    for (const t of pairs) {
+      deck.push({ key: t.id, cover: t.cover, title: t.title });
+      deck.push({ key: t.id, cover: t.cover, title: t.title });
+    }
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = deck[i];
+      deck[i] = deck[j];
+      deck[j] = tmp;
+    }
+
+    memState = {
+      deck,
+      firstIdx: -1,
+      lock: false,
+      matched: new Set(),
+      moves: 0
+    };
+
+    mount.innerHTML = `
+      <div class="wmTiny" style="margin-bottom:10px;">Moves: <span id="wmMemMoves">0</span></div>
+      <div class="wmMemGrid" id="wmMemGrid"></div>
+    `;
+
+    const grid = document.getElementById("wmMemGrid");
+    if (!grid) return;
+
+    for (let i = 0; i < deck.length; i++) {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "wmMemCard";
+      card.setAttribute("data-idx", String(i));
+      card.setAttribute("aria-label", "Memory card");
+
+      const back = document.createElement("div");
+      back.className = "wmMemCardFace wmMemBack";
+      back.textContent = "WAMSMASH";
+
+      const front = document.createElement("div");
+      front.className = "wmMemCardFace wmMemFront";
+      front.style.backgroundImage = `url("${deck[i].cover}")`;
+
+      card.appendChild(back);
+      card.appendChild(front);
+      grid.appendChild(card);
+    }
+
+    if (!silent) activeGame = "memory";
+  }
+
+  function memFlip(idx) {
+    if (!memState || memState.lock) return;
+    if (memState.matched.has(idx)) return;
+
+    const grid = document.getElementById("wmMemGrid");
+    const movesEl = document.getElementById("wmMemMoves");
+    if (!grid || !movesEl) return;
+
+    const cardEl = grid.querySelector(`[data-idx="${idx}"]`);
+    if (!cardEl) return;
+
+    if (cardEl.classList.contains("isFlipped")) return;
+
+    cardEl.classList.add("isFlipped");
+
+    if (memState.firstIdx < 0) {
+      memState.firstIdx = idx;
+      return;
+    }
+
+    memState.moves += 1;
+    movesEl.textContent = String(memState.moves);
+
+    const a = memState.deck[memState.firstIdx];
+    const b = memState.deck[idx];
+
+    if (a && b && a.key === b.key) {
+      memState.matched.add(memState.firstIdx);
+      memState.matched.add(idx);
+
+      const aEl = grid.querySelector(`[data-idx="${memState.firstIdx}"]`);
+      const bEl = grid.querySelector(`[data-idx="${idx}"]`);
+      if (aEl) aEl.classList.add("isMatched");
+      if (bEl) bEl.classList.add("isMatched");
+
+      memState.firstIdx = -1;
+      return;
+    }
+
+    memState.lock = true;
+    const first = memState.firstIdx;
+    memState.firstIdx = -1;
+
+    setTimeout(function () {
+      const aEl = grid.querySelector(`[data-idx="${first}"]`);
+      const bEl = grid.querySelector(`[data-idx="${idx}"]`);
+      if (aEl) aEl.classList.remove("isFlipped");
+      if (bEl) bEl.classList.remove("isFlipped");
+      memState.lock = false;
+    }, 520);
+  }
+
+  let reactState = null;
+
+  function initReaction(silent) {
+    const mount = document.getElementById("wmGameReaction");
+    if (!mount) return;
+
+    reactState = {
+      running: false,
+      score: 0,
+      hits: 0
+    };
+
+    mount.innerHTML = `
+      <div class="wmTiny" style="margin-bottom:10px;">
+        Score: <span id="wmReactScore">0</span>
+        <span style="margin-left:10px;">Hits: <span id="wmReactHits">0</span></span>
+      </div>
+      <div class="wmReactArena" id="wmReactArena"></div>
+    `;
+
+    if (!silent) activeGame = "reaction";
+  }
+
+  function spawnReactionTarget() {
+    const arena = document.getElementById("wmReactArena");
+    const scoreEl = document.getElementById("wmReactScore");
+    const hitsEl = document.getElementById("wmReactHits");
+    if (!arena || !scoreEl || !hitsEl) return;
+
+    arena.innerHTML = "";
+
+    const w = arena.clientWidth;
+    const h = arena.clientHeight;
+
+    const x = Math.floor(Math.random() * Math.max(1, w - 56));
+    const y = Math.floor(Math.random() * Math.max(1, h - 56));
+
+    const t = document.createElement("button");
+    t.type = "button";
+    t.className = "wmReactTarget";
+    t.style.left = `${x}px`;
+    t.style.top = `${y}px`;
+
+    const born = performance.now();
+
+    t.addEventListener("click", function (e) {
+      if (!reactState || !reactState.running) return;
+
+      const now = performance.now();
+      const dt = clamp(now - born, 40, 1800);
+      const pts = Math.floor(1200 / dt * 100);
+
+      reactState.score += pts;
+      reactState.hits += 1;
+
+      scoreEl.textContent = String(reactState.score);
+      hitsEl.textContent = String(reactState.hits);
+
+      spawnSparks(arena, x + 28, y + 28);
+      spawnReactionTarget();
+    });
+
+    arena.appendChild(t);
+  }
+
+  function spawnSparks(root, cx, cy) {
+    const count = 12;
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement("div");
+      s.className = "wmSpark";
+      s.style.left = `${cx}px`;
+      s.style.top = `${cy}px`;
+
+      const ang = Math.random() * Math.PI * 2;
+      const mag = 22 + Math.random() * 34;
+      const dx = Math.cos(ang) * mag;
+      const dy = Math.sin(ang) * mag;
+
+      s.style.setProperty("--dx", `${dx}px`);
+      s.style.setProperty("--dy", `${dy}px`);
+
+      root.appendChild(s);
+
+      setTimeout(function () {
+        if (s && s.parentNode) s.parentNode.removeChild(s);
+      }, 560);
+    }
+  }
+
+  function startReaction() {
+    if (!reactState) return;
+    reactState.running = true;
+    spawnReactionTarget();
+  }
+
+  let curveState = null;
+
+  function initCurve(silent) {
+    const mount = document.getElementById("wmGameCurve");
+    if (!mount) return;
+
+    mount.innerHTML = `
+      <div class="wmTiny" style="margin-bottom:10px;">
+        Move mouse or finger. Curve comes from paddle motion at impact
+      </div>
+      <div class="wmCanvasWrap">
+        <canvas id="wmCurveCanvas" width="720" height="360"></canvas>
+      </div>
+      <div class="wmGameRow" style="margin-top:10px;">
+        <button class="btn" type="button" id="wmCurveServe">Serve</button>
+      </div>
+    `;
+
+    const canvas = document.getElementById("wmCurveCanvas");
+    const serveBtn = document.getElementById("wmCurveServe");
+    if (!canvas || !serveBtn) return;
+
+    const ctx = canvas.getContext("2d");
+
+    curveState = {
+      canvas,
+      ctx,
+      running: false,
+      paddleX: 360,
+      paddleVX: 0,
+      lastPaddleX: 360,
+      ballX: 360,
+      ballY: 180,
+      ballVX: 3.2,
+      ballVY: 2.6,
+      radius: 10,
+      paddleW: 120,
+      paddleH: 14,
+      paddleY: 330,
+      score: 0,
+      lastT: 0
+    };
+
+    function setPaddleX(px) {
+      const nx = clamp(px, curveState.paddleW * 0.5, canvas.width - curveState.paddleW * 0.5);
+      curveState.paddleX = nx;
+    }
+
+    canvas.addEventListener("mousemove", function (e) {
+      const r = canvas.getBoundingClientRect();
+      const px = (e.clientX - r.left) * (canvas.width / r.width);
+      setPaddleX(px);
+    });
+
+    canvas.addEventListener("touchmove", function (e) {
+      if (!e.touches || !e.touches.length) return;
+      const r = canvas.getBoundingClientRect();
+      const px = (e.touches[0].clientX - r.left) * (canvas.width / r.width);
+      setPaddleX(px);
+      e.preventDefault();
+    }, { passive: false });
+
+    function draw() {
+      const s = curveState;
+      const g = s.ctx;
+
+      g.clearRect(0, 0, canvas.width, canvas.height);
+
+      g.fillStyle = "rgba(242,243,247,0.9)";
+      g.font = "12px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+      g.fillText(`Score: ${s.score}`, 12, 20);
+
+      g.fillStyle = "rgba(0,0,0,0.25)";
+      g.fillRect(0, 0, canvas.width, canvas.height);
+
+      g.fillStyle = "rgba(255,255,255,0.10)";
+      for (let i = 0; i < 24; i++) {
+        const x = (i * 31 + 17) % canvas.width;
+        const y = (i * 19 + 33) % canvas.height;
+        g.beginPath();
+        g.arc(x, y, 2.2, 0, Math.PI * 2);
+        g.fill();
+      }
+
+      g.fillStyle = "rgba(255,255,255,0.85)";
+      g.fillRect(s.paddleX - s.paddleW / 2, s.paddleY, s.paddleW, s.paddleH);
+
+      g.beginPath();
+      g.arc(s.ballX, s.ballY, s.radius, 0, Math.PI * 2);
+      g.fill();
+    }
+
+    function step(t) {
+      const s = curveState;
+      if (!s.running) return;
+
+      const dt = s.lastT ? clamp((t - s.lastT) / 16.666, 0.6, 1.6) : 1;
+      s.lastT = t;
+
+      const px = s.paddleX;
+      s.paddleVX = (px - s.lastPaddleX);
+      s.lastPaddleX = px;
+
+      s.ballX += s.ballVX * dt;
+      s.ballY += s.ballVY * dt;
+
+      if (s.ballX < s.radius) {
+        s.ballX = s.radius;
+        s.ballVX *= -1;
+      }
+      if (s.ballX > s.canvas.width - s.radius) {
+        s.ballX = s.canvas.width - s.radius;
+        s.ballVX *= -1;
+      }
+      if (s.ballY < s.radius) {
+        s.ballY = s.radius;
+        s.ballVY *= -1;
+      }
+
+      const paddleTop = s.paddleY;
+      const paddleLeft = s.paddleX - s.paddleW / 2;
+      const paddleRight = s.paddleX + s.paddleW / 2;
+
+      const hitY = s.ballY + s.radius >= paddleTop && s.ballY + s.radius <= paddleTop + s.paddleH;
+      const hitX = s.ballX >= paddleLeft && s.ballX <= paddleRight;
+
+      if (hitY && hitX && s.ballVY > 0) {
+        const rel = (s.ballX - s.paddleX) / (s.paddleW / 2);
+        s.ballVY = -Math.abs(s.ballVY) * 1.02;
+        s.ballVX += rel * 1.8;
+
+        const curve = clamp(s.paddleVX / 18, -1.2, 1.2);
+        s.ballVX += curve * 1.6;
+
+        s.score += 1;
+      }
+
+      if (s.ballY > s.canvas.height + 40) {
+        s.running = false;
+      }
+
+      draw();
+      requestAnimationFrame(step);
+    }
+
+    serveBtn.addEventListener("click", function () {
+      const s = curveState;
+      s.ballX = s.canvas.width / 2;
+      s.ballY = s.canvas.height / 2;
+      s.ballVX = 3.2 * (Math.random() < 0.5 ? -1 : 1);
+      s.ballVY = 2.6;
+      s.score = 0;
+      s.lastT = 0;
+      s.running = true;
+      requestAnimationFrame(step);
+    });
+
+    draw();
+
+    if (!silent) activeGame = "curve";
+  }
+
+  function wireGamesControls() {
+    document.addEventListener("click", function (e) {
+      const btn = e.target.closest("[data-game]");
+      if (!btn) return;
+
+      const key = btn.getAttribute("data-game");
+      if (!key) return;
+
+      if (key === "memory") {
+        initMemory(false);
+        return;
+      }
+      if (key === "memory-reset") {
+        initMemory(true);
+        return;
+      }
+
+      if (key === "reaction") {
+        initReaction(false);
+        startReaction();
+        return;
+      }
+      if (key === "reaction-reset") {
+        initReaction(true);
+        return;
+      }
+
+      if (key === "curve") {
+        initCurve(false);
+        return;
+      }
+      if (key === "curve-reset") {
+        initCurve(true);
+        return;
+      }
+    });
+
+    document.addEventListener("click", function (e) {
+      const card = e.target.closest(".wmMemCard");
+      if (!card) return;
+      const idxRaw = card.getAttribute("data-idx");
+      const idx = idxRaw ? parseInt(idxRaw, 10) : -1;
+      if (idx >= 0) memFlip(idx);
+    });
+  }
+
   function init() {
     createPlayerBar();
 
-    const audioEl = $("#wmAudio");
-    hardenAudioElement(audioEl);
+    wmAudio = $("#wmAudio");
+    hardenAudioElement(wmAudio);
 
     clearState();
 
-    wireAudioPersistence(audioEl);
-    restoreAudio(audioEl);
+    wireAudioPersistence(wmAudio);
+    wirePlayButtons(wmAudio);
+    wireNavigation();
+    wirePlayerControls();
+    wireGamesControls();
 
     renderFeaturedGrid();
     renderMusicList();
-    renderLinksAndPress();
+    renderLinks();
+    renderPress();
     renderGames();
-
-    wirePlayButtons(audioEl);
-    wireNavigation();
-    wireGames();
 
     window.addEventListener("hashchange", applyRoute);
     applyRoute();
 
-    if (!audioEl || !audioEl.getAttribute("data-track-id")) setNowPlayingUI(null);
+    setNowPlayingUI(null);
   }
 
   if (document.readyState === "loading") {
