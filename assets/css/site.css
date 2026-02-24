@@ -707,3 +707,8 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
     grid-column:auto;
   }
 }
+#gamesView,
+#wmGames{
+  grid-column:1 / -1;
+  justify-self:stretch;
+}
