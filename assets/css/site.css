@@ -654,8 +654,8 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   align-items:center;
   gap:10px;
 }
-
 .wmPulseDot{
+  display:inline-block;
   width:10px;
   height:10px;
   border-radius:999px;
@@ -673,14 +673,4 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   0%{ transform:scale(0.92); filter:brightness(0.95); }
   50%{ transform:scale(1.18); filter:brightness(1.25); }
   100%{ transform:scale(0.92); filter:brightness(0.95); }
-}
-.wmPulseDot{
-  display:inline-block;
-  width:10px;
-  height:10px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.35);
-  box-shadow:0 0 0 1px rgba(255,255,255,0.10), 0 0 12px rgba(255,255,255,0.10);
-  opacity:0.75;
-  transform:scale(0.98);
-}
+
