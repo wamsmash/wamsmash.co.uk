@@ -270,53 +270,51 @@
     if (v === "iridescent") return "🫧 IRIDESCENT";
     return (v ? v.toUpperCase() : "LANE");
   }
-function laneLabel(lane) {
-  ...
-}
 
-function laneDotColor(lane){
-  const v = String(lane || "").toLowerCase();
-  if (v === "red") return "rgba(255, 60, 90, 0.95)";
-  if (v === "blue") return "rgba(60, 180, 255, 0.95)";
-  if (v === "green") return "rgba(60, 255, 170, 0.95)";
-  if (v === "yellow") return "rgba(255, 210, 60, 0.95)";
-  if (v === "pink") return "rgba(255, 80, 210, 0.95)";
-  if (v === "orange") return "rgba(255, 140, 60, 0.95)";
-  if (v === "iridescent") return "rgba(170, 210, 255, 0.95)";
-  return "rgba(255,255,255,0.35)";
-}
-
-function ensureBrandPulseDot(){
-  const header = document.querySelector("header");
-  if (!header) return null;
-
-  const brand = header.querySelector("h1, .brand, .logo, a");
-  if (!brand) return null;
-
-  if (header.querySelector("#wmPulseDot")) {
-    return header.querySelector("#wmPulseDot");
+  function laneDotColor(lane) {
+    const v = String(lane || "").toLowerCase();
+    if (v === "red") return "rgba(255, 60, 90, 0.95)";
+    if (v === "blue") return "rgba(60, 180, 255, 0.95)";
+    if (v === "green") return "rgba(60, 255, 170, 0.95)";
+    if (v === "yellow") return "rgba(255, 210, 60, 0.95)";
+    if (v === "pink") return "rgba(255, 80, 210, 0.95)";
+    if (v === "orange") return "rgba(255, 140, 60, 0.95)";
+    if (v === "iridescent") return "rgba(170, 210, 255, 0.95)";
+    return "rgba(255,255,255,0.35)";
   }
 
-  const dot = document.createElement("span");
-  dot.id = "wmPulseDot";
-  dot.className = "wmPulseDot";
-  dot.setAttribute("aria-hidden", "true");
+  function ensureBrandPulseDot() {
+    const header = document.querySelector("header");
+    if (!header) return null;
 
-  brand.insertAdjacentElement("afterend", dot);
+    const brand = header.querySelector("h1, .brand, .logo, a");
+    if (!brand) return null;
 
-  return dot;
-}
+    if (header.querySelector("#wmPulseDot")) {
+      return header.querySelector("#wmPulseDot");
+    }
 
-function updateBrandPulseDot(track){
-  const dot = ensureBrandPulseDot();
-  if (!dot) return;
+    const dot = document.createElement("span");
+    dot.id = "wmPulseDot";
+    dot.className = "wmPulseDot";
+    dot.setAttribute("aria-hidden", "true");
 
-  const lane = track && track.lane ? track.lane : "";
-  dot.style.background = laneDotColor(lane);
+    brand.insertAdjacentElement("afterend", dot);
 
-  const playing = wmAudio && !wmAudio.paused && !wmAudio.ended;
-  dot.classList.toggle("isPlaying", !!playing);
-}
+    return dot;
+  }
+
+  function updateBrandPulseDot(track) {
+    const dot = ensureBrandPulseDot();
+    if (!dot) return;
+
+    const lane = track && track.lane ? track.lane : "";
+    dot.style.background = laneDotColor(lane);
+
+    const playing = wmAudio && !wmAudio.paused && !wmAudio.ended;
+    dot.classList.toggle("isPlaying", !!playing);
+  }
+
   function $(sel, root = document) {
     return root.querySelector(sel);
   }
@@ -460,11 +458,13 @@ function updateBrandPulseDot(track){
     if (!track) {
       title.textContent = "WAMSMASH";
       sub.textContent = "Select a track";
+      updateBrandPulseDot(null);
       return;
     }
 
     title.textContent = track.title;
     sub.textContent = `${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}`;
+    updateBrandPulseDot(track);
   }
 
   function setAudioSource(audioEl, track) {
@@ -549,6 +549,14 @@ function updateBrandPulseDot(track){
     if (wmAudio) {
       wmAudio.addEventListener("ended", function () {
         playNext();
+      });
+
+      wmAudio.addEventListener("play", function () {
+        updateBrandPulseDot(findTrackById(wmAudio.getAttribute("data-track-id")));
+      });
+
+      wmAudio.addEventListener("pause", function () {
+        updateBrandPulseDot(findTrackById(wmAudio.getAttribute("data-track-id")));
       });
     }
 
@@ -1040,16 +1048,6 @@ function updateBrandPulseDot(track){
         backdrop-filter:blur(2px);
         pointer-events:none;
       }
-
-      .wmInlineSelect{
-        border:1px solid rgba(255,255,255,0.14);
-        background:rgba(0,0,0,0.20);
-        color:rgba(242,243,247,0.92);
-        border-radius:12px;
-        padding:8px 10px;
-        font-size:12px;
-        outline:none;
-      }
     `;
     document.head.appendChild(style);
   }
@@ -1153,29 +1151,6 @@ function updateBrandPulseDot(track){
         <div class="wmGameWrap isFull">
           <div class="wmGameHead">
             <div>
-              <h3 class="wmGameTitle">Dive Kick</h3>
-              <div class="wmGameSub">Arrow keys move. D dives. Space kicks</div>
-              <div class="wmGameRow" style="margin-top:10px;">
-                <select class="wmInlineSelect" id="wmLanezPick" aria-label="Lanez">
-                  <option value="red">🔴 Lanez</option>
-                  <option value="blue">🔵 Lanez</option>
-                  <option value="green">🟢 Lanez</option>
-                  <option value="yellow">🟡 Lanez</option>
-                  <option value="pink">🩷 Lanez</option>
-                </select>
-              </div>
-            </div>
-            <div class="wmGameRow">
-              <button class="btn btnPrimary" type="button" data-game="divekick">Play</button>
-              <button class="btn" type="button" data-game="divekick-reset">Reset</button>
-            </div>
-          </div>
-          <div id="wmGameDiveKick"></div>
-        </div>
-
-        <div class="wmGameWrap isFull">
-          <div class="wmGameHead">
-            <div>
               <h3 class="wmGameTitle">Lane Dodge</h3>
             </div>
             <div class="wmGameRow">
@@ -1219,7 +1194,6 @@ function updateBrandPulseDot(track){
     initMemory(true);
     initReaction(true);
     initBreaker(true);
-    initDiveKick(true);
     initDodge(true);
     initCannon(true);
     initGolf(true);
@@ -2053,325 +2027,6 @@ function updateBrandPulseDot(track){
     if (lbEl) lbEl.innerHTML = renderLeaderboard(top5);
   }
 
-  let dkState = null;
-  let dkLane = "red";
-
-  function laneColor(lane) {
-    const v = String(lane || "").toLowerCase();
-    if (v === "red") return "rgba(255,60,60,0.90)";
-    if (v === "blue") return "rgba(0,229,255,0.90)";
-    if (v === "green") return "rgba(0,255,160,0.90)";
-    if (v === "yellow") return "rgba(255,190,0,0.90)";
-    if (v === "pink") return "rgba(255,43,214,0.90)";
-    return "rgba(255,255,255,0.90)";
-  }
-
-  function initDiveKick(silent) {
-    const mount = document.getElementById("wmGameDiveKick");
-    if (!mount) return;
-
-    mount.innerHTML = `
-      <div class="wmTiny" style="margin-bottom:10px;">
-        Score: <span id="wmDkScore">0</span>
-        <span style="margin-left:10px;">Hits: <span id="wmDkHits">0</span></span>
-        <span style="margin-left:10px;" class="wmCountdown">Time: <span id="wmDkTime">15.0</span></span>
-      </div>
-      <div class="wmCanvasWrap" style="position:relative;">
-        <canvas id="wmDkCanvas" width="960" height="440"></canvas>
-      </div>
-      <div class="wmLbBox">
-        <div class="wmTiny" style="margin-bottom:6px;">Top 5</div>
-        <div id="wmDkLb"></div>
-      </div>
-    `;
-
-    const lbEl = document.getElementById("wmDkLb");
-    if (lbEl) lbEl.innerHTML = renderLeaderboard(readJson("wamsmash_lb_divekick", []).slice(0, 5));
-
-    const canvas = document.getElementById("wmDkCanvas");
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    const bgUrl = pickRandomCoverUrl();
-    const bg = new Image();
-    if (bgUrl) bg.src = bgUrl;
-
-    dkState = {
-      canvas,
-      ctx,
-      bg,
-      bgReady: false,
-      running: false,
-      endAt: 0,
-      lastT: 0,
-      score: 0,
-      hits: 0,
-      keys: {},
-      player: { x: 240, y: 320, vx: 0, vy: 0, r: 16, grounded: true, diving: false },
-      bot: { x: 720, y: 320, vx: 0, vy: 0, r: 16, grounded: true, diving: false, dir: -1, t: 0 }
-    };
-
-    bg.onload = function () { dkState.bgReady = true; };
-
-    const pick = document.getElementById("wmLanezPick");
-    if (pick) {
-      dkLane = pick.value || dkLane;
-      pick.onchange = function () {
-        dkLane = pick.value || dkLane;
-      };
-    }
-
-    if (!silent) {}
-  }
-
-  function startDiveKick() {
-    if (!dkState) return;
-
-    dkState.running = false;
-    dkState.lastT = 0;
-    dkState.score = 0;
-    dkState.hits = 0;
-    dkState.keys = {};
-    dkState.player.x = 240;
-    dkState.player.y = 320;
-    dkState.player.vx = 0;
-    dkState.player.vy = 0;
-    dkState.player.grounded = true;
-    dkState.player.diving = false;
-    dkState.bot.x = 720;
-    dkState.bot.y = 320;
-    dkState.bot.vx = 0;
-    dkState.bot.vy = 0;
-    dkState.bot.grounded = true;
-    dkState.bot.diving = false;
-    dkState.bot.t = 0;
-
-    const scoreEl = document.getElementById("wmDkScore");
-    const hitsEl = document.getElementById("wmDkHits");
-    const timeEl = document.getElementById("wmDkTime");
-    if (scoreEl) scoreEl.textContent = "0";
-    if (hitsEl) hitsEl.textContent = "0";
-    if (timeEl) timeEl.textContent = "15.0";
-
-    drawDiveKick();
-
-    const wrap = dkState.canvas.parentElement;
-    if (!wrap) return;
-
-    const overlay = showOverlay(wrap, "READY");
-    setTimeout(function () {
-      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      const set = showOverlay(wrap, "SET");
-      setTimeout(function () {
-        if (set && set.parentNode) set.parentNode.removeChild(set);
-        const go = showOverlay(wrap, "GO");
-        setTimeout(function () {
-          if (go && go.parentNode) go.parentNode.removeChild(go);
-          dkState.running = true;
-          dkState.endAt = performance.now() + 15000;
-          requestAnimationFrame(tickDiveKick);
-        }, 260);
-      }, 420);
-    }, 520);
-  }
-
-  function tickDiveKick(t) {
-    if (!dkState || !dkState.running) return;
-
-    const s = dkState;
-    const dt = s.lastT ? clamp((t - s.lastT) / 16.666, 0.7, 1.6) : 1;
-    s.lastT = t;
-
-    const floorY = 340;
-    const grav = 0.55;
-
-    const p = s.player;
-
-    const moveLeft = !!(s.keys["ArrowLeft"] || s.keys["KeyA"]);
-    const moveRight = !!(s.keys["ArrowRight"] || s.keys["KeyD"]);
-    const diveBtn = !!(s.keys["KeyD"]);
-    const kickBtn = !!(s.keys["Space"]);
-
-    p.vx = 0;
-    if (moveLeft) p.vx = -5.0;
-    if (moveRight) p.vx = 5.0;
-
-    if (diveBtn && p.grounded) {
-      p.grounded = false;
-      p.diving = true;
-      p.vy = -9.5;
-    }
-
-    if (!p.grounded) {
-      if (p.diving && kickBtn) {
-        p.vy += 1.05;
-      } else {
-        p.vy += grav;
-      }
-      p.y += p.vy * dt;
-    }
-
-    p.x = clamp(p.x + p.vx * dt, 40, s.canvas.width - 40);
-
-    if (p.y >= floorY) {
-      p.y = floorY;
-      p.vy = 0;
-      p.grounded = true;
-      p.diving = false;
-    }
-
-    const b = s.bot;
-    b.t += dt;
-
-    if (b.grounded && b.t > 22) {
-      b.t = 0;
-      b.dir = (p.x < b.x) ? -1 : 1;
-
-      if (Math.random() < 0.75) {
-        b.grounded = false;
-        b.diving = true;
-        b.vy = -9.0;
-      }
-    }
-
-    b.vx = b.dir * 3.0;
-    b.x = clamp(b.x + b.vx * dt, 40, s.canvas.width - 40);
-
-    if (!b.grounded) {
-      b.vy += grav;
-      if (b.diving) b.vy += 0.55;
-      b.y += b.vy * dt;
-
-      if (b.y >= floorY) {
-        b.y = floorY;
-        b.vy = 0;
-        b.grounded = true;
-        b.diving = false;
-      }
-    }
-
-    const dx = p.x - b.x;
-    const dy = p.y - b.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-
-    if (dist < p.r + b.r) {
-      const playerAttack = p.diving && !p.grounded && kickBtn;
-      const botAttack = b.diving && !b.grounded;
-
-      if (playerAttack && !botAttack) {
-        s.hits += 1;
-        s.score += 120;
-        b.x = 720;
-        b.y = floorY;
-        b.grounded = true;
-        b.diving = false;
-        b.vy = 0;
-      } else if (botAttack && !playerAttack) {
-        s.score = Math.max(0, s.score - 80);
-        p.x = 240;
-        p.y = floorY;
-        p.grounded = true;
-        p.diving = false;
-        p.vy = 0;
-      } else {
-        s.score = Math.max(0, s.score - 30);
-      }
-    }
-
-    const leftMs = s.endAt - t;
-    const secsLeft = Math.max(0, leftMs / 1000);
-
-    const scoreEl = document.getElementById("wmDkScore");
-    const hitsEl = document.getElementById("wmDkHits");
-    const timeEl = document.getElementById("wmDkTime");
-    if (scoreEl) scoreEl.textContent = String(s.score);
-    if (hitsEl) hitsEl.textContent = String(s.hits);
-    if (timeEl) timeEl.textContent = secsLeft.toFixed(1);
-
-    drawDiveKick();
-
-    if (leftMs <= 0) {
-      endDiveKick();
-      return;
-    }
-
-    requestAnimationFrame(tickDiveKick);
-  }
-
-  function drawDiveKick() {
-    const s = dkState;
-    if (!s) return;
-
-    const g = s.ctx;
-    const w = s.canvas.width;
-    const h = s.canvas.height;
-
-    g.clearRect(0, 0, w, h);
-
-    if (s.bgReady) {
-      g.globalAlpha = 0.16;
-      g.drawImage(s.bg, 0, 0, w, h);
-      g.globalAlpha = 1;
-    }
-
-    g.fillStyle = "rgba(0,0,0,0.24)";
-    g.fillRect(0, 0, w, h);
-
-    g.fillStyle = "rgba(255,255,255,0.06)";
-    g.fillRect(0, 360, w, 2);
-
-    const playerCol = laneColor(dkLane);
-    const botCol = "rgba(255,255,255,0.78)";
-
-    g.fillStyle = playerCol;
-    g.beginPath();
-    g.arc(s.player.x, s.player.y, s.player.r, 0, Math.PI * 2);
-    g.fill();
-
-    if (s.player.diving && !s.player.grounded) {
-      g.fillStyle = playerCol.replace("0.90", "0.20");
-      g.beginPath();
-      g.arc(s.player.x, s.player.y, 34, 0, Math.PI * 2);
-      g.fill();
-    }
-
-    g.fillStyle = botCol;
-    g.beginPath();
-    g.arc(s.bot.x, s.bot.y, s.bot.r, 0, Math.PI * 2);
-    g.fill();
-
-    if (s.bot.diving && !s.bot.grounded) {
-      g.fillStyle = "rgba(255,255,255,0.12)";
-      g.beginPath();
-      g.arc(s.bot.x, s.bot.y, 34, 0, Math.PI * 2);
-      g.fill();
-    }
-
-    g.strokeStyle = "rgba(0,229,255,0.18)";
-    g.strokeRect(1, 1, w - 2, h - 2);
-  }
-
-  function endDiveKick() {
-    if (!dkState) return;
-    dkState.running = false;
-
-    const lbEl = document.getElementById("wmDkLb");
-    const top5 = updateLeaderboard("divekick", dkState.score);
-    if (lbEl) lbEl.innerHTML = renderLeaderboard(top5);
-  }
-
-  function wireDiveKickKeys() {
-    document.addEventListener("keydown", function (e) {
-      if (!dkState) return;
-      dkState.keys[e.code] = true;
-    });
-
-    document.addEventListener("keyup", function (e) {
-      if (!dkState) return;
-      dkState.keys[e.code] = false;
-    });
-  }
-
   let cannonState = null;
 
   function initCannon(silent) {
@@ -2890,9 +2545,6 @@ function updateBrandPulseDot(track){
       if (key === "breaker") { initBreaker(false); startBreaker(); return; }
       if (key === "breaker-reset") { initBreaker(true); return; }
 
-      if (key === "divekick") { initDiveKick(false); startDiveKick(); return; }
-      if (key === "divekick-reset") { initDiveKick(true); return; }
-
       if (key === "dodge") { initDodge(false); startDodge(); return; }
       if (key === "dodge-reset") { initDodge(true); return; }
 
@@ -2925,7 +2577,6 @@ function updateBrandPulseDot(track){
     wireNavigation();
     wirePlayerControls();
     wireGamesControls();
-    wireDiveKickKeys();
 
     renderFeaturedGrid();
     renderMusicList();
