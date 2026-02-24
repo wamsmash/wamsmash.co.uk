@@ -892,8 +892,16 @@
   const style = document.createElement("style");
   style.id = "wmGameStyles";
   style.textContent = `
-    #wmGames{ width:100%; }
-    #gamesView{ width:100%; }
+  #wmGames{
+  width:100%;
+  grid-column:1 / -1;
+  justify-self:stretch;
+}
+   #gamesView{
+  width:100%;
+  grid-column:1 / -1;
+  justify-self:stretch;
+}
 
     .wmGamesGrid{
       width:100%;
