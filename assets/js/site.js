@@ -894,16 +894,23 @@
   style.textContent = `
     #wmGames{ width:100%; }
     #gamesView{ width:100%; }
+
     .wmGamesGrid{
       width:100%;
       display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(360px, 1fr));
       gap:18px;
       align-items:stretch;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
     }
+
     .wmGamesGrid .wmGameWrap.isFull{
       grid-column:1 / -1;
     }
+
+    @media (max-width: 1200px){
+      .wmGamesGrid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+    }
+
     @media (max-width: 900px){
       .wmGamesGrid{ grid-template-columns:1fr; }
       .wmGamesGrid .wmGameWrap.isFull{ grid-column:auto; }
