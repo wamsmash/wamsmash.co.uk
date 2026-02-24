@@ -1,3 +1,4 @@
+```js
 (function () {
   const STORAGE_KEY = "wamsmash_player_state_v1";
   const FEATURED_COUNT = 6;
@@ -290,9 +291,8 @@
     const brand = header.querySelector("h1, .brand, .logo, a");
     if (!brand) return null;
 
-    if (header.querySelector("#wmPulseDot")) {
-      return header.querySelector("#wmPulseDot");
-    }
+    const existing = header.querySelector("#wmPulseDot");
+    if (existing) return existing;
 
     const dot = document.createElement("span");
     dot.id = "wmPulseDot";
@@ -385,12 +385,6 @@
     } catch (e) {}
   }
 
-  function clearState() {
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch (e) {}
-  }
-
   function findTrackById(id) {
     return TRACKS.find(t => t.id === id) || null;
   }
@@ -407,6 +401,63 @@
   let currentTrackId = "";
   let shuffleOn = true;
   let recentQueue = [];
+
+  function persistPlayerState(opts) {
+    if (!wmAudio) return;
+    const trackId = wmAudio.getAttribute("data-track-id") || currentTrackId || "";
+    const t = (typeof wmAudio.currentTime === "number" && isFinite(wmAudio.currentTime)) ? wmAudio.currentTime : 0;
+    const paused = !!wmAudio.paused;
+
+    saveState({
+      trackId,
+      time: Math.max(0, t),
+      paused,
+      shuffleOn,
+      recentQueue: recentQueue.slice(-20),
+      currentTrackId: currentTrackId || trackId || "",
+      ts: Date.now(),
+      reason: (opts && opts.reason) ? String(opts.reason) : ""
+    });
+  }
+
+  function restorePlayerState() {
+    if (!wmAudio) return;
+
+    const st = readJson(STORAGE_KEY, null);
+    if (!st || !st.trackId) return;
+
+    const track = findTrackById(st.trackId);
+    if (!track) return;
+
+    if (typeof st.shuffleOn === "boolean") shuffleOn = st.shuffleOn;
+    if (Array.isArray(st.recentQueue)) recentQueue = st.recentQueue.slice(-20);
+    currentTrackId = track.id;
+
+    setNowPlayingUI(track);
+    setAudioSource(wmAudio, track);
+
+    const wantTime = (typeof st.time === "number" && isFinite(st.time)) ? st.time : 0;
+    const wantPaused = (typeof st.paused === "boolean") ? st.paused : true;
+
+    const applyTimeAndMaybePlay = function () {
+      try {
+        wmAudio.currentTime = Math.max(0, wantTime);
+      } catch (e) {}
+
+      if (!wantPaused) {
+        wmAudio.play().catch(() => {});
+      } else {
+        wmAudio.pause();
+      }
+      updateBrandPulseDot(track);
+    };
+
+    if (wmAudio.readyState >= 1) {
+      applyTimeAndMaybePlay();
+    } else {
+      wmAudio.addEventListener("loadedmetadata", applyTimeAndMaybePlay, { once: true });
+    }
+  }
 
   function pickNextTrackId() {
     const ids = TRACKS.map(t => t.id);
@@ -483,10 +534,6 @@
       audioEl.setAttribute("data-track-id", track.id);
       audioEl.load();
     }
-
-    try {
-      audioEl.currentTime = 0;
-    } catch (e) {}
   }
 
   function playTrackById(trackId) {
@@ -500,7 +547,10 @@
     setNowPlayingUI(track);
     setAudioSource(wmAudio, track);
 
+    try { wmAudio.currentTime = 0; } catch (e) {}
+
     wmAudio.play().catch(() => {});
+    persistPlayerState({ reason: "playTrackById" });
   }
 
   function playNext() {
@@ -543,22 +593,41 @@
       shuffleBtn.addEventListener("click", function () {
         shuffleOn = !shuffleOn;
         shuffleBtn.textContent = `Shuffle: ${shuffleOn ? "On" : "Off"}`;
+        persistPlayerState({ reason: "shuffleToggle" });
       });
     }
 
     if (wmAudio) {
       wmAudio.addEventListener("ended", function () {
+        persistPlayerState({ reason: "ended" });
         playNext();
       });
-
       wmAudio.addEventListener("play", function () {
-        updateBrandPulseDot(findTrackById(wmAudio.getAttribute("data-track-id")));
+        const id = wmAudio.getAttribute("data-track-id");
+        if (id) currentTrackId = id;
+        persistPlayerState({ reason: "play" });
+        const track = findTrackById(id);
+        if (track) updateBrandPulseDot(track);
+      });
+      wmAudio.addEventListener("pause", function () {
+        persistPlayerState({ reason: "pause" });
+        const id = wmAudio.getAttribute("data-track-id");
+        const track = findTrackById(id);
+        if (track) updateBrandPulseDot(track);
       });
 
-      wmAudio.addEventListener("pause", function () {
-        updateBrandPulseDot(findTrackById(wmAudio.getAttribute("data-track-id")));
+      let lastSave = 0;
+      wmAudio.addEventListener("timeupdate", function () {
+        const now = Date.now();
+        if (now - lastSave < 800) return;
+        lastSave = now;
+        persistPlayerState({ reason: "timeupdate" });
       });
     }
+
+    window.addEventListener("beforeunload", function () {
+      persistPlayerState({ reason: "beforeunload" });
+    });
 
     document.addEventListener("keydown", function (e) {
       const tag = (e.target && e.target.tagName) ? String(e.target.tagName).toLowerCase() : "";
@@ -574,22 +643,6 @@
 
       if (e.code === "ArrowRight") playNext();
       if (e.code === "ArrowLeft") playPrev();
-    });
-  }
-
-  function wireAudioPersistence(audioEl) {
-    if (!audioEl) return;
-
-    audioEl.addEventListener("pause", function () {
-      const id = audioEl.getAttribute("data-track-id");
-      if (!id) return;
-      saveState({ trackId: id, time: 0, paused: true });
-    });
-
-    audioEl.addEventListener("play", function () {
-      const id = audioEl.getAttribute("data-track-id");
-      if (!id) return;
-      saveState({ trackId: id, time: 0, paused: false });
     });
   }
 
@@ -708,7 +761,10 @@
     setNowPlayingUI(track);
     setAudioSource(audioEl, track);
 
+    try { audioEl.currentTime = 0; } catch (e) {}
+
     audioEl.play().catch(() => {});
+    persistPlayerState({ reason: "playButton" });
   }
 
   function wirePlayButtons(audioEl) {
@@ -1288,6 +1344,8 @@
       return;
     }
 
+    if (memState.firstIdx === idx) return;
+
     memState.moves += 1;
     movesEl.textContent = String(memState.moves);
 
@@ -1605,12 +1663,11 @@
       r: 10,
       bricks: [],
       bricksLeft: 0,
-      score: 0
+      score: 0,
+      wired: false
     };
 
-    bgImg.onload = function () {
-      breakerState.bgReady = true;
-    };
+    bgImg.onload = function () { breakerState.bgReady = true; };
 
     const cols = 10;
     const rows = 4;
@@ -1651,15 +1708,21 @@
       breakerState.paddleX = clamp(px, breakerState.paddleW / 2, canvas.width - breakerState.paddleW / 2);
     }
 
-    canvas.addEventListener("mousemove", function (e) {
-      setPaddleFromClientX(e.clientX);
-    });
+    if (!breakerState.wired) {
+      breakerState.wired = true;
 
-    canvas.addEventListener("touchmove", function (e) {
-      if (!e.touches || !e.touches.length) return;
-      setPaddleFromClientX(e.touches[0].clientX);
-      e.preventDefault();
-    }, { passive: false });
+      canvas.addEventListener("mousemove", function (e) {
+        if (!breakerState) return;
+        setPaddleFromClientX(e.clientX);
+      });
+
+      canvas.addEventListener("touchmove", function (e) {
+        if (!breakerState) return;
+        if (!e.touches || !e.touches.length) return;
+        setPaddleFromClientX(e.touches[0].clientX);
+        e.preventDefault();
+      }, { passive: false });
+    }
 
     if (!silent) {}
   }
@@ -1876,7 +1939,8 @@
       x: canvas.width / 2,
       y: canvas.height - 64,
       score: 0,
-      hazards: []
+      hazards: [],
+      wired: false
     };
 
     bg.onload = function () { dodgeState.bgReady = true; };
@@ -1887,12 +1951,21 @@
       dodgeState.x = clamp(px, 18, canvas.width - 18);
     }
 
-    canvas.addEventListener("mousemove", e => setX(e.clientX));
-    canvas.addEventListener("touchmove", function (e) {
-      if (!e.touches || !e.touches.length) return;
-      setX(e.touches[0].clientX);
-      e.preventDefault();
-    }, { passive: false });
+    if (!dodgeState.wired) {
+      dodgeState.wired = true;
+
+      canvas.addEventListener("mousemove", function (e) {
+        if (!dodgeState) return;
+        setX(e.clientX);
+      });
+
+      canvas.addEventListener("touchmove", function (e) {
+        if (!dodgeState) return;
+        if (!e.touches || !e.touches.length) return;
+        setX(e.touches[0].clientX);
+        e.preventDefault();
+      }, { passive: false });
+    }
 
     if (!silent) {}
   }
@@ -2028,6 +2101,7 @@
   }
 
   let cannonState = null;
+  let cannonListenersAdded = false;
 
   function initCannon(silent) {
     const mount = document.getElementById("wmGameCannon");
@@ -2068,8 +2142,11 @@
       wind: (Math.random() * 0.6 - 0.3)
     };
 
-    document.addEventListener("keydown", cannonKeyDown);
-    document.addEventListener("keyup", cannonKeyUp);
+    if (!cannonListenersAdded) {
+      cannonListenersAdded = true;
+      document.addEventListener("keydown", cannonKeyDown);
+      document.addEventListener("keyup", cannonKeyUp);
+    }
 
     if (!silent) {}
   }
@@ -2149,7 +2226,7 @@
     cannonState.fired = true;
   }
 
-  function tickCannon(t) {
+  function tickCannon() {
     if (!cannonState || !cannonState.running) return;
 
     const s = cannonState;
@@ -2247,6 +2324,7 @@
   }
 
   let golfState = null;
+  let golfListenersAdded = false;
 
   function initGolf(silent) {
     const mount = document.getElementById("wmGameGolf");
@@ -2293,11 +2371,15 @@
 
     canvas.addEventListener("mousedown", golfDown);
     canvas.addEventListener("mousemove", golfMove);
-    window.addEventListener("mouseup", golfUp);
 
     canvas.addEventListener("touchstart", golfTouchDown, { passive: false });
     canvas.addEventListener("touchmove", golfTouchMove, { passive: false });
-    window.addEventListener("touchend", golfTouchUp, { passive: false });
+
+    if (!golfListenersAdded) {
+      golfListenersAdded = true;
+      window.addEventListener("mouseup", golfUp);
+      window.addEventListener("touchend", golfTouchUp, { passive: false });
+    }
 
     if (!silent) {}
   }
@@ -2570,9 +2652,6 @@
     wmAudio = $("#wmAudio");
     hardenAudioElement(wmAudio);
 
-    clearState();
-
-    wireAudioPersistence(wmAudio);
     wirePlayButtons(wmAudio);
     wireNavigation();
     wirePlayerControls();
@@ -2587,7 +2666,11 @@
     window.addEventListener("hashchange", applyRoute);
     applyRoute();
 
+    const shuffleBtn = $("#wmShuffleBtn");
+    if (shuffleBtn) shuffleBtn.textContent = `Shuffle: ${shuffleOn ? "On" : "Off"}`;
+
     setNowPlayingUI(null);
+    restorePlayerState();
   }
 
   if (document.readyState === "loading") {
@@ -2596,3 +2679,4 @@
     init();
   }
 })();
+```
