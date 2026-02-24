@@ -42,7 +42,7 @@
       lane: "iridescent",
       year: "2026",
       audio: "/assets/audio/equinox.mp3",
-      cover: "/assets/img/covers/equinox.mp3",
+      cover: "/assets/img/covers/equinox.jpg",
       note: "",
       blurb: "Cold divides. Warm replies\nTempo shifts. Keys turn\nThe line holds",
       tags: "season cycle form\ntempo and key modulation\npiano sax call response\nanalogue meets aggressive",
@@ -2150,14 +2150,14 @@
 
     const p = s.player;
 
-    const left = !!(s.keys["ArrowLeft"] || s.keys["KeyA"]);
-    const right = !!(s.keys["ArrowRight"] || s.keys["KeyD"]);
+const moveLeft = !!(s.keys["ArrowLeft"] || s.keys["KeyA"]);
+const moveRight = !!(s.keys["ArrowRight"] || s.keys["KeyD"]);
     const dive = !!(s.keys["Space"]);
     const diveKey = !!(s.keys["KeyF"]);
 
-    p.vx = 0;
-    if (left) p.vx = -5.0;
-    if (right) p.vx = 5.0;
+p.vx = 0;
+if (moveLeft) p.vx = -5.0;
+if (moveRight) p.vx = 5.0;
 
     if ((dive || diveKey) && p.grounded) {
       p.grounded = false;
