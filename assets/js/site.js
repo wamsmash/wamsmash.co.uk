@@ -1980,8 +1980,9 @@
     const sinceStart = t - dodgeState.startAt;
 
     const graceMs = 1100;
-    const spawnChance = sinceStart < graceMs ? 0 : 0.045;
-if (Math.random() < 0.05) {
+const spawnChance = sinceStart < graceMs ? 0 : 0.05;
+
+if (Math.random() < spawnChance) {
   dodgeState.hazards.push({
     x: Math.random() * dodgeState.canvas.width,
     y: -24,
