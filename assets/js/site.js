@@ -971,7 +971,7 @@
             <div class="wmGameWrap wmGameFull">
         <div class="wmGameHead">
           <div>
-            <h3 class="wmGameTitle">Runner</h3>
+            <h3 class="wmGameTitle">WAMSMASH</h3>
             <div class="wmGameSub">Dodge the energy. Top 10 leaderboard</div>
           </div>
           <div class="wmGameRow">
