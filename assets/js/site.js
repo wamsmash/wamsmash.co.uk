@@ -910,7 +910,7 @@
 
 .wmEmbedFrame iframe{
   width:100%;
-  height:520px;
+  height:620px;
   display:block;
   border:0;
 }
@@ -926,69 +926,66 @@
 
     ensureGameStyles();
 
-    mount.innerHTML = `
-      <div class="wmGameWrap">
-        <div class="wmGameHead">
-          <div>
-            <h3 class="wmGameTitle">Memory</h3>
-            <div class="wmGameSub">Match cover pairs. Clean loop. No filler</div>
-          </div>
-          <div class="wmGameRow">
-            <button class="btn btnPrimary" type="button" data-game="memory">Play</button>
-            <button class="btn" type="button" data-game="memory-reset">Reset</button>
-          </div>
-        </div>
-        <div id="wmGameMemory"></div>
+mount.innerHTML = `
+  <div class="wmGameWrap wmGameFull">
+    <div class="wmGameHead">
+      <div>
+        <h3 class="wmGameTitle">Runner</h3>
       </div>
+      <div class="wmGameRow">
+        <a class="btn btnPrimary" href="/game/" target="_blank" rel="noopener">Open</a>
+      </div>
+    </div>
 
-      <div class="wmGameWrap">
-        <div class="wmGameHead">
-          <div>
-            <h3 class="wmGameTitle">Neon Reaction</h3>
-            <div class="wmGameSub">Hit the target. Spark on contact. No waiting</div>
-          </div>
-          <div class="wmGameRow">
-            <button class="btn btnPrimary" type="button" data-game="reaction">Play</button>
-            <button class="btn" type="button" data-game="reaction-reset">Reset</button>
-          </div>
-        </div>
-        <div id="wmGameReaction"></div>
-      </div>
+    <div class="wmEmbedFrame">
+      <iframe
+        src="/game/"
+        title="WAMSMASH Runner"
+        loading="lazy"
+        scrolling="no"
+      ></iframe>
+    </div>
+  </div>
 
-      <div class="wmGameWrap">
-        <div class="wmGameHead">
-          <div>
-            <h3 class="wmGameTitle">Curve Ball</h3>
-            <div class="wmGameSub">Paddle control. Add curve by moving as you hit</div>
-          </div>
-          <div class="wmGameRow">
-            <button class="btn btnPrimary" type="button" data-game="curve">Play</button>
-            <button class="btn" type="button" data-game="curve-reset">Reset</button>
-          </div>
-        </div>
-        <div id="wmGameCurve"></div>
+  <div class="wmGameWrap">
+    <div class="wmGameHead">
+      <div>
+        <h3 class="wmGameTitle">Covers</h3>
       </div>
-            <div class="wmGameWrap wmGameFull">
-        <div class="wmGameHead">
-          <div>
-            <h3 class="wmGameTitle">WAMSMASH</h3>
-            <div class="wmGameSub">Dodge the energy. Top 10 leaderboard</div>
-          </div>
-          <div class="wmGameRow">
-            <a class="btn btnPrimary" href="/game/" target="_blank" rel="noopener">Open</a>
-          </div>
-        </div>
+      <div class="wmGameRow">
+        <button class="btn btnPrimary" type="button" data-game="memory">Play</button>
+        <button class="btn" type="button" data-game="memory-reset">Reset</button>
+      </div>
+    </div>
+    <div id="wmGameMemory"></div>
+  </div>
 
-        <div class="wmEmbedFrame">
-          <iframe
-            src="/game/"
-            title="WAMSMASH Runner"
-            loading="lazy"
-            scrolling="no"
-          ></iframe>
-        </div>
+  <div class="wmGameWrap">
+    <div class="wmGameHead">
+      <div>
+        <h3 class="wmGameTitle">Neon Reaction</h3>
       </div>
-    `;
+      <div class="wmGameRow">
+        <button class="btn btnPrimary" type="button" data-game="reaction">Play</button>
+        <button class="btn" type="button" data-game="reaction-reset">Reset</button>
+      </div>
+    </div>
+    <div id="wmGameReaction"></div>
+  </div>
+
+  <div class="wmGameWrap">
+    <div class="wmGameHead">
+      <div>
+        <h3 class="wmGameTitle">Keepie Uppie</h3>
+      </div>
+      <div class="wmGameRow">
+        <button class="btn btnPrimary" type="button" data-game="curve">Play</button>
+        <button class="btn" type="button" data-game="curve-reset">Reset</button>
+      </div>
+    </div>
+    <div id="wmGameCurve"></div>
+  </div>
+`;
 
     initMemory(true);
     initReaction(true);
@@ -1217,17 +1214,11 @@
     const mount = document.getElementById("wmGameCurve");
     if (!mount) return;
 
-    mount.innerHTML = `
-      <div class="wmTiny" style="margin-bottom:10px;">
-        Move mouse or finger. Curve comes from paddle motion at impact
-      </div>
-      <div class="wmCanvasWrap">
-        <canvas id="wmCurveCanvas" width="720" height="360"></canvas>
-      </div>
-      <div class="wmGameRow" style="margin-top:10px;">
-        <button class="btn" type="button" id="wmCurveServe">Serve</button>
-      </div>
-    `;
+mount.innerHTML = `
+  <div class="wmCanvasWrap">
+    <canvas id="wmCurveCanvas" width="720" height="360"></canvas>
+  </div>
+`;
 
     const canvas = document.getElementById("wmCurveCanvas");
     const serveBtn = document.getElementById("wmCurveServe");
@@ -1279,13 +1270,13 @@
 
       g.clearRect(0, 0, canvas.width, canvas.height);
 
-      g.fillStyle = "rgba(242,243,247,0.9)";
-      g.font = "12px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
-      g.fillText(`Score: ${s.score}`, 12, 20);
 
       g.fillStyle = "rgba(0,0,0,0.25)";
       g.fillRect(0, 0, canvas.width, canvas.height);
-
+g.fillStyle = "rgba(242,243,247,0.9)";
+g.font = "44px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+g.fillText(String(s.score), 18, 56);
+      
       g.fillStyle = "rgba(255,255,255,0.10)";
       for (let i = 0; i < 24; i++) {
         const x = (i * 31 + 17) % canvas.width;
@@ -1356,21 +1347,29 @@
       requestAnimationFrame(step);
     }
 
-    serveBtn.addEventListener("click", function () {
-      const s = curveState;
-      s.ballX = s.canvas.width / 2;
-      s.ballY = s.canvas.height / 2;
-      s.ballVX = 3.2 * (Math.random() < 0.5 ? -1 : 1);
-      s.ballVY = 2.6;
-      s.score = 0;
-      s.lastT = 0;
-      s.running = true;
-      requestAnimationFrame(step);
-    });
+function serveNow() {
+  const s = curveState;
+  s.ballX = s.canvas.width / 2;
+  s.ballY = s.canvas.height / 2;
+  s.ballVX = 3.2 * (Math.random() < 0.5 ? -1 : 1);
+  s.ballVY = 2.6;
+  s.score = 0;
+  s.lastT = 0;
+  s.running = true;
+  requestAnimationFrame(step);
+}
+
+canvas.addEventListener("click", function () {
+  if (!curveState) return;
+  if (!curveState.running) serveNow();
+});
 
     draw();
 
-    if (!silent) activeGame = "curve";
+if (!silent) {
+  activeGame = "curve";
+  serveNow();
+}
   }
 
   function wireGamesControls() {
