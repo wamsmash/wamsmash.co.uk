@@ -933,7 +933,7 @@ mount.innerHTML = `
         <h3 class="wmGameTitle">Runner</h3>
       </div>
       <div class="wmGameRow">
-        <a class="btn btnPrimary" href="/game/" target="_blank" rel="noopener">Open</a>
+        <a class="btn btnPrimary" href="/game/" target="_blank" rel="noopener">Full Screen</a>
       </div>
     </div>
 
