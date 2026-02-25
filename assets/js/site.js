@@ -930,7 +930,7 @@ mount.innerHTML = `
   <div class="wmGameWrap wmGameFull">
     <div class="wmGameHead">
       <div>
-        <h3 class="wmGameTitle">Runner</h3>
+        <h3 class="wmGameTitle">WAMSMASH</h3>
       </div>
       <div class="wmGameRow">
         <a class="btn btnPrimary" href="/game/" target="_blank" rel="noopener">Full Screen</a>
@@ -940,7 +940,7 @@ mount.innerHTML = `
     <div class="wmEmbedFrame">
       <iframe
         src="/game/"
-        title="WAMSMASH Runner"
+        title="WAMSMASH"
         loading="lazy"
         scrolling="no"
       ></iframe>
@@ -1219,10 +1219,8 @@ mount.innerHTML = `
     <canvas id="wmCurveCanvas" width="720" height="360"></canvas>
   </div>
 `;
-
-    const canvas = document.getElementById("wmCurveCanvas");
-    const serveBtn = document.getElementById("wmCurveServe");
-    if (!canvas || !serveBtn) return;
+const canvas = document.getElementById("wmCurveCanvas");
+if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
 
