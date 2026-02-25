@@ -754,6 +754,9 @@
         padding:14px;
         box-shadow:0 10px 30px rgba(0,0,0,0.28);
       }
+      .wmGameWrap.wmGameFull{
+      grid-column: 1 / -1;
+      }
       .wmGameHead{
         display:flex;
         align-items:flex-start;
@@ -965,7 +968,7 @@
         </div>
         <div id="wmGameCurve"></div>
       </div>
-            <div class="wmGameWrap">
+            <div class="wmGameWrap wmGameFull">
         <div class="wmGameHead">
           <div>
             <h3 class="wmGameTitle">Runner</h3>
