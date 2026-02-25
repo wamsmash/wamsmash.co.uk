@@ -898,6 +898,19 @@
         color:rgba(166,168,179,0.95);
         line-height:1.35;
       }
+      .wmEmbedFrame{
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.12);
+  overflow:hidden;
+  background:rgba(0,0,0,0.20);
+}
+
+.wmEmbedFrame iframe{
+  width:100%;
+  height:520px;
+  display:block;
+  border:0;
+}
     `;
     document.head.appendChild(style);
   }
@@ -951,6 +964,26 @@
           </div>
         </div>
         <div id="wmGameCurve"></div>
+      </div>
+            <div class="wmGameWrap">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">Runner</h3>
+            <div class="wmGameSub">Dodge the energy. Top 10 leaderboard</div>
+          </div>
+          <div class="wmGameRow">
+            <a class="btn btnPrimary" href="/game/" target="_blank" rel="noopener">Open</a>
+          </div>
+        </div>
+
+        <div class="wmEmbedFrame">
+          <iframe
+            src="/game/"
+            title="WAMSMASH Runner"
+            loading="lazy"
+            scrolling="no"
+          ></iframe>
+        </div>
       </div>
     `;
 
