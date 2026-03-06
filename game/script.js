@@ -27,9 +27,12 @@
   }
 
   const sfx = {
-    level: makeSfx("/game/ESMlvl.mp3", 0.55),
-    coin: makeSfx("/game/ESMcoin.mp3", 0.45)
-  }
+  level: makeSfx("/game/ESMlvl.mp3", 0.55),
+  coin: makeSfx("/game/ESMcoin.mp3", 0.45),
+  pop: makeSfx("/game/pop.mp3", 0.55),
+  bad: makeSfx("/game/bad.mp3", 0.60),
+  gameover: makeSfx("/game/gameover.mp3", 0.70)
+}
 
   function playSfx(audio, overlap) {
     try {
@@ -52,6 +55,17 @@
   function playCoinSfx() {
     playSfx(sfx.coin, true)
   }
+  function playPopSfx() {
+  playSfx(sfx.pop, true)
+}
+
+function playBadSfx() {
+  playSfx(sfx.bad, false)
+}
+
+function playGameOverSfx() {
+  playSfx(sfx.gameover, false)
+}
   const LB_KEY = "wamsmash_runner_lb_v3"
 
   const SPEED_MUL = 1.20
@@ -2643,18 +2657,19 @@
     spawnSparks(hitX, hitY, [255, 255, 255], 24)
     spawnSparks(hitX, hitY, [0, 229, 255], 18)
 
-    if (state.lives <= 0) {
-      player.explodeT = 1.2
-      state.mode = "death"
-      state.running = false
-      state.deathPhase = 0
-      state.deathT = 0
-      state.dead = true
-      state.deathHold = 5.0
-      state.deathX = hitX
-      state.deathY = hitY
-      return
-    }
+if (state.lives <= 0) {
+  playGameOverSfx()
+  player.explodeT = 1.2
+  state.mode = "death"
+  state.running = false
+  state.deathPhase = 0
+  state.deathT = 0
+  state.dead = true
+  state.deathHold = 5.0
+  state.deathX = hitX
+  state.deathY = hitY
+  return
+}
 
     player.invuln = 1.0
     player.shield = false
@@ -3105,34 +3120,38 @@ function updateModeLegend(dt) {
     }
 
       if (p.type === "gem") {
-        state.gems += 1
-        state.gemMult = 1 + state.gems
-        addFloatText("GEM", p.x, p.y - 10, "green")
-        addBankCoin(p.x, p.y, [0, 255, 140])
-        continue
+      state.gems += 1
+      state.gemMult = 1 + state.gems
+      addFloatText("GEM", p.x, p.y - 10, "green")
+      addBankCoin(p.x, p.y, [0, 255, 140])
+      playPopSfx()
+      continue
       }
 
       if (p.type === "pwr") {
-        addBankCoin(p.x, p.y, powerupColor(p.kind))
+  addBankCoin(p.x, p.y, powerupColor(p.kind))
 
-        if (p.kind === "bubble") {
-          player.shield = true
-          addFloatText("BUBBLE SHIELD", p.x, p.y - 10, "blue")
-          continue
-        }
+  if (p.kind === "bubble") {
+    playPopSfx()
+    player.shield = true
+    addFloatText("BUBBLE SHIELD", p.x, p.y - 10, "blue")
+    continue
+  }
 
-        if (p.kind === "speed") {
-          state.speedBoostUntil = performance.now() + 10000
-          addFloatText("POCKET WATCH", p.x, p.y - 10, "gold")
-          continue
-        }
+  if (p.kind === "speed") {
+    playPopSfx()
+    state.speedBoostUntil = performance.now() + 10000
+    addFloatText("POCKET WATCH", p.x, p.y - 10, "gold")
+    continue
+  }
 
-        if (p.kind === "springs") {
-          state.springsUntil = performance.now() + 3000
-          addFloatText("SPRINGS", p.x, p.y - 10, "green")
-          continue
-        }
-      }
+  if (p.kind === "springs") {
+    playBadSfx()
+    state.springsUntil = performance.now() + 3000
+    addFloatText("SPRINGS", p.x, p.y - 10, "green")
+    continue
+  }
+}
     }
   }
 
@@ -3257,6 +3276,9 @@ function updateModeLegend(dt) {
       spawnSparks(centerX, centerY, c.colB, 28)
       sfx.level.load()
       sfx.coin.load()
+      sfx.pop.load()
+      sfx.bad.load()
+      sfx.gameover.load()
       state.startPending = true
       state.startDelayT = 2.0
       return
