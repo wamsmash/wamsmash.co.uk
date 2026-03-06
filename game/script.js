@@ -3668,7 +3668,7 @@ canvas.addEventListener("touchcancel", (e) => {
   
   
 
-  // ============================================================
+   // ============================================================
   // INIT: BOOTSTRAP
   // Applies character stats, builds initial plan, starts RAF loop
   // ============================================================
@@ -3677,6 +3677,22 @@ canvas.addEventListener("touchcancel", (e) => {
     state.spawnPlan = buildSpawnPlan(0)
     state.planCursor = { coin: 0, obs: 0, pwr: 0, extra: 0 }
     requestAnimationFrame(tick)
+  }
+
+  async function fetchLeaderboard() {
+    const { data, error } = await supabase
+      .from("scores")
+      .select("name, score, char, completed, created_at")
+      .order("score", { ascending: false })
+      .order("created_at", { ascending: true })
+      .limit(10)
+
+    if (error) {
+      console.log("fetchLeaderboard error", error)
+      return []
+    }
+
+    return Array.isArray(data) ? data : []
   }
 
   init()
