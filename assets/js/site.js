@@ -712,6 +712,9 @@
     if (hero) hero.style.display = view === "home" ? "block" : "none";
 
     setActiveNav(view);
+        if (view === "games" && wmAudio && wmAudio.paused && !wmAudio.currentSrc) {
+      playTrackById("chaos");
+    }
   }
 
   function setActiveNav(view) {
