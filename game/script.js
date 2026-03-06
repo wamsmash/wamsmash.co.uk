@@ -353,6 +353,8 @@ function playGameOverSfx() {
     dropArmed: false,
     jumpQueued: false,
     queuedChargeAt: 0,
+    queuedCharging: false,
+    queuedChargeMs: 0,
     
     startPending: false,
     startDelayT: 0,
@@ -2639,6 +2641,8 @@ function playGameOverSfx() {
     state.dropArmed = false
     state.jumpQueued = false
     state.queuedChargeAt = 0
+    state.queuedCharging = false
+    state.queuedChargeMs = 0
     state.touchActive = false
     state.touchId = null
     state.touchDropFired = false
@@ -3022,15 +3026,16 @@ function updateModeLegend(dt) {
       player.onGround = true
       player.lane = player.landLane
 
-      if (performance.now() < state.springsUntil) {
+            if (performance.now() < state.springsUntil) {
         springBounce()
       } else if (state.jumpQueued) {
         state.charging = false
         state.jumpQueued = false
-        const held = performance.now() - state.queuedChargeAt
-        resolveJump(held, false)
+        state.queuedCharging = false
+        resolveJump(state.queuedChargeMs, false)
         state.dropArmed = false
         state.queuedChargeAt = 0
+        state.queuedChargeMs = 0
       }
     }
   }
@@ -3363,13 +3368,17 @@ function updateModeLegend(dt) {
     state.charging = true
     state.jumpQueued = false
     state.queuedChargeAt = 0
+    state.queuedCharging = false
+    state.queuedChargeMs = 0
     state.chargeAt = performance.now()
     return
   }
 
   if (!state.jumpQueued) {
     state.jumpQueued = true
+    state.queuedCharging = true
     state.queuedChargeAt = performance.now()
+    state.queuedChargeMs = 0
   }
 
   return
@@ -3398,7 +3407,9 @@ function updateModeLegend(dt) {
     return
   }
 
-  if (state.jumpQueued) {
+    if (state.jumpQueued && state.queuedCharging) {
+    state.queuedCharging = false
+    state.queuedChargeMs = performance.now() - state.queuedChargeAt
     return
   }
 }
