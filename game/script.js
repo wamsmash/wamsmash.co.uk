@@ -1412,24 +1412,6 @@ function playGameOverSfx() {
       g.fill()
     }
 
-    if (performance.now() < state.springsUntil) {
-  springBounce()
-} else if (state.jumpQueued) {
-  if (state.queuedCharging) {
-    state.charging = true
-    state.chargeAt = state.queuedChargeAt || performance.now()
-  } else {
-    const held = state.queuedChargeMs || 0
-    state.charging = false
-    resolveJump(held, false)
-  }
-
-  state.jumpQueued = false
-  state.queuedCharging = false
-  state.queuedChargeAt = 0
-  state.queuedChargeMs = 0
-}
-
     g.restore()
   }
 
@@ -2011,7 +1993,7 @@ function playGameOverSfx() {
     g.fillStyle = "rgba(255,255,255,0.45)"
     g.fillText(`${left.toFixed(0)}s`, W - 64, 26)
 
-    if (state.charging) {
+    if (state.charging && player.onGround) {
       const held = clamp((performance.now() - state.chargeAt) / 420, 0, 1)
       const barW = 160
       const barH = 10
@@ -3025,34 +3007,33 @@ function updateModeLegend(dt) {
     if (player.vy < 2200) player.vy += dropAcc * dt
   }
 
-  if (player.vy >= 0) {
-    const ground = laneY(player.landLane)
+if (player.vy >= 0) {
+  const ground = laneY(player.landLane)
 
-    if (player.y >= ground) {
-      player.y = ground
-      player.vy = 0
-      player.onGround = true
-      player.lane = player.landLane
-
-       if (performance.now() < state.springsUntil) {
-        springBounce()
-      } else if (state.jumpQueued) {
-        state.charging = true
-        state.chargeAt = state.queuedChargeAt || performance.now()
-        state.jumpQueued = false
-        state.queuedCharging = false
-        state.queuedChargeAt = 0
-        state.queuedChargeMs = 0
-      }
-    }
-  }
-
-  if (player.y > lanes.botY) {
-    player.y = lanes.botY
+  if (player.y >= ground) {
+    player.y = ground
     player.vy = 0
     player.onGround = true
-    player.lane = "bot"
-    player.landLane = "bot"
+    player.lane = player.landLane
+
+    if (performance.now() < state.springsUntil) {
+      springBounce()
+    } else if (state.jumpQueued) {
+      if (state.queuedCharging) {
+        state.charging = true
+        state.chargeAt = state.queuedChargeAt || performance.now()
+      } else {
+        const held = state.queuedChargeMs || 0
+        state.charging = false
+        resolveJump(held, false)
+      }
+
+      state.jumpQueued = false
+      state.queuedCharging = false
+      state.queuedChargeAt = 0
+      state.queuedChargeMs = 0
+      state.dropArmed = false
+    }
   }
 }
 
@@ -3405,8 +3386,8 @@ function updateModeLegend(dt) {
     if (state.mode !== "play") return
     if (e.button === 2) state.rightHeld = false
 
-    if (e.button === 0) {
-  if (state.charging) {
+if (e.button === 0) {
+  if (state.charging && player.onGround) {
     state.charging = false
     const held = performance.now() - state.chargeAt
     resolveJump(held, false)
@@ -3414,7 +3395,7 @@ function updateModeLegend(dt) {
     return
   }
 
-    if (state.jumpQueued && state.queuedCharging) {
+  if (state.jumpQueued && state.queuedCharging) {
     state.queuedCharging = false
     state.queuedChargeMs = performance.now() - state.queuedChargeAt
     return
