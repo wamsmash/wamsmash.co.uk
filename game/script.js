@@ -2519,14 +2519,19 @@ function statBar(label, value, row) {
   // LEADERBOARD: READ / WRITE / QUALIFY
   // Stores Top 10 rendering + Top 50 persistence in localStorage
   // ============================================================
-  function getLeaderboard() {
-    const list = safeReadJson(LB_KEY, [])
-    if (!Array.isArray(list)) return []
-    return list
-      .filter(x => x && typeof x.score === "number" && x.name)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 10)
-  }
+async function getLeaderboard() {
+  const rows = await fetchLeaderboard()
+
+  if (!rows || !rows.length) return []
+
+  return rows.map(r => ({
+    name: r.name || "---",
+    score: r.score || 0,
+    char: r.char || "",
+    completed: !!r.completed,
+    ts: r.created_at ? new Date(r.created_at).getTime() : Date.now()
+  }))
+}
 
   function qualifies(score) {
     const lb = getLeaderboard()
