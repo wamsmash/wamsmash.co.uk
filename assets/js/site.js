@@ -1310,6 +1310,7 @@ if (!canvas) return;
       ballY: 180,
       ballVX: 3.2,
       ballVY: 2.6,
+      speedMul: 1,
       radius: 10,
       paddleW: 120,
       paddleH: 14,
@@ -1402,15 +1403,18 @@ g.fillText(String(s.score), 18, 56);
       const hitX = s.ballX >= paddleLeft && s.ballX <= paddleRight;
 
       if (hitY && hitX && s.ballVY > 0) {
-        const rel = (s.ballX - s.paddleX) / (s.paddleW / 2);
-        s.ballVY = -Math.abs(s.ballVY) * 1.02;
-        s.ballVX += rel * 1.8;
+      const rel = (s.ballX - s.paddleX) / (s.paddleW / 2);
+      s.ballVY = -Math.abs(s.ballVY) * 1.02;
+      s.ballVX += rel * 1.8;
 
-        const curve = clamp(s.paddleVX / 18, -1.2, 1.2);
-        s.ballVX += curve * 1.6;
+      const curve = clamp(s.paddleVX / 18, -1.2, 1.2);
+      s.ballVX += curve * 1.6;
 
-        s.score += 1;
-      }
+      s.score += 1;
+      s.speedMul *= 1.02;
+      s.ballVX *= 1.02;
+      s.ballVY *= 1.02;
+    }
 
       if (s.ballY > s.canvas.height + 40) {
         s.running = false;
@@ -1426,6 +1430,7 @@ function serveNow() {
   s.ballY = s.canvas.height / 2;
   s.ballVX = 3.2 * (Math.random() < 0.5 ? -1 : 1);
   s.ballVY = 2.6;
+  s.speedMul = 1;
   s.score = 0;
   s.lastT = 0;
   s.running = true;
