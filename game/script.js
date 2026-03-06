@@ -3488,13 +3488,20 @@ function updateModeLegend(dt) {
   // ============================================================
   // INIT
   // ============================================================
-  async function init() {
-    applyCharacterStats()
-    state.spawnPlan = buildSpawnPlan(0)
-    state.planCursor = { coin: 0, obs: 0, pwr: 0, extra: 0 }
-    await getLeaderboard()
-    requestAnimationFrame(tick)
-  }
+async function init() {
+  applyCharacterStats()
+  state.spawnPlan = buildSpawnPlan(0)
+  state.planCursor = { coin: 0, obs: 0, pwr: 0, extra: 0 }
+
+  sfx.level.load()
+  sfx.coin.load()
+  sfx.pop.load()
+  sfx.bad.load()
+  sfx.gameover.load()
+
+  await getLeaderboard()
+  requestAnimationFrame(tick)
+}
 
   init()
 })()
