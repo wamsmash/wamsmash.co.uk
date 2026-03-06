@@ -49,8 +49,8 @@
   }
 
   function playLevelSfx() {
-    playSfx(sfx.level, false)
-  }
+  playSfx(sfx.level, true)
+}
 
   function playCoinSfx() {
     playSfx(sfx.coin, true)
