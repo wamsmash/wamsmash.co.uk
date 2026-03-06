@@ -378,6 +378,7 @@ function drawRedBalls() {
 
     // Leaderboard save flow state
     pendingSave: null,
+    leaderboard: [],
 
     // Spawn plan is deterministic per stage
     spawnPlan: null,
@@ -2494,19 +2495,22 @@ function statBar(label, value, row) {
 async function getLeaderboard() {
   const rows = await fetchLeaderboard()
 
-  if (!rows || !rows.length) return []
+  const next = (!rows || !rows.length)
+    ? []
+    : rows.map(r => ({
+        name: r.name || "---",
+        score: r.score || 0,
+        char: r.char || "",
+        completed: !!r.completed,
+        ts: r.created_at ? new Date(r.created_at).getTime() : Date.now()
+      }))
 
-  return rows.map(r => ({
-    name: r.name || "---",
-    score: r.score || 0,
-    char: r.char || "",
-    completed: !!r.completed,
-    ts: r.created_at ? new Date(r.created_at).getTime() : Date.now()
-  }))
+  state.leaderboard = next
+  return next
 }
 
 async function qualifies(score) {
-  const lb = await getLeaderboard()
+  const lb = state.leaderboard || []
   if (lb.length < 10) return true
   return score > lb[lb.length - 1].score
 }
@@ -2557,10 +2561,11 @@ saveBtn.addEventListener("click", async () => {
     state.completedRun
   )
 
+  await getLeaderboard()
+
   state.pendingSave = null
   nameModal.classList.add("hidden")
 })
-
 initialsInput.addEventListener("keydown", async (e) => {
   if (e.key === "Enter") {
     if (!state.pendingSave) return
@@ -2574,17 +2579,19 @@ initialsInput.addEventListener("keydown", async (e) => {
       state.completedRun
     )
 
+    await getLeaderboard()
+
     state.pendingSave = null
     nameModal.classList.add("hidden")
   }
-  })
+})
 
   // ============================================================
   // LEADERBOARD: DRAW TOP 10 TABLE
   // Completed runs get gold tint
   // ============================================================
-async function drawLeaderboard(x, y) {
-  const lb = await getLeaderboard()
+function drawLeaderboard(x, y) {
+  const lb = state.leaderboard || []
 
   const w = 360
   const h = 260
@@ -3667,11 +3674,12 @@ canvas.addEventListener("touchcancel", (e) => {
   // Applies character stats, builds initial plan, starts RAF loop
   // ============================================================
   function init() {
-    applyCharacterStats()
-    state.spawnPlan = buildSpawnPlan(0)
-    state.planCursor = { coin: 0, obs: 0, pwr: 0, extra: 0 }
-    requestAnimationFrame(tick)
-  }
+  applyCharacterStats()
+  state.spawnPlan = buildSpawnPlan(0)
+  state.planCursor = { coin: 0, obs: 0, pwr: 0, extra: 0 }
+  getLeaderboard()
+  requestAnimationFrame(tick)
+}
 
   async function fetchLeaderboard() {
     const { data, error } = await supabase
