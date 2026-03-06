@@ -3026,18 +3026,13 @@ function updateModeLegend(dt) {
       player.onGround = true
       player.lane = player.landLane
 
-              if (performance.now() < state.springsUntil) {
+       if (performance.now() < state.springsUntil) {
         springBounce()
       } else if (state.jumpQueued) {
-        const held = state.queuedCharging
-          ? (performance.now() - state.queuedChargeAt)
-          : state.queuedChargeMs
-
-        state.charging = false
+        state.charging = true
+        state.chargeAt = state.queuedChargeAt || performance.now()
         state.jumpQueued = false
         state.queuedCharging = false
-        resolveJump(held, false)
-        state.dropArmed = false
         state.queuedChargeAt = 0
         state.queuedChargeMs = 0
       }
