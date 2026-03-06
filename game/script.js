@@ -1228,21 +1228,6 @@ function drawSpikyPickup(x, y, innerR, outerR, spikes) {
   const step = Math.PI / n
 
   g.save()
-  g.globalCompositeOperation = "source-over"
-
-  g.beginPath()
-  for (let i = 0; i < n * 2; i++) {
-    const r = (i % 2 === 0) ? outerR : innerR
-    const a = i * step - Math.PI / 2
-    const px = x + Math.cos(a) * r
-    const py = y + Math.sin(a) * r
-    if (i === 0) g.moveTo(px, py)
-    else g.lineTo(px, py)
-function drawSpikyPickup(x, y, innerR, outerR, spikes) {
-  const n = Math.max(6, spikes || 10)
-  const step = Math.PI / n
-
-  g.save()
   g.translate(x, y)
   g.rotate(state.totalT * 2.5)
   g.translate(-x, -y)
@@ -1267,19 +1252,6 @@ function drawSpikyPickup(x, y, innerR, outerR, spikes) {
 
   g.restore()
 }
-  }
-  g.closePath()
-
-  g.fillStyle = "rgba(0,0,0,0.98)"
-  g.fill()
-
-  g.strokeStyle = "rgba(255,255,255,0.18)"
-  g.lineWidth = 2
-  g.stroke()
-
-  g.restore()
-}
-
 function drawPickups() {
   for (const p of pickups) {
     const pulse = 0.75 + 0.25 * Math.sin(state.totalT * 6 + p.x * 0.02)
@@ -2611,8 +2583,8 @@ initialsInput.addEventListener("keydown", async (e) => {
   // LEADERBOARD: DRAW TOP 10 TABLE
   // Completed runs get gold tint
   // ============================================================
-function drawLeaderboard(x, y) {
-  const lb = getLeaderboard()
+async function drawLeaderboard(x, y) {
+  const lb = await getLeaderboard()
 
   const w = 360
   const h = 260
