@@ -16,7 +16,42 @@
 
   const W = canvas.width
   const H = canvas.height
+  // ============================================================
+  // AUDIO
+  // ============================================================
+  function makeSfx(src, volume) {
+    const a = new Audio(src)
+    a.preload = "auto"
+    a.volume = volume
+    return a
+  }
 
+  const sfx = {
+    level: makeSfx("/game/ESMlvl.mp3", 0.55),
+    coin: makeSfx("/game/ESMcoin.mp3", 0.45)
+  }
+
+  function playSfx(audio, overlap) {
+    try {
+      if (overlap) {
+        const a = new Audio(audio.src)
+        a.volume = audio.volume
+        a.play().catch(() => {})
+        return
+      }
+
+      audio.currentTime = 0
+      audio.play().catch(() => {})
+    } catch (e) {}
+  }
+
+  function playLevelSfx() {
+    playSfx(sfx.level, false)
+  }
+
+  function playCoinSfx() {
+    playSfx(sfx.coin, true)
+  }
   const LB_KEY = "wamsmash_runner_lb_v3"
 
   const SPEED_MUL = 1.20
@@ -2688,13 +2723,17 @@
     state.planCursor = { coin: 0, obs: 0, pwr: 0, extra: 0 }
   }
 
-  function moveToStage(idx) {
+    function moveToStage(idx) {
     state.stageIdx = idx
     state.stageT = 0
+
     state.spawnPlan = buildSpawnPlan(state.stageIdx)
     state.planCursor = { coin: 0, obs: 0, pwr: 0, extra: 0 }
+
     state.countdownActive = false
     state.stageCountdown = 0
+
+    playLevelSfx()
   }
 
   function stageAdvance() {
@@ -2834,23 +2873,26 @@
   }
 
   function updateModeIntro(dt) {
-    state.totalT += dt
-    computeDifficulty()
-    parallax(dt, 240)
+  state.totalT += dt
+  computeDifficulty()
+  parallax(dt, 240)
 
-    if (ui.introT >= 1.10) state.mode = "play"
+  if (ui.introT >= 1.10) {
+    playLevelSfx()
+    state.mode = "play"
   }
+}
 
-  function updateModeLegend(dt) {
-    state.thanksT += dt
-    state.totalT += dt
+function updateModeLegend(dt) {
+  state.thanksT += dt
+  state.totalT += dt
 
-    if (state.thanksT > 2.0) {
-      state.mode = "gameover"
-      state.running = false
-      maybePromptForLeaderboard(state.score)
-    }
+  if (state.thanksT > 2.0) {
+    state.mode = "gameover"
+    state.running = false
+    maybePromptForLeaderboard(state.score)
   }
+}
 
   function updateModeGameover(dt) {
     state.lbT += dt
@@ -3054,12 +3096,13 @@
 
       pickups.splice(i, 1)
 
-      if (p.type === "coin") {
-        state.baseScore += Math.floor(60 * (1 + state.difficulty))
-        addFloatText("+COIN", p.x, p.y - 10, "green")
-        addBankCoin(p.x, p.y, [0, 229, 255])
-        continue
-      }
+          if (p.type === "coin") {
+      state.baseScore += Math.floor(60 * (1 + state.difficulty))
+      addFloatText("+COIN", p.x, p.y - 10, "green")
+      addBankCoin(p.x, p.y, [0, 229, 255])
+      playCoinSfx()
+      continue
+    }
 
       if (p.type === "gem") {
         state.gems += 1
@@ -3212,6 +3255,8 @@
       state.selectFlashCol = c.colB
       state.cardGlistenT = 1.0
       spawnSparks(centerX, centerY, c.colB, 28)
+      sfx.level.load()
+      sfx.coin.load()
       state.startPending = true
       state.startDelayT = 2.0
       return
