@@ -719,9 +719,9 @@
     if (hero) hero.style.display = view === "home" ? "block" : "none";
 
     setActiveNav(view);
-        if (view === "games" && wmAudio && wmAudio.paused && !wmAudio.currentSrc) {
-      playTrackById("chaos");
-    }
+        if (view === "games" && wmAudio && !wmAudio.currentSrc) {
+  playNext();
+}
   }
 
   function setActiveNav(view) {
