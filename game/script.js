@@ -3395,6 +3395,12 @@ function draw() {
   // Clears active run data, keeps character selection, rebuilds plan
   // ============================================================
   function restartToSelect() {
+
+  state.rightHeld = false
+  state.charging = false
+  state.dropArmed = false
+
+  // existing code continues
     nameModal.classList.add("hidden")
     state.pendingSave = null
 
