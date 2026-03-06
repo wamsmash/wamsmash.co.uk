@@ -1238,13 +1238,13 @@ function drawSpikyPickup(x, y, innerR, outerR, spikes) {
     const py = y + Math.sin(a) * r
     if (i === 0) g.moveTo(px, py)
     else g.lineTo(px, py)
-  function drawSpikyPickup(x, y, innerR, outerR, spikes) {
+function drawSpikyPickup(x, y, innerR, outerR, spikes) {
   const n = Math.max(6, spikes || 10)
   const step = Math.PI / n
 
   g.save()
   g.translate(x, y)
-  g.rotate(state.totalT * 2.5) // rotation speed
+  g.rotate(state.totalT * 2.5)
   g.translate(-x, -y)
 
   g.beginPath()
@@ -2533,11 +2533,11 @@ async function getLeaderboard() {
   }))
 }
 
-  function qualifies(score) {
-    const lb = getLeaderboard()
-    if (lb.length < 10) return true
-    return score > lb[lb.length - 1].score
-  }
+async function qualifies(score) {
+  const lb = await getLeaderboard()
+  if (lb.length < 10) return true
+  return score > lb[lb.length - 1].score
+}
 
   function sanitizeInitials(s) {
     const up = String(s || "").toUpperCase()
@@ -2545,8 +2545,8 @@ async function getLeaderboard() {
     return clean || "YOU"
   }
 
-  function maybePromptForLeaderboard(score) {
-    if (!qualifies(score)) return
+async function maybePromptForLeaderboard(score) {
+  if (!(await qualifies(score))) return
     state.pendingSave = { score }
     state.lbT = 0
     nameModal.classList.remove("hidden")
@@ -2554,40 +2554,57 @@ async function getLeaderboard() {
     initialsInput.focus()
   }
 
-  function saveLeaderboardEntry() {
+async function saveLeaderboardEntry(name, score, char, completed) {
+  const { error } = await supabase
+    .from("scores")
+    .insert([
+      {
+        name: name,
+        score: score,
+        char: char || null,
+        completed: !!completed,
+        mode: "runner"
+      }
+    ])
+
+  if (error) {
+    console.log("saveLeaderboardEntry error", error)
+  }
+}
+
+  // Modal controls
+saveBtn.addEventListener("click", async () => {
+  if (!state.pendingSave) return
+
+  const name = sanitizeInitials(initialsInput.value)
+
+  await saveLeaderboardEntry(
+    name,
+    state.pendingSave.score,
+    currentChar().name,
+    state.completedRun
+  )
+
+  state.pendingSave = null
+  nameModal.classList.add("hidden")
+})
+
+initialsInput.addEventListener("keydown", async (e) => {
+  if (e.key === "Enter") {
     if (!state.pendingSave) return
 
     const name = sanitizeInitials(initialsInput.value)
-    const score = state.pendingSave.score
-    const c = currentChar()
 
-    const list = safeReadJson(LB_KEY, [])
-    const next = Array.isArray(list) ? list.slice() : []
-
-    next.push({
+    await saveLeaderboardEntry(
       name,
-      score,
-      ts: Date.now(),
-      char: c.name,
-      completed: !!state.completedRun
-    })
-
-    next.sort((a, b) => b.score - a.score)
-    safeWriteJson(LB_KEY, next.slice(0, 50))
+      state.pendingSave.score,
+      currentChar().name,
+      state.completedRun
+    )
 
     state.pendingSave = null
     nameModal.classList.add("hidden")
   }
-
-  // Modal controls
-  saveBtn.addEventListener("click", saveLeaderboardEntry)
-
-  initialsInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") saveLeaderboardEntry()
-    if (e.key === "Escape") {
-      state.pendingSave = null
-      nameModal.classList.add("hidden")
-    }
   })
 
   // ============================================================
