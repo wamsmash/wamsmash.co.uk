@@ -1,4 +1,8 @@
 (() => {
+  const SUPABASE_URL = "https://lwirabcurbhczmiylqar.supabase.co"
+  const SUPABASE_KEY = "sb_publishable_RUn44tQ5zldb5SP5DB85NQ_5oTdrQPd"
+
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   // ============================================================
   // BOOTSTRAP
   // Grab DOM nodes, set up canvas context, define core constants
