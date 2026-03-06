@@ -2754,7 +2754,7 @@ async function drawLeaderboard(x, y) {
   // Overlay shows summary, multiplier rules, leaderboard, and restart hint
   // Note: Restart hint already updated to "click anywhere"
   // ============================================================
-  function drawGameOver() {
+  async function drawGameOver() {
     g.fillStyle = "rgba(0,0,0,0.65)"
     g.fillRect(0, 0, W, H)
 
@@ -2789,7 +2789,7 @@ async function drawLeaderboard(x, y) {
     }
 
     g.textAlign = "left"
-    drawLeaderboard(64, 64)
+    await drawLeaderboard(64, 64)
 
     // Bottom right "thank you" hint with subtle breathing animation
     ui.thankYouBreath += state.dt
