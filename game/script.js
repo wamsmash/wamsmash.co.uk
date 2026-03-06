@@ -3004,42 +3004,45 @@ function updateModeLegend(dt) {
   }
 
   function updatePlayer(dt) {
-    player.vy += 1800 * dt
-    player.y += player.vy * dt
+  player.vy += 1800 * dt
+  player.y += player.vy * dt
 
-    if (!player.onGround && state.rightHeld) {
-      player.landLane = "bot"
-      const dropAcc = 3800 * (player.dropSpeedMul || 1)
-      if (player.vy < 2200) player.vy += dropAcc * dt
-    }
+  if (!player.onGround && state.rightHeld) {
+    player.landLane = "bot"
+    const dropAcc = 3800 * (player.dropSpeedMul || 1)
+    if (player.vy < 2200) player.vy += dropAcc * dt
+  }
+
+  if (player.vy >= 0) {
+    const ground = laneY(player.landLane)
 
     if (player.y >= ground) {
-  player.y = ground
-  player.vy = 0
-  player.onGround = true
-  player.lane = player.landLane
-
-  if (performance.now() < state.springsUntil) {
-    springBounce()
-  } else if (state.jumpQueued) {
-    state.charging = false
-    state.jumpQueued = false
-    const held = performance.now() - state.queuedChargeAt
-    resolveJump(held, false)
-    state.dropArmed = false
-    state.queuedChargeAt = 0
-  }
-}
-    }
-
-    if (player.y > lanes.botY) {
-      player.y = lanes.botY
+      player.y = ground
       player.vy = 0
       player.onGround = true
-      player.lane = "bot"
-      player.landLane = "bot"
+      player.lane = player.landLane
+
+      if (performance.now() < state.springsUntil) {
+        springBounce()
+      } else if (state.jumpQueued) {
+        state.charging = false
+        state.jumpQueued = false
+        const held = performance.now() - state.queuedChargeAt
+        resolveJump(held, false)
+        state.dropArmed = false
+        state.queuedChargeAt = 0
+      }
     }
   }
+
+  if (player.y > lanes.botY) {
+    player.y = lanes.botY
+    player.vy = 0
+    player.onGround = true
+    player.lane = "bot"
+    player.landLane = "bot"
+  }
+}
 
   function updateScoring(dt) {
     state.baseScore += Math.floor(18 * dt * (1 + state.difficulty))
