@@ -3293,7 +3293,7 @@ function updateModeLegend(dt) {
       state.selectFlashCol = c.colB
       state.cardGlistenT = 1.0
       spawnSparks(centerX, centerY, c.colB, 28)
-      sfx.level.load()
+      
       sfx.coin.load()
       sfx.pop.load()
       sfx.bad.load()
@@ -3535,7 +3535,7 @@ async function init() {
   state.spawnPlan = buildSpawnPlan(0)
   state.planCursor = { coin: 0, obs: 0, pwr: 0, extra: 0 }
 
-  sfx.level.load()
+ 
   sfx.coin.load()
   sfx.pop.load()
   sfx.bad.load()
