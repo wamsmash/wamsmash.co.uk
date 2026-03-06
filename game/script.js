@@ -1413,14 +1413,22 @@ function playGameOverSfx() {
     }
 
     if (performance.now() < state.springsUntil) {
-      const glow = g.createRadialGradient(x + 36, y + 30, 10, x + 36, y + 30, 90)
-      glow.addColorStop(0, "rgba(0,255,140,0.18)")
-      glow.addColorStop(1, "rgba(0,0,0,0)")
-      g.fillStyle = glow
-      g.beginPath()
-      g.arc(x + 36, y + 30, 90, 0, Math.PI * 2)
-      g.fill()
-    }
+  springBounce()
+} else if (state.jumpQueued) {
+  if (state.queuedCharging) {
+    state.charging = true
+    state.chargeAt = state.queuedChargeAt || performance.now()
+  } else {
+    const held = state.queuedChargeMs || 0
+    state.charging = false
+    resolveJump(held, false)
+  }
+
+  state.jumpQueued = false
+  state.queuedCharging = false
+  state.queuedChargeAt = 0
+  state.queuedChargeMs = 0
+}
 
     g.restore()
   }
@@ -3374,11 +3382,11 @@ function updateModeLegend(dt) {
   }
 
   if (!state.jumpQueued) {
-    state.jumpQueued = true
-    state.queuedCharging = true
-    state.queuedChargeAt = performance.now()
-    state.queuedChargeMs = 0
-  }
+  state.jumpQueued = true
+  state.queuedCharging = true
+  state.queuedChargeAt = performance.now()
+  state.queuedChargeMs = 0
+}
 
   return
 }
