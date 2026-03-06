@@ -2501,7 +2501,7 @@ async function getLeaderboard() {
         name: r.name || "---",
         score: r.score || 0,
         char: r.char || "",
-        completed: !!r.completed,
+        completed: false,
         ts: r.created_at ? new Date(r.created_at).getTime() : Date.now()
       }))
 
@@ -3681,21 +3681,21 @@ canvas.addEventListener("touchcancel", (e) => {
   requestAnimationFrame(tick)
 }
 
-  async function fetchLeaderboard() {
-    const { data, error } = await supabase
-      .from("scores")
-      .select("name, score, char, completed, created_at")
-      .order("score", { ascending: false })
-      .order("created_at", { ascending: true })
-      .limit(10)
+async function fetchLeaderboard() {
+  const { data, error } = await supabase
+    .from("scores")
+    .select("name, score, char, created_at")
+    .order("score", { ascending: false })
+    .order("created_at", { ascending: true })
+    .limit(10)
 
-    if (error) {
-      console.log("fetchLeaderboard error", error)
-      return []
-    }
-
-    return Array.isArray(data) ? data : []
+  if (error) {
+    console.log("fetchLeaderboard error", error)
+    return []
   }
+
+  return Array.isArray(data) ? data : []
+}
 
   init()
 })()
