@@ -481,19 +481,26 @@
   }
 
   function playNext() {
-    if (!TRACKS.length) return;
-    if (!currentTrackId) {
+  if (!TRACKS.length) return;
+
+  if (!currentTrackId) {
+    if (shuffleOn) {
+      playTrackById(pickNextTrackId());
+    } else {
       playTrackById(TRACKS[0].id);
-      return;
     }
-    if (!shuffleOn) {
-      const idx = TRACKS.findIndex(t => t.id === currentTrackId);
-      const next = TRACKS[(idx + 1) % TRACKS.length];
-      playTrackById(next.id);
-      return;
-    }
-    playTrackById(pickNextTrackId());
+    return;
   }
+
+  if (!shuffleOn) {
+    const idx = TRACKS.findIndex(t => t.id === currentTrackId);
+    const next = TRACKS[(idx + 1) % TRACKS.length];
+    playTrackById(next.id);
+    return;
+  }
+
+  playTrackById(pickNextTrackId());
+}
 
   function playPrev() {
     if (!TRACKS.length) return;
