@@ -351,7 +351,9 @@ function playGameOverSfx() {
     charging: false,
     chargeAt: 0,
     dropArmed: false,
-
+    jumpQueued: false,
+    queuedChargeAt: 0,
+    
     startPending: false,
     startDelayT: 0,
 
@@ -2635,10 +2637,13 @@ function playGameOverSfx() {
     state.rightHeld = false
     state.charging = false
     state.dropArmed = false
+    state.jumpQueued = false
+    state.queuedChargeAt = 0
     state.touchActive = false
     state.touchId = null
     state.touchDropFired = false
     state.touchJustEnded = false
+    
   }
 
   function resetFxBuffers() {
@@ -3008,16 +3013,23 @@ function updateModeLegend(dt) {
       if (player.vy < 2200) player.vy += dropAcc * dt
     }
 
-    if (player.vy >= 0) {
-      const ground = laneY(player.landLane)
-      if (player.y >= ground) {
-        player.y = ground
-        player.vy = 0
-        player.onGround = true
-        player.lane = player.landLane
+    if (player.y >= ground) {
+  player.y = ground
+  player.vy = 0
+  player.onGround = true
+  player.lane = player.landLane
 
-        if (performance.now() < state.springsUntil) springBounce()
-      }
+  if (performance.now() < state.springsUntil) {
+    springBounce()
+  } else if (state.jumpQueued) {
+    state.charging = false
+    state.jumpQueued = false
+    const held = performance.now() - state.queuedChargeAt
+    resolveJump(held, false)
+    state.dropArmed = false
+    state.queuedChargeAt = 0
+  }
+}
     }
 
     if (player.y > lanes.botY) {
@@ -3342,12 +3354,23 @@ function updateModeLegend(dt) {
     if (state.mode !== "play") return
 
     if (e.button === 0) {
-      if (!player.onGround) return
-      state.charging = true
-      state.dropArmed = false
-      state.chargeAt = performance.now()
-      return
-    }
+  state.dropArmed = false
+
+  if (player.onGround) {
+    state.charging = true
+    state.jumpQueued = false
+    state.queuedChargeAt = 0
+    state.chargeAt = performance.now()
+    return
+  }
+
+  if (!state.jumpQueued) {
+    state.jumpQueued = true
+    state.queuedChargeAt = performance.now()
+  }
+
+  return
+}
 
     if (e.button === 2) {
       if (state.charging && player.onGround) {
@@ -3364,12 +3387,18 @@ function updateModeLegend(dt) {
     if (e.button === 2) state.rightHeld = false
 
     if (e.button === 0) {
-      if (!state.charging) return
-      state.charging = false
-      const held = performance.now() - state.chargeAt
-      resolveJump(held, false)
-      state.dropArmed = false
-    }
+  if (state.charging) {
+    state.charging = false
+    const held = performance.now() - state.chargeAt
+    resolveJump(held, false)
+    state.dropArmed = false
+    return
+  }
+
+  if (state.jumpQueued) {
+    return
+  }
+}
   })
 
   canvas.style.touchAction = "none"
