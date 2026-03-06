@@ -2761,7 +2761,7 @@ function drawLeaderboard(x, y) {
   // Overlay shows summary, multiplier rules, leaderboard, and restart hint
   // Note: Restart hint already updated to "click anywhere"
   // ============================================================
-  async function drawGameOver() {
+  function drawGameOver() {
     g.fillStyle = "rgba(0,0,0,0.65)"
     g.fillRect(0, 0, W, H)
 
@@ -2796,7 +2796,7 @@ function drawLeaderboard(x, y) {
     }
 
     g.textAlign = "left"
-    await drawLeaderboard(64, 64)
+    drawLeaderboard(64, 64)
 
     // Bottom right "thank you" hint with subtle breathing animation
     ui.thankYouBreath += state.dt
@@ -2858,6 +2858,12 @@ state.deathT = 0
   // Fully reinitializes state, player, arrays, and rebuilds spawn plan
   // ============================================================
   function startGame() {
+
+  state.rightHeld = false
+  state.charging = false
+  state.dropArmed = false
+
+  // existing reset code continues below
     applyCharacterStats()
 
     state.mode = "intro"
@@ -3663,39 +3669,153 @@ canvas.addEventListener("touchcancel", (e) => {
   state.dropArmed = false
 }, { passive: false })
  
-    canvas.addEventListener("click", () => {
-    if (state.mode === "gameover" && nameModal.classList.contains("hidden")) restartToSelect()
-  })
-  
-  
+   canvas.addEventListener("click", () => {
+  if (state.mode === "gameover" && nameModal.classList.contains("hidden")) restartToSelect()
+})
 
-   // ============================================================
-  // INIT: BOOTSTRAP
-  // Applies character stats, builds initial plan, starts RAF loop
-  // ============================================================
-  function init() {
+// ============================================================
+// INIT: BOOTSTRAP
+// Applies character stats, builds initial plan, starts RAF loop
+// ============================================================
+async function init() {
   applyCharacterStats()
   state.spawnPlan = buildSpawnPlan(0)
   state.planCursor = { coin: 0, obs: 0, pwr: 0, extra: 0 }
-  getLeaderboard()
+  await getLeaderboard()
   requestAnimationFrame(tick)
 }
 
 async function fetchLeaderboard() {
   const { data, error } = await supabase
     .from("scores")
-    .select("name, score, char, created_at")
+    .select("name, score, char, completed, created_at")
+    .eq("mode", "runner")
     .order("score", { ascending: false })
     .order("created_at", { ascending: true })
     .limit(10)
 
   if (error) {
     console.log("fetchLeaderboard error", error)
-    return []
+    return null
   }
 
   return Array.isArray(data) ? data : []
 }
 
-  init()
+async function getLeaderboard() {
+  const rows = await fetchLeaderboard()
+
+  if (!rows) {
+    const local = safeReadJson(LB_KEY, [])
+    state.leaderboard = Array.isArray(local) ? local : []
+    return state.leaderboard
+  }
+
+  const next = rows.map(r => ({
+    name: r.name || "---",
+    score: Number(r.score) || 0,
+    char: r.char || "",
+    completed: !!r.completed,
+    ts: r.created_at ? new Date(r.created_at).getTime() : Date.now()
+  }))
+
+  state.leaderboard = next
+  safeWriteJson(LB_KEY, next)
+  return next
+}
+
+async function qualifies(score) {
+  if (!state.leaderboard || !state.leaderboard.length) {
+    await getLeaderboard()
+  }
+
+  const lb = state.leaderboard || []
+  if (lb.length < 10) return true
+  return score > lb[lb.length - 1].score
+}
+
+function sanitizeInitials(s) {
+  const up = String(s || "").toUpperCase()
+  const clean = up.replace(/[^A-Z0-9]/g, "").slice(0, 3)
+  return clean || "YOU"
+}
+
+async function maybePromptForLeaderboard(score) {
+  const ok = await qualifies(score)
+  if (!ok) return
+
+  state.pendingSave = { score }
+  state.lbT = 0
+  nameModal.classList.remove("hidden")
+  initialsInput.value = ""
+  initialsInput.focus()
+}
+
+async function saveLeaderboardEntry(name, score, char, completed) {
+  const payload = {
+    name: sanitizeInitials(name),
+    score: Number(score) || 0,
+    char: char || null,
+    completed: !!completed,
+    mode: "runner"
+  }
+
+  const { error } = await supabase
+    .from("scores")
+    .insert([payload])
+
+  if (error) {
+    console.log("saveLeaderboardEntry error", error)
+
+    const local = safeReadJson(LB_KEY, [])
+    const merged = (Array.isArray(local) ? local : []).concat([{
+      name: payload.name,
+      score: payload.score,
+      char: payload.char || "",
+      completed: payload.completed,
+      ts: Date.now()
+    }])
+
+    merged.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score
+      return (a.ts || 0) - (b.ts || 0)
+    })
+
+    const top10 = merged.slice(0, 10)
+    safeWriteJson(LB_KEY, top10)
+    state.leaderboard = top10
+    return false
+  }
+
+  return true
+}
+
+async function submitLeaderboardEntry() {
+  if (!state.pendingSave) return
+
+  const name = sanitizeInitials(initialsInput.value)
+
+  await saveLeaderboardEntry(
+    name,
+    state.pendingSave.score,
+    currentChar().name,
+    state.completedRun
+  )
+
+  await getLeaderboard()
+
+  state.pendingSave = null
+  nameModal.classList.add("hidden")
+  state.lbT = 0
+}
+
+saveBtn.addEventListener("click", submitLeaderboardEntry)
+
+initialsInput.addEventListener("keydown", async (e) => {
+  if (e.key === "Enter") {
+    await submitLeaderboardEntry()
+  }
+})
+
+init()
 })()
