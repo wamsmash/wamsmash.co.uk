@@ -274,7 +274,7 @@
     { label: "YouTube", href: "https://www.youtube.com/@wamsmash", note: "Visual hub", icon: "youtube" },
     { label: "Instagram", href: "https://www.instagram.com/wamsmash", note: "Updates", icon: "instagram" },
     { label: "X", href: "https://x.com/wamsmash_", note: "Updates", icon: "x" },
-    { label: "BLACK VAULT", href: "/#vault", note: "Collector access", icon: "vault" }
+    { label: "BLACK VAULT", href: "#vault", note: "Collector access", icon: "vault" }
   ];
 
   const PRESS = [
@@ -350,7 +350,9 @@
     youtube: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2a3 3 0 00-2.1-2.1C17.7 4.6 12 4.6 12 4.6s-5.7 0-7.5.5A3 3 0 002.4 7.2 31.4 31.4 0 002.4 12a31.4 31.4 0 00.0 4.8 3 3 0 002.1 2.1c1.8.5 7.5.5 7.5.5s5.7 0 7.5-.5a3 3 0 002.1-2.1A31.4 31.4 0 0021.6 12a31.4 31.4 0 000-4.8zM10.2 15.2V8.8L15.8 12l-5.6 3.2z"/></svg>`,
     instagram: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 2h9A5.5 5.5 0 0122 7.5v9A5.5 5.5 0 0116.5 22h-9A5.5 5.5 0 012 16.5v-9A5.5 5.5 0 017.5 2zm0 2A3.5 3.5 0 004 7.5v9A3.5 3.5 0 007.5 20h9a3.5 3.5 0 003.5-3.5v-9A3.5 3.5 0 0016.5 4h-9zM12 7a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6zm5.6-2.2a1 1 0 110 2 1 1 0 010-2z"/></svg>`,
     x: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.6l-5.2-6.5L5.6 22H2.5l7.3-8.4L1 2h6.8l4.7 5.9L18.9 2zm-1.2 18h1.7L6.1 3.9H4.3L17.7 20z"/></svg>`,
-    bandcamp: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 7H22l-4.9 10H9.3L14.7 7zM2 7h9.1L6.2 17H2V7z"/></svg>`,
+    vault: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l7 3v6c0 5.2-3.4 9.2-7 11c-3.6-1.8-7-5.8-7-11V5l7-3zm0 3.2L7 7.3v3.6c0 3.8 2.3 6.9 5 8.5c2.7-1.6 5-4.7 5-8.5V7.3l-5-2.1zm0 2.3a2.4 2.4 0 0 1 2.4 2.4c0 .9-.5 1.7-1.2 2.1V15h-2.4v-2.9A2.4 2.4 0 0 1 9.6 10A2.4 2.4 0 0 1 12 7.5zm0 1.8a.6.6 0 1 0 0 1.2a.6.6 0 0 0 0-1.2z"/></svg>`,
+
+    
   };
 
   function iconMarkup(name) {
