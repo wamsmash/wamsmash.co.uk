@@ -756,6 +756,7 @@ a.innerHTML = `
 
     if (viewPart === "music") return { view: "music", scrollId };
     if (viewPart === "links") return { view: "links", scrollId: "" };
+    if (viewPart === "vault") return { view: "links", scrollId: "vaultEntry" };
     if (viewPart === "games") return { view: "games", scrollId: "" };
 
     return { view: "home", scrollId: "" };
