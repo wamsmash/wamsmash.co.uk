@@ -2996,7 +2996,6 @@ function updateModeLegend(dt) {
     updateWorldObstacles(dt, spd)
     updateWorldPickups(dt, spd)
   }
-
 function updatePlayer(dt) {
   player.vy += 1800 * dt
   player.y += player.vy * dt
