@@ -2997,7 +2997,7 @@ function updateModeLegend(dt) {
     updateWorldPickups(dt, spd)
   }
 
-  function updatePlayer(dt) {
+function updatePlayer(dt) {
   player.vy += 1800 * dt
   player.y += player.vy * dt
 
@@ -3007,33 +3007,42 @@ function updateModeLegend(dt) {
     if (player.vy < 2200) player.vy += dropAcc * dt
   }
 
-if (player.vy >= 0) {
-  const ground = laneY(player.landLane)
+  if (player.vy >= 0) {
+    const ground = laneY(player.landLane)
 
-  if (player.y >= ground) {
-    player.y = ground
+    if (player.y >= ground) {
+      player.y = ground
+      player.vy = 0
+      player.onGround = true
+      player.lane = player.landLane
+
+      if (performance.now() < state.springsUntil) {
+        springBounce()
+      } else if (state.jumpQueued) {
+        if (state.queuedCharging) {
+          state.charging = true
+          state.chargeAt = state.queuedChargeAt || performance.now()
+        } else {
+          const held = state.queuedChargeMs || 0
+          state.charging = false
+          resolveJump(held, false)
+        }
+
+        state.jumpQueued = false
+        state.queuedCharging = false
+        state.queuedChargeAt = 0
+        state.queuedChargeMs = 0
+        state.dropArmed = false
+      }
+    }
+  }
+
+  if (player.y > lanes.botY) {
+    player.y = lanes.botY
     player.vy = 0
     player.onGround = true
-    player.lane = player.landLane
-
-    if (performance.now() < state.springsUntil) {
-      springBounce()
-    } else if (state.jumpQueued) {
-      if (state.queuedCharging) {
-        state.charging = true
-        state.chargeAt = state.queuedChargeAt || performance.now()
-      } else {
-        const held = state.queuedChargeMs || 0
-        state.charging = false
-        resolveJump(held, false)
-      }
-
-      state.jumpQueued = false
-      state.queuedCharging = false
-      state.queuedChargeAt = 0
-      state.queuedChargeMs = 0
-      state.dropArmed = false
-    }
+    player.lane = "bot"
+    player.landLane = "bot"
   }
 }
 
