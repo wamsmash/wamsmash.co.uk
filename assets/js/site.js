@@ -762,19 +762,19 @@ a.innerHTML = `
     return { view: "home", scrollId: "" };
   }
 
-  function applyRoute() {
-    const route = parseHash();
-    switchView(route.view);
+function applyRoute() {
+  const route = parseHash();
+  switchView(route.view);
 
-    if (route.view === "music" && route.scrollId) {
-      requestAnimationFrame(function () {
-        const target = document.getElementById(route.scrollId);
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      });
-    }
+  if (route.scrollId) {
+    requestAnimationFrame(function () {
+      const target = document.getElementById(route.scrollId);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
   }
+}
 
   function wireNavigation() {
     document.addEventListener("click", function (e) {
