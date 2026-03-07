@@ -640,16 +640,16 @@
       }
 
       a.innerHTML = `
-        <div class="linkCardTop">
-          <div style="display:flex; align-items:center; gap:10px;">
-            ${iconMarkup(item.icon)}
-            <div class="linkCardTitle">${item.label}</div>
-          </div>
-          <div class="linkCardBadge">${isInternalVault ? "Enter" : "Open"}</div>
-        </div>
-        <div class="linkCardNote">${item.note || ""}</div>
-        <div class="linkCardUrl">${isInternalVault ? "Hidden inside links" : item.href}</div>
-      `;
+  <div class="linkCardTop">
+    <div style="display:flex; align-items:center; gap:10px;">
+      ${iconMarkup(item.icon)}
+      <div class="linkCardTitle">${item.label}</div>
+    </div>
+    <div class="linkCardBadge">${isInternalVault ? "Enter" : "Open"}</div>
+  </div>
+  <div class="linkCardNote">${item.note || ""}</div>
+  <div class="linkCardUrl">${isInternalVault ? "Private collector layer" : item.href}</div>
+`;
 
       mount.appendChild(a);
     }
