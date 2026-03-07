@@ -753,7 +753,14 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   letter-spacing:0.22em;
   text-transform:uppercase;
 }
-
+.vaultLane{
+  margin:0 0 18px;
+  color:#ff5a5a;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+}
 .vaultTrackTitle{
   margin:0 0 18px;
   font-size:clamp(42px, 5vw, 74px);
@@ -765,7 +772,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
 
 .vaultText{
   margin:0 0 26px;
-  max-width:560px;
+  max-width:none;
   color:rgba(240,232,223,0.84);
   font-size:20px;
   line-height:1.58;
