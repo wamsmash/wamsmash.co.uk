@@ -36,7 +36,7 @@
       blurb: "Men pull closer. Light gets warmer\nPower in the quiet tilt\nDo you play you or me",
       tags: "brass driven rhythm\nlatin pulse undertone\nspotlight psychology\nperformance tension",
     },
-        {
+    {
       id: "equinox",
       title: "EQUINOX",
       lane: "iridescent",
@@ -268,6 +268,7 @@
       tags: "metal dubstep crossover\nfast live drums energy\nfuzzy guitar drive\nprimal aggression rhythm",
     }
   ];
+
   const LINKS = [
     { label: "Spotify", href: "https://open.spotify.com/artist/4s68tFsNBcKZSDB5Ja4HQl", note: "Canonical releases", icon: "spotify" },
     { label: "SoundCloud", href: "https://soundcloud.com/wamsmash", note: "Playground and iteration", icon: "soundcloud" },
@@ -299,6 +300,29 @@
       quote: "“L'artiste britannique lance un morceau bass music à la sauce de Dub FX pour l'approche doucement bouncy. L'interprétation vocale féminine bourrée d'attitude véhicule un récit poétique, telle une fable des temps modernes, débordante de métaphores empreintes d'une touche de spiritualité.”"
     },
   ];
+
+  const VAULT_RELEASE = {
+    id: "swim",
+    title: "SWIM",
+    subtitle: "Exclusive digital edition",
+    price: "£4.99",
+    edition: "Edition 1, one drop only",
+    endAt: "2026-06-19T23:59:59",
+    cover: "/assets/img/covers/swim.jpg",
+    support: "Best way to support me to keep making music",
+    includes: [
+      "High quality digital download",
+      "Collector note",
+      "Artwork pack",
+      "Vault presentation access"
+    ],
+    bundle: [
+      { title: "SWIM", cover: "/assets/img/covers/swim.jpg" },
+      { title: "SIDEWINDER", cover: "/assets/img/covers/sidewinder.jpg" },
+      { title: "TEMPO", cover: "/assets/img/covers/tempo.jpg" },
+      { title: "FLOW", cover: "/assets/img/covers/flow.jpg" }
+    ]
+  };
 
   function renderPress() {
     const mount = document.getElementById("wmPress");
@@ -350,9 +374,7 @@
     youtube: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2a3 3 0 00-2.1-2.1C17.7 4.6 12 4.6 12 4.6s-5.7 0-7.5.5A3 3 0 002.4 7.2 31.4 31.4 0 002.4 12a31.4 31.4 0 00.0 4.8 3 3 0 002.1 2.1c1.8.5 7.5.5 7.5.5s5.7 0 7.5-.5a3 3 0 002.1-2.1A31.4 31.4 0 0021.6 12a31.4 31.4 0 000-4.8zM10.2 15.2V8.8L15.8 12l-5.6 3.2z"/></svg>`,
     instagram: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 2h9A5.5 5.5 0 0122 7.5v9A5.5 5.5 0 0116.5 22h-9A5.5 5.5 0 012 16.5v-9A5.5 5.5 0 017.5 2zm0 2A3.5 3.5 0 004 7.5v9A3.5 3.5 0 007.5 20h9a3.5 3.5 0 003.5-3.5v-9A3.5 3.5 0 0016.5 4h-9zM12 7a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6zm5.6-2.2a1 1 0 110 2 1 1 0 010-2z"/></svg>`,
     x: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.6l-5.2-6.5L5.6 22H2.5l7.3-8.4L1 2h6.8l4.7 5.9L18.9 2zm-1.2 18h1.7L6.1 3.9H4.3L17.7 20z"/></svg>`,
-    vault: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l7 3v6c0 5.2-3.4 9.2-7 11c-3.6-1.8-7-5.8-7-11V5l7-3zm0 3.2L7 7.3v3.6c0 3.8 2.3 6.9 5 8.5c2.7-1.6 5-4.7 5-8.5V7.3l-5-2.1zm0 2.3a2.4 2.4 0 0 1 2.4 2.4c0 .9-.5 1.7-1.2 2.1V15h-2.4v-2.9A2.4 2.4 0 0 1 9.6 10A2.4 2.4 0 0 1 12 7.5zm0 1.8a.6.6 0 1 0 0 1.2a.6.6 0 0 0 0-1.2z"/></svg>`,
-
-    
+    vault: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l7 3v6c0 5.2-3.4 9.2-7 11c-3.6-1.8-7-5.8-7-11V5l7-3zm0 3.2L7 7.3v3.6c0 3.8 2.3 6.9 5 8.5c2.7-1.6 5-4.7 5-8.5V7.3l-5-2.1zm0 2.3a2.4 2.4 0 0 1 2.4 2.4c0 .9-.5 1.7-1.2 2.1V15h-2.4v-2.9A2.4 2.4 0 0 1 9.6 10A2.4 2.4 0 0 1 12 7.5zm0 1.8a.6.6 0 1 0 0 1.2a.6.6 0 0 0 0-1.2z"/></svg>`
   };
 
   function iconMarkup(name) {
@@ -483,26 +505,26 @@
   }
 
   function playNext() {
-  if (!TRACKS.length) return;
+    if (!TRACKS.length) return;
 
-  if (!currentTrackId) {
-    if (shuffleOn) {
-      playTrackById(pickNextTrackId());
-    } else {
-      playTrackById(TRACKS[0].id);
+    if (!currentTrackId) {
+      if (shuffleOn) {
+        playTrackById(pickNextTrackId());
+      } else {
+        playTrackById(TRACKS[0].id);
+      }
+      return;
     }
-    return;
-  }
 
-  if (!shuffleOn) {
-    const idx = TRACKS.findIndex(t => t.id === currentTrackId);
-    const next = TRACKS[(idx + 1) % TRACKS.length];
-    playTrackById(next.id);
-    return;
-  }
+    if (!shuffleOn) {
+      const idx = TRACKS.findIndex(t => t.id === currentTrackId);
+      const next = TRACKS[(idx + 1) % TRACKS.length];
+      playTrackById(next.id);
+      return;
+    }
 
-  playTrackById(pickNextTrackId());
-}
+    playTrackById(pickNextTrackId());
+  }
 
   function playPrev() {
     if (!TRACKS.length) return;
@@ -657,17 +679,18 @@
 
     for (let i = 0; i < LINKS.length; i++) {
       const item = LINKS[i];
-
       const a = document.createElement("a");
+      const isInternalVault = item.href === "#vault" || item.href === "/#vault";
+
       a.className = "linkCard";
       a.href = item.href;
-      const isInternalVault = item.href === "/#vault" || item.href === "#vault";
 
-if (!isInternalVault) {
-a.target = "_blank";
-a.rel = "noopener noreferrer";
-}
-a.innerHTML = `
+      if (!isInternalVault) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+
+      a.innerHTML = `
         <div class="linkCardTop">
           <div style="display:flex; align-items:center; gap:10px;">
             ${iconMarkup(item.icon)}
@@ -676,11 +699,328 @@ a.innerHTML = `
           <div class="linkCardBadge">${isInternalVault ? "Enter" : "Open"}</div>
         </div>
         <div class="linkCardNote">${item.note || ""}</div>
-        <div class="linkCardUrl">${item.href}</div>
+        <div class="linkCardUrl">${isInternalVault ? "Hidden access point" : item.href}</div>
       `;
 
       mount.appendChild(a);
     }
+  }
+
+  function getVaultCountdownParts(endAt) {
+    const end = new Date(endAt).getTime();
+    const now = Date.now();
+    const diff = Math.max(0, end - now);
+
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
+
+    return { diff, days, hours, mins, secs };
+  }
+
+  function ensureVaultStyles() {
+    if (document.getElementById("wmVaultStyles")) return;
+
+    const style = document.createElement("style");
+    style.id = "wmVaultStyles";
+    style.textContent = `
+      .vaultSection{
+        margin-top:24px;
+        border:1px solid rgba(255,190,70,0.18);
+        border-radius:24px;
+        overflow:hidden;
+        background:
+          radial-gradient(900px 500px at 50% -10%, rgba(255,140,40,0.10), transparent 60%),
+          radial-gradient(700px 420px at 15% 10%, rgba(255,90,0,0.08), transparent 60%),
+          radial-gradient(700px 420px at 85% 20%, rgba(255,210,80,0.06), transparent 60%),
+          linear-gradient(180deg, rgba(3,3,4,0.98), rgba(7,7,9,0.98));
+        box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+        position:relative;
+      }
+      .vaultSection::before{
+        content:"";
+        position:absolute;
+        inset:0;
+        pointer-events:none;
+        background:
+          radial-gradient(600px 200px at 50% 0%, rgba(255,170,50,0.10), transparent 70%),
+          linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%);
+        mix-blend-mode:screen;
+      }
+      .vaultInner{
+        padding:28px;
+        position:relative;
+        z-index:1;
+      }
+      .vaultTopline{
+        color:rgba(255,210,120,0.88);
+        font-size:12px;
+        letter-spacing:0.18em;
+        text-transform:uppercase;
+        margin-bottom:10px;
+      }
+      .vaultTitle{
+        margin:0;
+        font-size:34px;
+        line-height:1;
+        color:rgba(255,250,240,0.98);
+        text-shadow:0 0 20px rgba(255,170,50,0.18);
+      }
+      .vaultSub{
+        margin-top:10px;
+        color:rgba(210,210,220,0.82);
+        font-size:15px;
+        line-height:1.5;
+        max-width:820px;
+      }
+      .vaultHero{
+        display:grid;
+        grid-template-columns:minmax(280px, 420px) 1fr;
+        gap:24px;
+        align-items:start;
+        margin-top:24px;
+      }
+      .vaultCoverWrap{
+        position:relative;
+        border-radius:22px;
+        overflow:hidden;
+        border:1px solid rgba(255,200,90,0.18);
+        background:rgba(0,0,0,0.55);
+        box-shadow:0 18px 60px rgba(0,0,0,0.42);
+      }
+      .vaultCoverWrap::before{
+        content:"";
+        position:absolute;
+        inset:-18px;
+        background:
+          radial-gradient(circle at 50% 100%, rgba(255,90,0,0.34), transparent 35%),
+          radial-gradient(circle at 20% 90%, rgba(255,180,60,0.18), transparent 25%),
+          radial-gradient(circle at 80% 88%, rgba(255,120,20,0.18), transparent 25%);
+        filter:blur(16px);
+        animation:vaultFire 2.8s ease-in-out infinite;
+        pointer-events:none;
+        z-index:0;
+      }
+      .vaultCoverWrap img{
+        display:block;
+        width:100%;
+        height:auto;
+        position:relative;
+        z-index:1;
+      }
+      @keyframes vaultFire{
+        0%{ transform:translateY(0) scale(1); opacity:0.82; }
+        50%{ transform:translateY(-8px) scale(1.03); opacity:1; }
+        100%{ transform:translateY(0) scale(1); opacity:0.82; }
+      }
+      .vaultPanel{
+        border:1px solid rgba(255,255,255,0.08);
+        border-radius:20px;
+        padding:22px;
+        background:rgba(255,255,255,0.03);
+        backdrop-filter:blur(6px);
+      }
+      .vaultKicker{
+        color:rgba(255,215,120,0.92);
+        font-size:12px;
+        text-transform:uppercase;
+        letter-spacing:0.16em;
+        margin-bottom:10px;
+      }
+      .vaultReleaseTitle{
+        margin:0;
+        color:rgba(255,255,255,0.98);
+        font-size:30px;
+        line-height:1;
+      }
+      .vaultMeta{
+        margin-top:10px;
+        color:rgba(222,222,232,0.80);
+        line-height:1.5;
+        font-size:14px;
+      }
+      .vaultPrice{
+        margin-top:18px;
+        font-size:34px;
+        color:rgba(255,220,120,0.98);
+        font-weight:800;
+        text-shadow:0 0 18px rgba(255,170,50,0.16);
+      }
+      .vaultCountdown{
+        margin-top:16px;
+        display:flex;
+        flex-wrap:wrap;
+        gap:12px;
+      }
+      .vaultTick{
+        min-width:96px;
+        border-radius:16px;
+        padding:12px 14px;
+        background:rgba(0,0,0,0.38);
+        border:1px solid rgba(255,255,255,0.08);
+      }
+      .vaultTickNum{
+        display:block;
+        font-size:28px;
+        font-weight:800;
+        color:rgba(255,255,255,0.96);
+        line-height:1;
+      }
+      .vaultTickLab{
+        display:block;
+        margin-top:6px;
+        font-size:11px;
+        letter-spacing:0.14em;
+        text-transform:uppercase;
+        color:rgba(255,215,120,0.78);
+      }
+      .vaultList{
+        margin:18px 0 0 0;
+        padding-left:18px;
+        color:rgba(220,220,230,0.84);
+        line-height:1.7;
+        font-size:14px;
+      }
+      .vaultBundle{
+        margin-top:28px;
+      }
+      .vaultBundleTitle{
+        margin:0 0 14px 0;
+        color:rgba(255,255,255,0.96);
+        font-size:18px;
+      }
+      .vaultBundleGrid{
+        display:grid;
+        grid-template-columns:repeat(4, minmax(0, 1fr));
+        gap:14px;
+      }
+      .vaultBundleCard{
+        border:1px solid rgba(255,255,255,0.08);
+        border-radius:18px;
+        overflow:hidden;
+        background:rgba(255,255,255,0.03);
+      }
+      .vaultBundleCard img{
+        display:block;
+        width:100%;
+        height:auto;
+      }
+      .vaultBundleCard div{
+        padding:10px 12px;
+        color:rgba(235,235,240,0.90);
+        font-size:12px;
+        letter-spacing:0.06em;
+        text-transform:uppercase;
+      }
+      @media (max-width: 900px){
+        .vaultHero{
+          grid-template-columns:1fr;
+        }
+        .vaultBundleGrid{
+          grid-template-columns:repeat(2, minmax(0, 1fr));
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function updateVaultCountdown() {
+    const wrap = document.getElementById("vaultCountdown");
+    if (!wrap) return;
+
+    const t = getVaultCountdownParts(VAULT_RELEASE.endAt);
+
+    wrap.innerHTML = `
+      <div class="vaultTick">
+        <span class="vaultTickNum">${t.days}</span>
+        <span class="vaultTickLab">Days</span>
+      </div>
+      <div class="vaultTick">
+        <span class="vaultTickNum">${t.hours}</span>
+        <span class="vaultTickLab">Hours</span>
+      </div>
+      <div class="vaultTick">
+        <span class="vaultTickNum">${t.mins}</span>
+        <span class="vaultTickLab">Minutes</span>
+      </div>
+      <div class="vaultTick">
+        <span class="vaultTickNum">${t.secs}</span>
+        <span class="vaultTickLab">Seconds</span>
+      </div>
+    `;
+  }
+
+  function renderVault() {
+    ensureVaultStyles();
+
+    const linksView = document.getElementById("linksView");
+    if (!linksView) return;
+
+    let mount = document.getElementById("vaultEntry");
+
+    if (!mount) {
+      mount = document.createElement("section");
+      mount.id = "vaultEntry";
+      mount.className = "vaultSection";
+      linksView.appendChild(mount);
+    }
+
+    const includeItems = VAULT_RELEASE.includes.map(function (item) {
+      return `<li>${item}</li>`;
+    }).join("");
+
+    const bundleCards = VAULT_RELEASE.bundle.map(function (item) {
+      return `
+        <div class="vaultBundleCard">
+          <img src="${item.cover}" alt="${item.title} cover" loading="lazy" decoding="async">
+          <div>${item.title}</div>
+        </div>
+      `;
+    }).join("");
+
+    mount.innerHTML = `
+      <div class="vaultInner">
+        <div class="vaultTopline">Black Vault</div>
+        <h2 class="vaultTitle">Collector access</h2>
+        <div class="vaultSub">
+          A darker premium layer hidden inside the links page, one featured release, limited window access, premium presentation, controlled release structure
+        </div>
+
+        <div class="vaultHero">
+          <div class="vaultCoverWrap">
+            <img src="${VAULT_RELEASE.cover}" alt="${VAULT_RELEASE.title} cover" loading="eager" decoding="async">
+          </div>
+
+          <div class="vaultPanel">
+            <div class="vaultKicker">${VAULT_RELEASE.subtitle}</div>
+            <h3 class="vaultReleaseTitle">${VAULT_RELEASE.title}</h3>
+
+            <div class="vaultMeta">
+              ${VAULT_RELEASE.edition}<br>
+              ${VAULT_RELEASE.support}
+            </div>
+
+            <div class="vaultPrice">${VAULT_RELEASE.price}</div>
+
+            <div class="vaultCountdown" id="vaultCountdown"></div>
+
+            <ul class="vaultList">
+              ${includeItems}
+            </ul>
+          </div>
+        </div>
+
+        <div class="vaultBundle">
+          <h3 class="vaultBundleTitle">Bundle one</h3>
+          <div class="vaultBundleGrid">
+            ${bundleCards}
+          </div>
+        </div>
+      </div>
+    `;
+
+    updateVaultCountdown();
   }
 
   function playTrack(audioEl, trackId) {
@@ -724,9 +1064,10 @@ a.innerHTML = `
     if (hero) hero.style.display = view === "home" ? "block" : "none";
 
     setActiveNav(view);
-        if (view === "games" && wmAudio && !wmAudio.currentSrc) {
-  playNext();
-}
+
+    if (view === "games" && wmAudio && !wmAudio.currentSrc) {
+      playNext();
+    }
   }
 
   function setActiveNav(view) {
@@ -750,31 +1091,30 @@ a.innerHTML = `
     const raw = (location.hash || "").replace(/^#/, "");
     if (!raw) return { view: "home", scrollId: "" };
 
-    const parts = raw.split("#");
-    const viewPart = parts[0];
-    const scrollId = parts[1] || "";
+    if (raw === "music") return { view: "music", scrollId: "" };
+    if (raw.startsWith("music#")) return { view: "music", scrollId: raw.slice(6) };
 
-    if (viewPart === "music") return { view: "music", scrollId };
-    if (viewPart === "links") return { view: "links", scrollId: "" };
-    if (viewPart === "vault") return { view: "links", scrollId: "vaultEntry" };
-    if (viewPart === "games") return { view: "games", scrollId: "" };
+    if (raw === "links") return { view: "links", scrollId: "" };
+    if (raw === "vault") return { view: "links", scrollId: "vaultEntry" };
+
+    if (raw === "games") return { view: "games", scrollId: "" };
 
     return { view: "home", scrollId: "" };
   }
 
-function applyRoute() {
-  const route = parseHash();
-  switchView(route.view);
+  function applyRoute() {
+    const route = parseHash();
+    switchView(route.view);
 
-  if (route.scrollId) {
-    requestAnimationFrame(function () {
-      const target = document.getElementById(route.scrollId);
-      if (target) {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    });
+    if (route.scrollId) {
+      requestAnimationFrame(function () {
+        const target = document.getElementById(route.scrollId);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    }
   }
-}
 
   function wireNavigation() {
     document.addEventListener("click", function (e) {
@@ -805,7 +1145,9 @@ function applyRoute() {
         return;
       }
 
-      if (view === "home") location.hash = "";
+      if (view === "home") {
+        location.hash = "";
+      }
     });
 
     document.addEventListener("keydown", function (e) {
@@ -836,7 +1178,7 @@ function applyRoute() {
         box-shadow:0 10px 30px rgba(0,0,0,0.28);
       }
       .wmGameWrap.wmGameFull{
-      grid-column: 1 / -1;
+        grid-column: 1 / -1;
       }
       .wmGameHead{
         display:flex;
@@ -983,18 +1325,17 @@ function applyRoute() {
         line-height:1.35;
       }
       .wmEmbedFrame{
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.12);
-  overflow:hidden;
-  background:rgba(0,0,0,0.20);
-}
-
-.wmEmbedFrame iframe{
-  width:100%;
-  height:620px;
-  display:block;
-  border:0;
-}
+        border-radius:16px;
+        border:1px solid rgba(255,255,255,0.12);
+        overflow:hidden;
+        background:rgba(0,0,0,0.20);
+      }
+      .wmEmbedFrame iframe{
+        width:100%;
+        height:620px;
+        display:block;
+        border:0;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -1007,66 +1348,66 @@ function applyRoute() {
 
     ensureGameStyles();
 
-mount.innerHTML = `
-  <div class="wmGameWrap wmGameFull">
-    <div class="wmGameHead">
-      <div>
-        <h3 class="wmGameTitle">WAMSMASH</h3>
-      </div>
-      <div class="wmGameRow">
-        <a class="btn btnPrimary" href="/game/" target="_blank" rel="noopener">Full Screen</a>
-      </div>
-    </div>
+    mount.innerHTML = `
+      <div class="wmGameWrap wmGameFull">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">WAMSMASH</h3>
+          </div>
+          <div class="wmGameRow">
+            <a class="btn btnPrimary" href="/game/" target="_blank" rel="noopener">Full Screen</a>
+          </div>
+        </div>
 
-    <div class="wmEmbedFrame">
-      <iframe
-        src="/game/"
-        title="WAMSMASH"
-        loading="lazy"
-        scrolling="no"
-      ></iframe>
-    </div>
-  </div>
+        <div class="wmEmbedFrame">
+          <iframe
+            src="/game/"
+            title="WAMSMASH"
+            loading="lazy"
+            scrolling="no"
+          ></iframe>
+        </div>
+      </div>
 
-  <div class="wmGameWrap">
-    <div class="wmGameHead">
-      <div>
-        <h3 class="wmGameTitle">Covers</h3>
+      <div class="wmGameWrap">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">Covers</h3>
+          </div>
+          <div class="wmGameRow">
+            <button class="btn btnPrimary" type="button" data-game="memory">Play</button>
+            <button class="btn" type="button" data-game="memory-reset">Reset</button>
+          </div>
+        </div>
+        <div id="wmGameMemory"></div>
       </div>
-      <div class="wmGameRow">
-        <button class="btn btnPrimary" type="button" data-game="memory">Play</button>
-        <button class="btn" type="button" data-game="memory-reset">Reset</button>
-      </div>
-    </div>
-    <div id="wmGameMemory"></div>
-  </div>
 
-  <div class="wmGameWrap">
-    <div class="wmGameHead">
-      <div>
-        <h3 class="wmGameTitle">Neon Reaction</h3>
+      <div class="wmGameWrap">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">Neon Reaction</h3>
+          </div>
+          <div class="wmGameRow">
+            <button class="btn btnPrimary" type="button" data-game="reaction">Play</button>
+            <button class="btn" type="button" data-game="reaction-reset">Reset</button>
+          </div>
+        </div>
+        <div id="wmGameReaction"></div>
       </div>
-      <div class="wmGameRow">
-        <button class="btn btnPrimary" type="button" data-game="reaction">Play</button>
-        <button class="btn" type="button" data-game="reaction-reset">Reset</button>
-      </div>
-    </div>
-    <div id="wmGameReaction"></div>
-  </div>
 
-  <div class="wmGameWrap">
-    <div class="wmGameHead">
-      <div>
-        <h3 class="wmGameTitle">Keepie Uppie</h3>
+      <div class="wmGameWrap">
+        <div class="wmGameHead">
+          <div>
+            <h3 class="wmGameTitle">Keepie Uppie</h3>
+          </div>
+          <div class="wmGameRow">
+            <button class="btn btnPrimary" type="button" data-game="curve">Play</button>
+            <button class="btn" type="button" data-game="curve-reset">Reset</button>
+          </div>
+        </div>
+        <div id="wmGameCurve"></div>
       </div>
-      <div class="wmGameRow">
-        <button class="btn btnPrimary" type="button" data-game="curve">Play</button>
-        <button class="btn" type="button" data-game="curve-reset">Reset</button>
-      </div>
-    </div>
-    <div id="wmGameCurve"></div>
-  </div>
-`;
+    `;
 
     initMemory(true);
     initReaction(true);
@@ -1239,7 +1580,7 @@ mount.innerHTML = `
 
     const born = performance.now();
 
-    t.addEventListener("click", function (e) {
+    t.addEventListener("click", function () {
       if (!reactState || !reactState.running) return;
 
       const now = performance.now();
@@ -1295,13 +1636,14 @@ mount.innerHTML = `
     const mount = document.getElementById("wmGameCurve");
     if (!mount) return;
 
-mount.innerHTML = `
-  <div class="wmCanvasWrap">
-    <canvas id="wmCurveCanvas" width="720" height="360"></canvas>
-  </div>
-`;
-const canvas = document.getElementById("wmCurveCanvas");
-if (!canvas) return;
+    mount.innerHTML = `
+      <div class="wmCanvasWrap">
+        <canvas id="wmCurveCanvas" width="720" height="360"></canvas>
+      </div>
+    `;
+
+    const canvas = document.getElementById("wmCurveCanvas");
+    if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
 
@@ -1350,13 +1692,13 @@ if (!canvas) return;
 
       g.clearRect(0, 0, canvas.width, canvas.height);
 
-
       g.fillStyle = "rgba(0,0,0,0.25)";
       g.fillRect(0, 0, canvas.width, canvas.height);
-g.fillStyle = "rgba(242,243,247,0.9)";
-g.font = "44px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
-g.fillText(String(s.score), 18, 56);
-      
+
+      g.fillStyle = "rgba(242,243,247,0.9)";
+      g.font = "44px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+      g.fillText(String(s.score), 18, 56);
+
       g.fillStyle = "rgba(255,255,255,0.10)";
       for (let i = 0; i < 24; i++) {
         const x = (i * 31 + 17) % canvas.width;
@@ -1409,18 +1751,18 @@ g.fillText(String(s.score), 18, 56);
       const hitX = s.ballX >= paddleLeft && s.ballX <= paddleRight;
 
       if (hitY && hitX && s.ballVY > 0) {
-      const rel = (s.ballX - s.paddleX) / (s.paddleW / 2);
-      s.ballVY = -Math.abs(s.ballVY) * 1.02;
-      s.ballVX += rel * 1.8;
+        const rel = (s.ballX - s.paddleX) / (s.paddleW / 2);
+        s.ballVY = -Math.abs(s.ballVY) * 1.02;
+        s.ballVX += rel * 1.8;
 
-      const curve = clamp(s.paddleVX / 18, -1.2, 1.2);
-      s.ballVX += curve * 1.6;
+        const curve = clamp(s.paddleVX / 18, -1.2, 1.2);
+        s.ballVX += curve * 1.6;
 
-      s.score += 1;
-      s.speedMul *= 1.02;
-      s.ballVX *= 1.02;
-      s.ballVY *= 1.02;
-    }
+        s.score += 1;
+        s.speedMul *= 1.02;
+        s.ballVX *= 1.02;
+        s.ballVY *= 1.02;
+      }
 
       if (s.ballY > s.canvas.height + 40) {
         s.running = false;
@@ -1430,30 +1772,30 @@ g.fillText(String(s.score), 18, 56);
       requestAnimationFrame(step);
     }
 
-function serveNow() {
-  const s = curveState;
-  s.ballX = s.canvas.width / 2;
-  s.ballY = s.canvas.height / 2;
-  s.ballVX = 3.2 * (Math.random() < 0.5 ? -1 : 1);
-  s.ballVY = 2.6;
-  s.speedMul = 1;
-  s.score = 0;
-  s.lastT = 0;
-  s.running = true;
-  requestAnimationFrame(step);
-}
+    function serveNow() {
+      const s = curveState;
+      s.ballX = s.canvas.width / 2;
+      s.ballY = s.canvas.height / 2;
+      s.ballVX = 3.2 * (Math.random() < 0.5 ? -1 : 1);
+      s.ballVY = 2.6;
+      s.speedMul = 1;
+      s.score = 0;
+      s.lastT = 0;
+      s.running = true;
+      requestAnimationFrame(step);
+    }
 
-canvas.addEventListener("click", function () {
-  if (!curveState) return;
-  if (!curveState.running) serveNow();
-});
+    canvas.addEventListener("click", function () {
+      if (!curveState) return;
+      if (!curveState.running) serveNow();
+    });
 
     draw();
 
-if (!silent) {
-  activeGame = "curve";
-  serveNow();
-}
+    if (!silent) {
+      activeGame = "curve";
+      serveNow();
+    }
   }
 
   function wireGamesControls() {
@@ -1519,8 +1861,11 @@ if (!silent) {
     renderFeaturedGrid();
     renderMusicList();
     renderLinks();
+    renderVault();
     renderPress();
     renderGames();
+
+    setInterval(updateVaultCountdown, 1000);
 
     window.addEventListener("hashchange", applyRoute);
     applyRoute();
