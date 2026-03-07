@@ -298,55 +298,8 @@
       source: "Boulimique de Musique, Les Saveurs du Jour",
       href: "https://boulimiquedemusique.blogspot.com/2026/02/la-steppe-awake-dreaming-wamsmash-les.html",
       quote: "“L'artiste britannique lance un morceau bass music à la sauce de Dub FX pour l'approche doucement bouncy. L'interprétation vocale féminine bourrée d'attitude véhicule un récit poétique, telle une fable des temps modernes, débordante de métaphores empreintes d'une touche de spiritualité.”"
-    },
-  ];
-
-  const VAULT_RELEASE = {
-    id: "swim",
-    title: "SWIM",
-    subtitle: "Exclusive digital edition",
-    price: "£4.99",
-    edition: "Edition 1, one drop only",
-    endAt: "2026-06-19T23:59:59",
-    cover: "/assets/img/covers/swim.jpg",
-    support: "Best way to support me to keep making music",
-    includes: [
-      "High quality digital download",
-      "Collector note",
-      "Artwork pack",
-      "Vault presentation access"
-    ],
-    bundle: [
-      { title: "SWIM", cover: "/assets/img/covers/swim.jpg" },
-      { title: "SIDEWINDER", cover: "/assets/img/covers/sidewinder.jpg" },
-      { title: "TEMPO", cover: "/assets/img/covers/tempo.jpg" },
-      { title: "FLOW", cover: "/assets/img/covers/flow.jpg" }
-    ]
-  };
-
-  function renderPress() {
-    const mount = document.getElementById("wmPress");
-    if (!mount) return;
-
-    mount.innerHTML = "";
-
-    for (const item of PRESS) {
-      const a = document.createElement("a");
-      a.className = "pressCard";
-      a.href = item.href;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-
-      a.innerHTML = `
-        <div class="pressTop">
-          <div class="pressSource">${item.source}</div>
-        </div>
-        <div class="pressQuote">${item.quote}</div>
-      `;
-
-      mount.appendChild(a);
     }
-  }
+  ];
 
   function laneLabel(lane) {
     const v = String(lane || "").toLowerCase();
@@ -410,6 +363,7 @@
   let currentTrackId = "";
   let shuffleOn = true;
   let recentQueue = [];
+  let vaultTimer = null;
 
   function pickNextTrackId() {
     const ids = TRACKS.map(t => t.id);
@@ -572,13 +526,8 @@
         else wmAudio.pause();
       }
 
-      if (e.code === "ArrowRight") {
-        playNext();
-      }
-
-      if (e.code === "ArrowLeft") {
-        playPrev();
-      }
+      if (e.code === "ArrowRight") playNext();
+      if (e.code === "ArrowLeft") playPrev();
     });
   }
 
@@ -699,328 +648,35 @@
           <div class="linkCardBadge">${isInternalVault ? "Enter" : "Open"}</div>
         </div>
         <div class="linkCardNote">${item.note || ""}</div>
-        <div class="linkCardUrl">${isInternalVault ? "Hidden access point" : item.href}</div>
+        <div class="linkCardUrl">${isInternalVault ? "Hidden inside links" : item.href}</div>
       `;
 
       mount.appendChild(a);
     }
   }
 
-  function getVaultCountdownParts(endAt) {
-    const end = new Date(endAt).getTime();
-    const now = Date.now();
-    const diff = Math.max(0, end - now);
+  function renderPress() {
+    const mount = document.getElementById("wmPress");
+    if (!mount) return;
 
-    const days = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const mins = Math.floor((diff % 3600000) / 60000);
-    const secs = Math.floor((diff % 60000) / 1000);
+    mount.innerHTML = "";
 
-    return { diff, days, hours, mins, secs };
-  }
+    for (const item of PRESS) {
+      const a = document.createElement("a");
+      a.className = "pressCard";
+      a.href = item.href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
 
-  function ensureVaultStyles() {
-    if (document.getElementById("wmVaultStyles")) return;
-
-    const style = document.createElement("style");
-    style.id = "wmVaultStyles";
-    style.textContent = `
-      .vaultSection{
-        margin-top:24px;
-        border:1px solid rgba(255,190,70,0.18);
-        border-radius:24px;
-        overflow:hidden;
-        background:
-          radial-gradient(900px 500px at 50% -10%, rgba(255,140,40,0.10), transparent 60%),
-          radial-gradient(700px 420px at 15% 10%, rgba(255,90,0,0.08), transparent 60%),
-          radial-gradient(700px 420px at 85% 20%, rgba(255,210,80,0.06), transparent 60%),
-          linear-gradient(180deg, rgba(3,3,4,0.98), rgba(7,7,9,0.98));
-        box-shadow: 0 24px 80px rgba(0,0,0,0.45);
-        position:relative;
-      }
-      .vaultSection::before{
-        content:"";
-        position:absolute;
-        inset:0;
-        pointer-events:none;
-        background:
-          radial-gradient(600px 200px at 50% 0%, rgba(255,170,50,0.10), transparent 70%),
-          linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%);
-        mix-blend-mode:screen;
-      }
-      .vaultInner{
-        padding:28px;
-        position:relative;
-        z-index:1;
-      }
-      .vaultTopline{
-        color:rgba(255,210,120,0.88);
-        font-size:12px;
-        letter-spacing:0.18em;
-        text-transform:uppercase;
-        margin-bottom:10px;
-      }
-      .vaultTitle{
-        margin:0;
-        font-size:34px;
-        line-height:1;
-        color:rgba(255,250,240,0.98);
-        text-shadow:0 0 20px rgba(255,170,50,0.18);
-      }
-      .vaultSub{
-        margin-top:10px;
-        color:rgba(210,210,220,0.82);
-        font-size:15px;
-        line-height:1.5;
-        max-width:820px;
-      }
-      .vaultHero{
-        display:grid;
-        grid-template-columns:minmax(280px, 420px) 1fr;
-        gap:24px;
-        align-items:start;
-        margin-top:24px;
-      }
-      .vaultCoverWrap{
-        position:relative;
-        border-radius:22px;
-        overflow:hidden;
-        border:1px solid rgba(255,200,90,0.18);
-        background:rgba(0,0,0,0.55);
-        box-shadow:0 18px 60px rgba(0,0,0,0.42);
-      }
-      .vaultCoverWrap::before{
-        content:"";
-        position:absolute;
-        inset:-18px;
-        background:
-          radial-gradient(circle at 50% 100%, rgba(255,90,0,0.34), transparent 35%),
-          radial-gradient(circle at 20% 90%, rgba(255,180,60,0.18), transparent 25%),
-          radial-gradient(circle at 80% 88%, rgba(255,120,20,0.18), transparent 25%);
-        filter:blur(16px);
-        animation:vaultFire 2.8s ease-in-out infinite;
-        pointer-events:none;
-        z-index:0;
-      }
-      .vaultCoverWrap img{
-        display:block;
-        width:100%;
-        height:auto;
-        position:relative;
-        z-index:1;
-      }
-      @keyframes vaultFire{
-        0%{ transform:translateY(0) scale(1); opacity:0.82; }
-        50%{ transform:translateY(-8px) scale(1.03); opacity:1; }
-        100%{ transform:translateY(0) scale(1); opacity:0.82; }
-      }
-      .vaultPanel{
-        border:1px solid rgba(255,255,255,0.08);
-        border-radius:20px;
-        padding:22px;
-        background:rgba(255,255,255,0.03);
-        backdrop-filter:blur(6px);
-      }
-      .vaultKicker{
-        color:rgba(255,215,120,0.92);
-        font-size:12px;
-        text-transform:uppercase;
-        letter-spacing:0.16em;
-        margin-bottom:10px;
-      }
-      .vaultReleaseTitle{
-        margin:0;
-        color:rgba(255,255,255,0.98);
-        font-size:30px;
-        line-height:1;
-      }
-      .vaultMeta{
-        margin-top:10px;
-        color:rgba(222,222,232,0.80);
-        line-height:1.5;
-        font-size:14px;
-      }
-      .vaultPrice{
-        margin-top:18px;
-        font-size:34px;
-        color:rgba(255,220,120,0.98);
-        font-weight:800;
-        text-shadow:0 0 18px rgba(255,170,50,0.16);
-      }
-      .vaultCountdown{
-        margin-top:16px;
-        display:flex;
-        flex-wrap:wrap;
-        gap:12px;
-      }
-      .vaultTick{
-        min-width:96px;
-        border-radius:16px;
-        padding:12px 14px;
-        background:rgba(0,0,0,0.38);
-        border:1px solid rgba(255,255,255,0.08);
-      }
-      .vaultTickNum{
-        display:block;
-        font-size:28px;
-        font-weight:800;
-        color:rgba(255,255,255,0.96);
-        line-height:1;
-      }
-      .vaultTickLab{
-        display:block;
-        margin-top:6px;
-        font-size:11px;
-        letter-spacing:0.14em;
-        text-transform:uppercase;
-        color:rgba(255,215,120,0.78);
-      }
-      .vaultList{
-        margin:18px 0 0 0;
-        padding-left:18px;
-        color:rgba(220,220,230,0.84);
-        line-height:1.7;
-        font-size:14px;
-      }
-      .vaultBundle{
-        margin-top:28px;
-      }
-      .vaultBundleTitle{
-        margin:0 0 14px 0;
-        color:rgba(255,255,255,0.96);
-        font-size:18px;
-      }
-      .vaultBundleGrid{
-        display:grid;
-        grid-template-columns:repeat(4, minmax(0, 1fr));
-        gap:14px;
-      }
-      .vaultBundleCard{
-        border:1px solid rgba(255,255,255,0.08);
-        border-radius:18px;
-        overflow:hidden;
-        background:rgba(255,255,255,0.03);
-      }
-      .vaultBundleCard img{
-        display:block;
-        width:100%;
-        height:auto;
-      }
-      .vaultBundleCard div{
-        padding:10px 12px;
-        color:rgba(235,235,240,0.90);
-        font-size:12px;
-        letter-spacing:0.06em;
-        text-transform:uppercase;
-      }
-      @media (max-width: 900px){
-        .vaultHero{
-          grid-template-columns:1fr;
-        }
-        .vaultBundleGrid{
-          grid-template-columns:repeat(2, minmax(0, 1fr));
-        }
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
-  function updateVaultCountdown() {
-    const wrap = document.getElementById("vaultCountdown");
-    if (!wrap) return;
-
-    const t = getVaultCountdownParts(VAULT_RELEASE.endAt);
-
-    wrap.innerHTML = `
-      <div class="vaultTick">
-        <span class="vaultTickNum">${t.days}</span>
-        <span class="vaultTickLab">Days</span>
-      </div>
-      <div class="vaultTick">
-        <span class="vaultTickNum">${t.hours}</span>
-        <span class="vaultTickLab">Hours</span>
-      </div>
-      <div class="vaultTick">
-        <span class="vaultTickNum">${t.mins}</span>
-        <span class="vaultTickLab">Minutes</span>
-      </div>
-      <div class="vaultTick">
-        <span class="vaultTickNum">${t.secs}</span>
-        <span class="vaultTickLab">Seconds</span>
-      </div>
-    `;
-  }
-
-  function renderVault() {
-    ensureVaultStyles();
-
-    const linksView = document.getElementById("linksView");
-    if (!linksView) return;
-
-    let mount = document.getElementById("vaultEntry");
-
-    if (!mount) {
-      mount = document.createElement("section");
-      mount.id = "vaultEntry";
-      mount.className = "vaultSection";
-      linksView.appendChild(mount);
-    }
-
-    const includeItems = VAULT_RELEASE.includes.map(function (item) {
-      return `<li>${item}</li>`;
-    }).join("");
-
-    const bundleCards = VAULT_RELEASE.bundle.map(function (item) {
-      return `
-        <div class="vaultBundleCard">
-          <img src="${item.cover}" alt="${item.title} cover" loading="lazy" decoding="async">
-          <div>${item.title}</div>
+      a.innerHTML = `
+        <div class="pressTop">
+          <div class="pressSource">${item.source}</div>
         </div>
+        <div class="pressQuote">${item.quote}</div>
       `;
-    }).join("");
 
-    mount.innerHTML = `
-      <div class="vaultInner">
-        <div class="vaultTopline">Black Vault</div>
-        <h2 class="vaultTitle">Collector access</h2>
-        <div class="vaultSub">
-          A darker premium layer hidden inside the links page, one featured release, limited window access, premium presentation, controlled release structure
-        </div>
-
-        <div class="vaultHero">
-          <div class="vaultCoverWrap">
-            <img src="${VAULT_RELEASE.cover}" alt="${VAULT_RELEASE.title} cover" loading="eager" decoding="async">
-          </div>
-
-          <div class="vaultPanel">
-            <div class="vaultKicker">${VAULT_RELEASE.subtitle}</div>
-            <h3 class="vaultReleaseTitle">${VAULT_RELEASE.title}</h3>
-
-            <div class="vaultMeta">
-              ${VAULT_RELEASE.edition}<br>
-              ${VAULT_RELEASE.support}
-            </div>
-
-            <div class="vaultPrice">${VAULT_RELEASE.price}</div>
-
-            <div class="vaultCountdown" id="vaultCountdown"></div>
-
-            <ul class="vaultList">
-              ${includeItems}
-            </ul>
-          </div>
-        </div>
-
-        <div class="vaultBundle">
-          <h3 class="vaultBundleTitle">Bundle one</h3>
-          <div class="vaultBundleGrid">
-            ${bundleCards}
-          </div>
-        </div>
-      </div>
-    `;
-
-    updateVaultCountdown();
+      mount.appendChild(a);
+    }
   }
 
   function playTrack(audioEl, trackId) {
@@ -1051,22 +707,30 @@
     const home = document.getElementById("homeView");
     const music = document.getElementById("musicView");
     const links = document.getElementById("linksView");
+    const vault = document.getElementById("vaultView");
     const games = document.getElementById("gamesView");
     const hero = document.querySelector(".heroIntro");
 
-    if (!home || !music || !links || !games) return;
+    if (!home || !music || !links || !vault || !games) return;
 
     home.style.display = view === "home" ? "block" : "none";
     music.style.display = view === "music" ? "block" : "none";
     links.style.display = view === "links" ? "block" : "none";
+    vault.style.display = view === "vault" ? "block" : "none";
     games.style.display = view === "games" ? "block" : "none";
 
     if (hero) hero.style.display = view === "home" ? "block" : "none";
 
-    setActiveNav(view);
+    setActiveNav(view === "vault" ? "links" : view);
 
     if (view === "games" && wmAudio && !wmAudio.currentSrc) {
       playNext();
+    }
+
+    if (view === "vault") {
+      startVaultCountdown();
+    } else {
+      stopVaultCountdown();
     }
   }
 
@@ -1092,11 +756,9 @@
     if (!raw) return { view: "home", scrollId: "" };
 
     if (raw === "music") return { view: "music", scrollId: "" };
-    if (raw.startsWith("music#")) return { view: "music", scrollId: raw.slice(6) };
-
+    if (raw.startsWith("music#")) return { view: "music", scrollId: raw.split("#")[1] || "" };
     if (raw === "links") return { view: "links", scrollId: "" };
-    if (raw === "vault") return { view: "links", scrollId: "vaultEntry" };
-
+    if (raw === "vault") return { view: "vault", scrollId: "" };
     if (raw === "games") return { view: "games", scrollId: "" };
 
     return { view: "home", scrollId: "" };
@@ -1159,6 +821,68 @@
         location.hash = "music";
       }
     });
+  }
+
+  function pad2(n) {
+    return String(n).padStart(2, "0");
+  }
+
+  function updateVaultCountdown() {
+    const countdown = document.getElementById("vaultCountdown");
+    if (!countdown) return;
+
+    const endRaw = countdown.getAttribute("data-end");
+    if (!endRaw) return;
+
+    const end = new Date(endRaw).getTime();
+    const now = Date.now();
+    const diff = Math.max(0, end - now);
+
+    const totalSeconds = Math.floor(diff / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+
+    const daysEl = document.getElementById("vaultDays");
+    const hoursEl = document.getElementById("vaultHours");
+    const minutesEl = document.getElementById("vaultMinutes");
+    const secondsEl = document.getElementById("vaultSeconds");
+
+    if (daysEl) daysEl.textContent = pad2(days);
+    if (hoursEl) hoursEl.textContent = pad2(hours);
+    if (minutesEl) minutesEl.textContent = pad2(minutes);
+    if (secondsEl) secondsEl.textContent = pad2(seconds);
+  }
+
+  function startVaultCountdown() {
+    updateVaultCountdown();
+    stopVaultCountdown();
+    vaultTimer = setInterval(updateVaultCountdown, 1000);
+  }
+
+  function stopVaultCountdown() {
+    if (vaultTimer) {
+      clearInterval(vaultTimer);
+      vaultTimer = null;
+    }
+  }
+
+  function wireVaultButtons() {
+    const swimBtn = document.getElementById("buySwimBtn");
+    const bundleBtn = document.getElementById("buyBundleBtn");
+
+    if (swimBtn) {
+      swimBtn.addEventListener("click", function () {
+        alert("SWIM checkout wiring is the next step");
+      });
+    }
+
+    if (bundleBtn) {
+      bundleBtn.addEventListener("click", function () {
+        alert("Bundle checkout wiring is the next step");
+      });
+    }
   }
 
   function clamp(n, a, b) {
@@ -1341,6 +1065,9 @@
   }
 
   let activeGame = "";
+  let memState = null;
+  let reactState = null;
+  let curveState = null;
 
   function renderGames() {
     const mount = document.getElementById("wmGames");
@@ -1425,8 +1152,6 @@
     return list.slice(0, clamp(pairCount, 3, Math.min(10, list.length)));
   }
 
-  let memState = null;
-
   function initMemory(silent) {
     const mount = document.getElementById("wmGameMemory");
     if (!mount) return;
@@ -1493,7 +1218,6 @@
 
     const cardEl = grid.querySelector(`[data-idx="${idx}"]`);
     if (!cardEl) return;
-
     if (cardEl.classList.contains("isFlipped")) return;
 
     cardEl.classList.add("isFlipped");
@@ -1534,8 +1258,6 @@
       memState.lock = false;
     }, 520);
   }
-
-  let reactState = null;
 
   function initReaction(silent) {
     const mount = document.getElementById("wmGameReaction");
@@ -1630,8 +1352,6 @@
     spawnReactionTarget();
   }
 
-  let curveState = null;
-
   function initCurve(silent) {
     const mount = document.getElementById("wmGameCurve");
     if (!mount) return;
@@ -1724,7 +1444,7 @@
       s.lastT = t;
 
       const px = s.paddleX;
-      s.paddleVX = (px - s.lastPaddleX);
+      s.paddleVX = px - s.lastPaddleX;
       s.lastPaddleX = px;
 
       s.ballX += s.ballVX * dt;
@@ -1814,7 +1534,6 @@
         initMemory(true);
         return;
       }
-
       if (key === "reaction") {
         initReaction(false);
         startReaction();
@@ -1824,7 +1543,6 @@
         initReaction(true);
         return;
       }
-
       if (key === "curve") {
         initCurve(false);
         return;
@@ -1857,15 +1575,13 @@
     wireNavigation();
     wirePlayerControls();
     wireGamesControls();
+    wireVaultButtons();
 
     renderFeaturedGrid();
     renderMusicList();
     renderLinks();
-    renderVault();
     renderPress();
     renderGames();
-
-    setInterval(updateVaultCountdown, 1000);
 
     window.addEventListener("hashchange", applyRoute);
     applyRoute();
