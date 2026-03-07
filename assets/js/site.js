@@ -274,7 +274,7 @@
     { label: "YouTube", href: "https://www.youtube.com/@wamsmash", note: "Visual hub", icon: "youtube" },
     { label: "Instagram", href: "https://www.instagram.com/wamsmash", note: "Updates", icon: "instagram" },
     { label: "X", href: "https://x.com/wamsmash_", note: "Updates", icon: "x" },
-    { label: "Bandcamp", href: "https://wamsmash.bandcamp.com/", note: "Direct support and catalogue", icon: "bandcamp" }
+    { label: "BLACK VAULT", href: "/#vault", note: "Exclusive editions and collector drops", icon: "bandcamp" }
   ];
 
   const PRESS = [
@@ -659,16 +659,19 @@
       const a = document.createElement("a");
       a.className = "linkCard";
       a.href = item.href;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
+      const isInternalVault = item.href === "/#vault" || item.href === "#vault";
 
-      a.innerHTML = `
+if (!isInternalVault) {
+a.target = "_blank";
+a.rel = "noopener noreferrer";
+}
+a.innerHTML = `
         <div class="linkCardTop">
           <div style="display:flex; align-items:center; gap:10px;">
             ${iconMarkup(item.icon)}
             <div class="linkCardTitle">${item.label}</div>
           </div>
-          <div class="linkCardBadge">Open</div>
+          <div class="linkCardBadge">${isInternalVault ? "Enter" : "Open"}</div>
         </div>
         <div class="linkCardNote">${item.note || ""}</div>
         <div class="linkCardUrl">${item.href}</div>
