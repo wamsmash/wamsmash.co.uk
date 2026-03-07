@@ -275,7 +275,7 @@
     { label: "YouTube", href: "https://www.youtube.com/@wamsmash", note: "Visual hub", icon: "youtube" },
     { label: "Instagram", href: "https://www.instagram.com/wamsmash", note: "Updates", icon: "instagram" },
     { label: "X", href: "https://x.com/wamsmash_", note: "Updates", icon: "x" },
-    { label: "BLACK VAULT", href: "#vault", note: "Collector access", icon: "vault" }
+    { label: "BLACK VAULT", href: "#vault", note: "Collector layer", icon: "vault" }
   ];
 
   const PRESS = [
