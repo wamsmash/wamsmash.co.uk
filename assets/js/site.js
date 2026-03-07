@@ -703,37 +703,39 @@
     });
   }
 
-  function switchView(view) {
-    const home = document.getElementById("homeView");
-    const music = document.getElementById("musicView");
-    const links = document.getElementById("linksView");
-    const vault = document.getElementById("vaultView");
-    const games = document.getElementById("gamesView");
-    const hero = document.querySelector(".heroIntro");
+function switchView(view) {
+  const home = document.getElementById("homeView");
+  const music = document.getElementById("musicView");
+  const links = document.getElementById("linksView");
+  const vault = document.getElementById("vaultView");
+  const games = document.getElementById("gamesView");
+  const hero = document.querySelector(".heroIntro");
 
-    if (!home || !music || !links || !vault || !games) return;
+  if (!home || !music || !links || !vault || !games) return;
 
-    home.style.display = view === "home" ? "block" : "none";
-    music.style.display = view === "music" ? "block" : "none";
-    links.style.display = view === "links" ? "block" : "none";
-    vault.style.display = view === "vault" ? "block" : "none";
-    games.style.display = view === "games" ? "block" : "none";
+  home.style.display = view === "home" ? "block" : "none";
+  music.style.display = view === "music" ? "block" : "none";
+  links.style.display = view === "links" ? "block" : "none";
+  vault.style.display = view === "vault" ? "block" : "none";
+  games.style.display = view === "games" ? "block" : "none";
 
-    if (hero) hero.style.display = view === "home" ? "block" : "none";
+  if (hero) hero.style.display = view === "home" ? "block" : "none";
 
-    setActiveNav(view === "vault" ? "links" : view);
+  setActiveNav(view === "vault" ? "links" : view);
 
-    if (view === "games" && wmAudio && !wmAudio.currentSrc) {
-      playNext();
-    }
-
-    if (view === "vault") {
-      startVaultCountdown();
-    } else {
-      stopVaultCountdown();
-    }
+  if (view === "games" && wmAudio && !wmAudio.currentSrc) {
+    playNext();
   }
 
+  if (view === "vault") {
+    startVaultCountdown();
+    requestAnimationFrame(function () {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    });
+  } else {
+    stopVaultCountdown();
+  }
+}
   function setActiveNav(view) {
     const navRoot = document.querySelector("header nav");
     if (!navRoot) return;
