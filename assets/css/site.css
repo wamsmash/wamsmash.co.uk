@@ -1099,7 +1099,36 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   font-size:18px;
   line-height:1.7;
 }
+.vaultWhatList{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:2px;
+}
 
+.vaultWhatItem{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:rgba(240,230,219,0.80);
+  font-size:18px;
+  line-height:1.5;
+}
+
+.vaultWhatIcon{
+  width:28px;
+  flex:0 0 28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#f5cb72;
+  font-size:18px;
+  line-height:1;
+}
+
+.vaultWhatText{
+  display:block;
+}
 @keyframes vaultGoldSpin{
   from{ transform:rotate(0deg); }
   to{ transform:rotate(360deg); }
