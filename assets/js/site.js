@@ -1814,6 +1814,26 @@ async function syncAuthUI() {
   if (logoutBtn) logoutBtn.style.display = hasSession ? "" : "none"
 }
 
+function applyAccountStateUI() {
+  document.body.classList.remove("wm-state-guest", "wm-state-member", "wm-state-premium")
+
+  const state = wmProfile && wmProfile.account_state ? wmProfile.account_state : "guest"
+  const premiumUnlocked = !!(wmProfile && wmProfile.premium_unlocked)
+
+  if (premiumUnlocked) {
+    document.body.classList.add("wm-state-premium")
+    return
+  }
+
+  if (state === "member") {
+    document.body.classList.add("wm-state-member")
+    return
+  }
+
+  document.body.classList.add("wm-state-guest")
+}
+  
+
   
   function init() {
     createPlayerBar();
@@ -1843,10 +1863,13 @@ applyRoute();
 ensureProfile().then(function () {
   return loadProfile()
 }).then(function () {
+  applyAccountStateUI()
   return syncAuthUI()
 })
 
 setNowPlayingUI(null);
+
+    
   }
 
   if (document.readyState === "loading") {
