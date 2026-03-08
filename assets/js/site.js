@@ -1566,9 +1566,10 @@ function switchView(view) {
   }
 
 function wireAuthButtons() {
-  const loginBtn = document.getElementById("wmLoginBtn")
-  const signupBtn = document.getElementById("wmSignupBtn")
-  const logoutBtn = document.getElementById("wmLogoutBtn")
+const loginBtn = document.getElementById("wmLoginBtn")
+const signupBtn = document.getElementById("wmSignupBtn")
+const memberBadge = document.getElementById("wmMemberBadge")
+const logoutBtn = document.getElementById("wmLogoutBtn")
 
   const authModal = document.getElementById("wmAuthModal")
   const authCloseBtn = document.getElementById("wmAuthCloseBtn")
@@ -1809,9 +1810,10 @@ async function syncAuthUI() {
 
   const hasSession = !!(data && data.session)
 
-  if (loginBtn) loginBtn.style.display = hasSession ? "none" : ""
-  if (signupBtn) signupBtn.style.display = hasSession ? "none" : ""
-  if (logoutBtn) logoutBtn.style.display = hasSession ? "" : "none"
+if (loginBtn) loginBtn.style.display = hasSession ? "none" : ""
+if (signupBtn) signupBtn.style.display = hasSession ? "none" : ""
+if (memberBadge) memberBadge.style.display = hasSession ? "flex" : "none"
+if (logoutBtn) logoutBtn.style.display = hasSession ? "" : "none"
 }
 
 function applyAccountStateUI() {
