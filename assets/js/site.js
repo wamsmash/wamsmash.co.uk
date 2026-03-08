@@ -1789,10 +1789,19 @@ async function syncAuthUI() {
 
   if (loginBtn) loginBtn.style.display = hasSession ? "none" : ""
   if (signupBtn) signupBtn.style.display = hasSession ? "none" : ""
-  if (memberBadge) memberBadge.style.display = hasSession ? "flex" : "none"
   if (logoutBtn) logoutBtn.style.display = hasSession ? "" : "none"
-}
 
+  if (memberBadge) {
+    memberBadge.style.display = hasSession ? "flex" : "none"
+
+    if (hasSession) {
+      const isPremium = !!(wmProfile && wmProfile.premium_unlocked)
+      memberBadge.textContent = isPremium ? "Black Vault" : "Member"
+    } else {
+      memberBadge.textContent = "Member"
+    }
+  }
+}
 function applyAccountStateUI() {
   document.body.classList.remove("wm-state-guest", "wm-state-member", "wm-state-premium")
 
