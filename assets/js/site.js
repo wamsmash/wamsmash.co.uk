@@ -1578,7 +1578,12 @@ function wireAuthButtons() {
   const authTitle = document.getElementById("wmAuthTitle")
   const authSubtitle = document.getElementById("wmAuthSubtitle")
   const authMessage = document.getElementById("wmAuthMessage")
+  const loginEmail = document.getElementById("wmLoginEmail")
+  const loginPassword = document.getElementById("wmLoginPassword")
+  const signupEmail = document.getElementById("wmSignupEmail")
+  const signupPassword = document.getElementById("wmSignupPassword")
 
+  
   function clearMessage() {
     if (authMessage) authMessage.textContent = ""
   }
@@ -1649,6 +1654,61 @@ function wireAuthButtons() {
     if (e.key === "Escape") closeModal()
   })
 
+if (signupForm) {
+  signupForm.addEventListener("submit", async function (e) {
+    e.preventDefault()
+    clearMessage()
+
+    if (!window.wmSupabase) {
+      if (authMessage) authMessage.textContent = "Supabase not available"
+      return
+    }
+
+    const email = signupEmail ? signupEmail.value.trim() : ""
+    const password = signupPassword ? signupPassword.value : ""
+
+    const { error } = await window.wmSupabase.auth.signUp({
+      email,
+      password
+    })
+
+    if (error) {
+      if (authMessage) authMessage.textContent = error.message
+      return
+    }
+
+    if (authMessage) authMessage.textContent = "Account created, check your email if confirmation is enabled"
+  })
+}
+
+if (loginForm) {
+  loginForm.addEventListener("submit", async function (e) {
+    e.preventDefault()
+    clearMessage()
+
+    if (!window.wmSupabase) {
+      if (authMessage) authMessage.textContent = "Supabase not available"
+      return
+    }
+
+    const email = loginEmail ? loginEmail.value.trim() : ""
+    const password = loginPassword ? loginPassword.value : ""
+
+    const { error } = await window.wmSupabase.auth.signInWithPassword({
+      email,
+      password
+    })
+
+    if (error) {
+      if (authMessage) authMessage.textContent = error.message
+      return
+    }
+
+    location.reload()
+  })
+}
+
+  
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async function () {
       if (!window.wmSupabase) return
