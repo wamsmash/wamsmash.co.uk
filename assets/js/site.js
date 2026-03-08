@@ -1564,6 +1564,32 @@ function switchView(view) {
     });
   }
 
+function wireAuthButtons() {
+  const loginBtn = document.getElementById("wmLoginBtn")
+  const signupBtn = document.getElementById("wmSignupBtn")
+  const logoutBtn = document.getElementById("wmLogoutBtn")
+
+  if (loginBtn) {
+    loginBtn.addEventListener("click", function () {
+      alert("Login form wiring is next")
+    })
+  }
+
+  if (signupBtn) {
+    signupBtn.addEventListener("click", function () {
+      alert("Signup form wiring is next")
+    })
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async function () {
+      if (!window.wmSupabase) return
+      await window.wmSupabase.auth.signOut()
+      location.reload()
+    })
+  }
+}
+  
   function init() {
     createPlayerBar();
 
@@ -1578,7 +1604,8 @@ function switchView(view) {
     wirePlayerControls();
     wireGamesControls();
     wireVaultButtons();
-
+    wireAuthButtons();
+    
     renderFeaturedGrid();
     renderMusicList();
     renderLinks();
