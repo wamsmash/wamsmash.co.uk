@@ -1569,17 +1569,85 @@ function wireAuthButtons() {
   const signupBtn = document.getElementById("wmSignupBtn")
   const logoutBtn = document.getElementById("wmLogoutBtn")
 
+  const authModal = document.getElementById("wmAuthModal")
+  const authCloseBtn = document.getElementById("wmAuthCloseBtn")
+  const showLoginBtn = document.getElementById("wmShowLoginBtn")
+  const showSignupBtn = document.getElementById("wmShowSignupBtn")
+  const loginForm = document.getElementById("wmLoginForm")
+  const signupForm = document.getElementById("wmSignupForm")
+  const authTitle = document.getElementById("wmAuthTitle")
+  const authSubtitle = document.getElementById("wmAuthSubtitle")
+  const authMessage = document.getElementById("wmAuthMessage")
+
+  function clearMessage() {
+    if (authMessage) authMessage.textContent = ""
+  }
+
+  function showLoginMode() {
+    if (loginForm) loginForm.style.display = "flex"
+    if (signupForm) signupForm.style.display = "none"
+    if (authTitle) authTitle.textContent = "Account access"
+    if (authSubtitle) authSubtitle.textContent = "Login to your account"
+    clearMessage()
+  }
+
+  function showSignupMode() {
+    if (loginForm) loginForm.style.display = "none"
+    if (signupForm) signupForm.style.display = "flex"
+    if (authTitle) authTitle.textContent = "Create account"
+    if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
+    clearMessage()
+  }
+
+  function openModal(mode) {
+    if (!authModal) return
+    authModal.style.display = "block"
+    if (mode === "signup") showSignupMode()
+    else showLoginMode()
+  }
+
+  function closeModal() {
+    if (!authModal) return
+    authModal.style.display = "none"
+    clearMessage()
+  }
+
   if (loginBtn) {
     loginBtn.addEventListener("click", function () {
-      alert("Login form wiring is next")
+      openModal("login")
     })
   }
 
   if (signupBtn) {
     signupBtn.addEventListener("click", function () {
-      alert("Signup form wiring is next")
+      openModal("signup")
     })
   }
+
+  if (showLoginBtn) {
+    showLoginBtn.addEventListener("click", function () {
+      showLoginMode()
+    })
+  }
+
+  if (showSignupBtn) {
+    showSignupBtn.addEventListener("click", function () {
+      showSignupMode()
+    })
+  }
+
+  if (authCloseBtn) {
+    authCloseBtn.addEventListener("click", closeModal)
+  }
+
+  document.addEventListener("click", function (e) {
+    const closeTarget = e.target.closest("[data-auth-close='true']")
+    if (closeTarget) closeModal()
+  })
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeModal()
+  })
 
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async function () {
