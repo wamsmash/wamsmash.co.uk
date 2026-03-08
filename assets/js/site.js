@@ -1756,10 +1756,11 @@ async function ensureProfile() {
     .from("profiles")
     .upsert(
       {
-        id: user.id,
-        email: email,
-        site_mode: "member"
-      },
+  id: user.id,
+  email: email,
+  account_state: "member",
+  premium_unlocked: false
+},
       { onConflict: "id" }
     )
 
