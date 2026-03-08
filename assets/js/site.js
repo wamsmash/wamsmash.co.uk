@@ -1747,31 +1747,7 @@ console.log("wmProfile loaded", wmProfile)
 return data
 }
   
-async function ensureProfile() {
-  if (!window.wmSupabase) return
 
-  const { data: sessionData, error: sessionError } = await window.wmSupabase.auth.getSession()
-  if (sessionError) return
-  if (!sessionData || !sessionData.session || !sessionData.session.user) return
-
-  const user = sessionData.session.user
-  const email = user.email || ""
-
-  const { error } = await window.wmSupabase
-    .from("profiles")
-    .upsert(
-      {
-        id: user.id,
-        email: email,
-        site_mode: "member"
-      },
-      { onConflict: "id" }
-    )
-
-  if (error) {
-    console.error("ensureProfile failed", error)
-  }
-}
   async function ensureProfile() {
   if (!window.wmSupabase) return
 
