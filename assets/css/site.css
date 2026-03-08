@@ -76,22 +76,37 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
 }
 
 /* SUBTITLE BOTTOM LEFT */
-.brandSubSingle{
+.brandSubStack{
   position:absolute;
   left:18px;
   bottom:14px;
-  max-width:760px;
+  max-width:520px;
   padding:10px 14px;
   border:1px solid rgba(255,255,255,0.12);
   border-radius:14px;
   background:rgba(14,15,22,0.34);
-  color:rgba(242,243,247,0.90);
-  font-size:clamp(13px, 1.5vw, 16px);
-  line-height:1.35;
   text-align:left;
   text-shadow:0 10px 22px rgba(0,0,0,0.65);
   margin:0;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width:0;
 }
+
+.brandSubLine{
+  color:rgba(242,243,247,0.92);
+  font-size:14px;
+  line-height:1.2;
+}
+
+.brandTagLine{
+  color:rgba(242,243,247,0.82);
+  font-size:13px;
+  line-height:1.2;
+}
+
+
 
 /* NAV BOTTOM RIGHT */
 .navUnderSub{
@@ -102,12 +117,14 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   gap:10px;
   flex-wrap:wrap;
   justify-content:flex-end;
+  align-items:center;
   z-index:2;
+  max-width:calc(100% - 580px);
 }
 
 /* NAV BUTTONS */
 .navlink{
-  padding:10px 12px;
+  padding:10px 10px;
   border:1px solid rgba(255,255,255,0.12);
   border-radius:12px;
   background:rgba(14,15,22,0.40);
@@ -149,15 +166,18 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
 .navMemberBadge{
   display:flex;
   align-items:center;
-  padding:10px 12px;
+  justify-content:center;
+  padding:10px 10px;
+  min-height:35px;
   border:1px solid rgba(255,255,255,0.12);
   border-radius:12px;
   background:rgba(14,15,22,0.40);
   color:var(--text);
-  font-size:13px;
+  font-size:12px;
   line-height:1;
   letter-spacing:0.06em;
   text-transform:uppercase;
+  white-space:nowrap;
 }
 
 
@@ -1199,6 +1219,25 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
 
 
 /* RESPONSIVE */
+
+@media (max-width: 1020px){
+  .brandSubStack{
+    max-width:440px;
+  }
+
+  .navUnderSub{
+    max-width:calc(100% - 500px);
+    gap:8px;
+  }
+
+  .navlink,
+  .navMemberBadge{
+    padding:9px 9px;
+    font-size:12px;
+  }
+}
+
+
 @media (max-width: 920px){
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .linksCards{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -1248,33 +1287,45 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
 /* MOBILE HEADER FIX */
 @media (max-width: 560px){
   .mainHeader{
-    min-height:260px;
+    min-height:280px;
     padding:18px 16px;
     background-position:calc(50% + 20px) 38%;
     background-size:112% auto;
   }
 
   .brand{
-    min-height:260px;
+    min-height:280px;
   }
 
-  .brandSubSingle{
+  .brandSubStack{
     left:12px;
     right:12px;
-    bottom:56px;
+    bottom:72px;
     max-width:none;
     padding:10px 12px;
+  }
+
+  .brandSubLine{
     font-size:13px;
-    line-height:1.3;
+    line-height:1.25;
+  }
+
+  .brandTagLine{
+    font-size:12px;
+    line-height:1.2;
   }
 
   .navUnderSub{
+    left:12px;
     right:12px;
     bottom:12px;
     gap:8px;
+    justify-content:flex-start;
+    max-width:none;
   }
 
-  .navlink{
+  .navlink,
+  .navMemberBadge{
     padding:8px 10px;
     font-size:12px;
     border-radius:10px;
@@ -1283,6 +1334,8 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   .grid{grid-template-columns:1fr}
   .linksCards{grid-template-columns:1fr}
 }
+
+
 
 .playerControls audio{
   -webkit-touch-callout:none;
