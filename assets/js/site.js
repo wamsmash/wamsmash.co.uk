@@ -675,9 +675,10 @@ function applyMusicViewState() {
       const item = LINKS[i];
       const a = document.createElement("a");
       const isInternalVault = item.href === "#vault" || item.href === "/#vault";
-
+      const vaultLocked = isInternalVault && !canAccessVault();
+      
       a.className = "linkCard";
-      a.href = item.href;
+      a.href = vaultLocked ? "#" : item.href;
 
       if (!isInternalVault) {
         a.target = "_blank";
@@ -690,10 +691,10 @@ function applyMusicViewState() {
       ${iconMarkup(item.icon)}
       <div class="linkCardTitle">${item.label}</div>
     </div>
-    <div class="linkCardBadge">${isInternalVault ? "Enter" : "Open"}</div>
+    <div class="linkCardBadge">${isInternalVault ? (vaultLocked ? "Login" : "Enter") : "Open"}</div>
   </div>
   <div class="linkCardNote">${item.note || ""}</div>
-  <div class="linkCardUrl">${isInternalVault ? "Private collector layer" : item.href}</div>
+  <div class="linkCardUrl">${isInternalVault ? (vaultLocked ? "Login required" : "Private collector layer") : item.href}</div>
 `;
 
       mount.appendChild(a);
@@ -825,8 +826,35 @@ function switchView(view) {
     }
   }
 
+function canAccessVault() {
+  const state = wmProfile && wmProfile.account_state ? wmProfile.account_state : "guest"
+  return state === "member" || hasPremiumAccess()
+}
+
+  
   function wireNavigation() {
     document.addEventListener("click", function (e) {
+
+      const vaultLink = e.target.closest(".linkCard[href='#']")
+if (vaultLink) {
+  e.preventDefault()
+
+  const authModal = document.getElementById("wmAuthModal")
+  const loginForm = document.getElementById("wmLoginForm")
+  const signupForm = document.getElementById("wmSignupForm")
+  const authTitle = document.getElementById("wmAuthTitle")
+  const authSubtitle = document.getElementById("wmAuthSubtitle")
+  const authMessage = document.getElementById("wmAuthMessage")
+
+  if (authModal) authModal.style.display = "block"
+  if (loginForm) loginForm.style.display = "none"
+  if (signupForm) signupForm.style.display = "flex"
+  if (authTitle) authTitle.textContent = "Create account"
+  if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
+  if (authMessage) authMessage.textContent = ""
+
+  return
+}
       const hero = e.target.closest(".heroIntro");
       if (hero) {
         location.hash = "music";
@@ -1903,6 +1931,7 @@ ensureProfile().then(function () {
 }).then(function () {
   applyAccountStateUI()
   applyMusicViewState()
+  renderLinks()
   return syncAuthUI()
 })
 
