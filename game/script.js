@@ -2628,7 +2628,7 @@ function playGameOverSfx() {
 
     g.restore()
 
-        g.textAlign = "left"
+    g.textAlign = "left"
     g.fillStyle = "rgba(0,255,140,0.88)"
     g.font = "800 14px system-ui, Segoe UI, Arial"
     g.fillText(`Gems ${state.gems} / 6`, W / 2 + 6, H / 2 - 26)
