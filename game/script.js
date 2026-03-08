@@ -2577,9 +2577,78 @@ function playGameOverSfx() {
     g.textAlign = "center"
     g.fillText("GAME OVER", W / 2, H / 2 - 86)
 
-    g.font = "600 16px system-ui, Segoe UI, Arial"
-    g.fillStyle = "rgba(255,255,255,0.78)"
-    g.fillText(`Base ${Math.floor(state.baseScore)}   Coins`, W / 2, H / 2 - 52)
+    const burstCx = W / 2 + 170
+    const burstCy = H / 2 - 38
+    const pulse = 1 + 0.04 * Math.sin(ui.thankYouBreath * 4.2)
+
+    g.save()
+    g.translate(burstCx, burstCy)
+    g.scale(pulse, pulse)
+    g.translate(-burstCx, -burstCy)
+
+    g.fillStyle = "rgba(0,0,0,0.70)"
+    g.beginPath()
+    g.moveTo(burstCx - 64, burstCy - 18)
+    g.lineTo(burstCx - 30, burstCy - 24)
+    g.lineTo(burstCx - 12, burstCy - 52)
+    g.lineTo(burstCx + 8, burstCy - 24)
+    g.lineTo(burstCx + 42, burstCy - 30)
+    g.lineTo(burstCx + 28, burstCy + 0)
+    g.lineTo(burstCx + 64, burstCy + 18)
+    g.lineTo(burstCx + 24, burstCy + 22)
+    g.lineTo(burstCx + 10, burstCy + 52)
+    g.lineTo(burstCx - 14, burstCy + 26)
+    g.lineTo(burstCx - 52, burstCy + 30)
+    g.lineTo(burstCx - 34, burstCy + 4)
+    g.closePath()
+    g.fill()
+
+    g.fillStyle = "rgba(255,220,40,0.98)"
+    g.beginPath()
+    g.moveTo(burstCx - 70, burstCy - 20)
+    g.lineTo(burstCx - 34, burstCy - 28)
+    g.lineTo(burstCx - 14, burstCy - 58)
+    g.lineTo(burstCx + 10, burstCy - 28)
+    g.lineTo(burstCx + 48, burstCy - 34)
+    g.lineTo(burstCx + 32, burstCy + 0)
+    g.lineTo(burstCx + 72, burstCy + 20)
+    g.lineTo(burstCx + 28, burstCy + 26)
+    g.lineTo(burstCx + 12, burstCy + 58)
+    g.lineTo(burstCx - 18, burstCy + 30)
+    g.lineTo(burstCx - 58, burstCy + 34)
+    g.lineTo(burstCx - 40, burstCy + 4)
+    g.closePath()
+    g.fill()
+
+    g.strokeStyle = "rgba(0,0,0,0.95)"
+    g.lineWidth = 4
+    g.stroke()
+
+    g.fillStyle = "rgba(255,80,60,0.26)"
+    g.beginPath()
+    g.arc(burstCx - 28, burstCy - 10, 6, 0, Math.PI * 2)
+    g.arc(burstCx + 20, burstCy - 18, 4, 0, Math.PI * 2)
+    g.arc(burstCx + 26, burstCy + 20, 5, 0, Math.PI * 2)
+    g.arc(burstCx - 18, burstCy + 24, 4, 0, Math.PI * 2)
+    g.fill()
+
+    g.fillStyle = "rgba(255,255,255,0.92)"
+    g.font = "900 16px system-ui, Segoe UI, Arial"
+    g.textAlign = "center"
+    g.fillText("SCORE", burstCx, burstCy - 20)
+
+    g.fillStyle = "rgba(0,0,0,0.65)"
+    g.font = "900 34px system-ui, Segoe UI, Arial"
+    g.fillText(String(state.score), burstCx + 3, burstCy + 17)
+
+    g.fillStyle = "rgba(255,60,60,0.98)"
+    g.fillText(String(state.score), burstCx, burstCy + 14)
+
+    g.lineWidth = 2
+    g.strokeStyle = "rgba(0,0,0,0.95)"
+    g.strokeText(String(state.score), burstCx, burstCy + 14)
+
+    g.restore()
 
         g.textAlign = "left"
     g.fillStyle = "rgba(0,255,140,0.88)"
