@@ -146,6 +146,21 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
     0 0 20px rgba(255,255,255,0.06);
 }
 
+.navMemberBadge{
+  display:flex;
+  align-items:center;
+  padding:10px 12px;
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:12px;
+  background:rgba(14,15,22,0.40);
+  color:var(--text);
+  font-size:13px;
+  line-height:1;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+}
+
+
 /* HERO BLOCKS */
 .hero{
   border:1px solid rgba(255,255,255,0.14);
