@@ -28,7 +28,7 @@
 
   const sfx = {
   level: makeSfx("/game/ESMlvl.mp3", 0.55),
-  coin: makeSfx("/game/ESMcoin.mp3", 0.45),
+  coin: makeSfx("/game/ESMcoin.mp3", 0.225),
   pop: makeSfx("/game/pop.mp3", 0.55),
   bad: makeSfx("/game/bad.mp3", 0.60),
   gameover: makeSfx("/game/gameover.mp3", 0.70)
@@ -2420,8 +2420,8 @@ function playGameOverSfx() {
     g.globalAlpha = 0.92
 
     const bg = g.createLinearGradient(x, y, x, y + h)
-    bg.addColorStop(0, "rgba(0,0,0,0.40)")
-    bg.addColorStop(1, "rgba(0,0,0,0.22)")
+    bg.addColorStop(0, "rgba(0,0,0,0.48)")
+    bg.addColorStop(1, "rgba(0,0,0,0.264)")
     g.fillStyle = bg
     g.beginPath()
     roundRect(x, y, w, h, 18)
@@ -2581,12 +2581,16 @@ function playGameOverSfx() {
     g.fillStyle = "rgba(255,255,255,0.78)"
     g.fillText(`Base ${Math.floor(state.baseScore)}   Coins`, W / 2, H / 2 - 52)
 
+        g.textAlign = "left"
     g.fillStyle = "rgba(0,255,140,0.88)"
-    g.fillText(`Gems ${state.gems} / 6   Mult x${state.gemMult}   Final ${state.score}`, W / 2, H / 2 - 28)
+    g.fillText(`Gems ${state.gems} / 6`, W / 2 + 20, H / 2 - 40)
+    g.fillText(`Mult x${state.gemMult}`, W / 2 + 20, H / 2 - 18)
+    g.fillText(`Final ${state.score}`, W / 2 + 20, H / 2 + 4)
+    g.textAlign = "center"
 
     g.fillStyle = "rgba(255,255,255,0.55)"
-    g.fillText("Multiplier rule", W / 2, H / 2 - 2)
-    g.fillText("1 gem = x2   2 gems = x3   3 gems = x4   6 gems = x7", W / 2, H / 2 + 20)
+    g.fillText("Multiplier rule", W / 2, H / 2 + 30)
+    g.fillText("1 gem = x2   2 gems = x3   3 gems = x4   6 gems = x7", W / 2, H / 2 + 52)
 
     const gx = W / 2 - 92
     const gy = H / 2 + 44
