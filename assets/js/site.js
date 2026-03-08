@@ -1717,6 +1717,24 @@ if (loginForm) {
     })
   }
 }
+
+async function syncAuthUI() {
+  const loginBtn = document.getElementById("wmLoginBtn")
+  const signupBtn = document.getElementById("wmSignupBtn")
+  const logoutBtn = document.getElementById("wmLogoutBtn")
+
+  if (!window.wmSupabase) return
+
+  const { data, error } = await window.wmSupabase.auth.getSession()
+  if (error) return
+
+  const hasSession = !!(data && data.session)
+
+  if (loginBtn) loginBtn.style.display = hasSession ? "none" : ""
+  if (signupBtn) signupBtn.style.display = hasSession ? "none" : ""
+  if (logoutBtn) logoutBtn.style.display = hasSession ? "" : "none"
+}
+
   
   function init() {
     createPlayerBar();
@@ -1742,7 +1760,8 @@ if (loginForm) {
 
     window.addEventListener("hashchange", applyRoute);
     applyRoute();
-
+    
+    syncAuthUI();
     setNowPlayingUI(null);
   }
 
