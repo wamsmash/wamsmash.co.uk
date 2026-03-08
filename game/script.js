@@ -2577,94 +2577,71 @@ function playGameOverSfx() {
     g.textAlign = "center"
     g.fillText("GAME OVER", W / 2, H / 2 - 86)
 
-    const burstCx = W / 2 + 170
-    const burstCy = H / 2 - 38
-    const pulse = 1 + 0.04 * Math.sin(ui.thankYouBreath * 4.2)
+        const burstCx = W / 2 + 235
+    const burstCy = H / 2 - 42
+    const pulse = 1 + 0.02 * Math.sin(ui.thankYouBreath * 2.8)
 
     g.save()
     g.translate(burstCx, burstCy)
     g.scale(pulse, pulse)
     g.translate(-burstCx, -burstCy)
 
-    g.fillStyle = "rgba(0,0,0,0.70)"
-    g.beginPath()
-    g.moveTo(burstCx - 64, burstCy - 18)
-    g.lineTo(burstCx - 30, burstCy - 24)
-    g.lineTo(burstCx - 12, burstCy - 52)
-    g.lineTo(burstCx + 8, burstCy - 24)
-    g.lineTo(burstCx + 42, burstCy - 30)
-    g.lineTo(burstCx + 28, burstCy + 0)
-    g.lineTo(burstCx + 64, burstCy + 18)
-    g.lineTo(burstCx + 24, burstCy + 22)
-    g.lineTo(burstCx + 10, burstCy + 52)
-    g.lineTo(burstCx - 14, burstCy + 26)
-    g.lineTo(burstCx - 52, burstCy + 30)
-    g.lineTo(burstCx - 34, burstCy + 4)
-    g.closePath()
-    g.fill()
-
     g.fillStyle = "rgba(255,220,40,0.98)"
     g.beginPath()
-    g.moveTo(burstCx - 70, burstCy - 20)
-    g.lineTo(burstCx - 34, burstCy - 28)
-    g.lineTo(burstCx - 14, burstCy - 58)
-    g.lineTo(burstCx + 10, burstCy - 28)
-    g.lineTo(burstCx + 48, burstCy - 34)
-    g.lineTo(burstCx + 32, burstCy + 0)
-    g.lineTo(burstCx + 72, burstCy + 20)
-    g.lineTo(burstCx + 28, burstCy + 26)
-    g.lineTo(burstCx + 12, burstCy + 58)
-    g.lineTo(burstCx - 18, burstCy + 30)
-    g.lineTo(burstCx - 58, burstCy + 34)
-    g.lineTo(burstCx - 40, burstCy + 4)
+    g.moveTo(burstCx - 42, burstCy - 14)
+    g.lineTo(burstCx - 18, burstCy - 18)
+    g.lineTo(burstCx - 8, burstCy - 36)
+    g.lineTo(burstCx + 8, burstCy - 18)
+    g.lineTo(burstCx + 34, burstCy - 22)
+    g.lineTo(burstCx + 22, burstCy + 0)
+    g.lineTo(burstCx + 42, burstCy + 14)
+    g.lineTo(burstCx + 18, burstCy + 18)
+    g.lineTo(burstCx + 8, burstCy + 36)
+    g.lineTo(burstCx - 10, burstCy + 18)
+    g.lineTo(burstCx - 34, burstCy + 22)
+    g.lineTo(burstCx - 22, burstCy + 2)
     g.closePath()
     g.fill()
 
     g.strokeStyle = "rgba(0,0,0,0.95)"
-    g.lineWidth = 4
+    g.lineWidth = 3
     g.stroke()
 
-    g.fillStyle = "rgba(255,80,60,0.26)"
+    g.fillStyle = "rgba(255,80,60,0.22)"
     g.beginPath()
-    g.arc(burstCx - 28, burstCy - 10, 6, 0, Math.PI * 2)
-    g.arc(burstCx + 20, burstCy - 18, 4, 0, Math.PI * 2)
-    g.arc(burstCx + 26, burstCy + 20, 5, 0, Math.PI * 2)
-    g.arc(burstCx - 18, burstCy + 24, 4, 0, Math.PI * 2)
+    g.arc(burstCx - 14, burstCy - 6, 3, 0, Math.PI * 2)
+    g.arc(burstCx + 12, burstCy + 10, 3, 0, Math.PI * 2)
     g.fill()
 
-    g.fillStyle = "rgba(255,255,255,0.92)"
-    g.font = "900 16px system-ui, Segoe UI, Arial"
+    g.fillStyle = "rgba(0,0,0,0.70)"
+    g.font = "900 10px system-ui, Segoe UI, Arial"
     g.textAlign = "center"
-    g.fillText("SCORE", burstCx, burstCy - 20)
-
-    g.fillStyle = "rgba(0,0,0,0.65)"
-    g.font = "900 34px system-ui, Segoe UI, Arial"
-    g.fillText(String(state.score), burstCx + 3, burstCy + 17)
+    g.fillText("SCORE", burstCx + 1, burstCy - 10)
 
     g.fillStyle = "rgba(255,60,60,0.98)"
-    g.fillText(String(state.score), burstCx, burstCy + 14)
+    g.font = "900 22px system-ui, Segoe UI, Arial"
+    g.fillText(String(state.score), burstCx, burstCy + 12)
 
     g.lineWidth = 2
     g.strokeStyle = "rgba(0,0,0,0.95)"
-    g.strokeText(String(state.score), burstCx, burstCy + 14)
+    g.strokeText(String(state.score), burstCx, burstCy + 12)
 
     g.restore()
 
         g.textAlign = "left"
     g.fillStyle = "rgba(0,255,140,0.88)"
-    g.fillText(`Gems ${state.gems} / 6`, W / 2 + 20, H / 2 - 40)
-    g.fillText(`Mult x${state.gemMult}`, W / 2 + 20, H / 2 - 18)
-    g.fillText(`Final ${state.score}`, W / 2 + 20, H / 2 + 4)
-    g.textAlign = "center"
+    g.font = "800 14px system-ui, Segoe UI, Arial"
+    g.fillText(`Gems ${state.gems} / 6`, W / 2 + 6, H / 2 - 26)
+    g.fillText(`Mult x${state.gemMult}`, W / 2 + 6, H / 2 - 4)
+    g.fillText(`Final ${state.score}`, W / 2 + 6, H / 2 + 18)
 
-      g.fillStyle = "rgba(255,255,255,0.55)"
-    g.font = "600 14px system-ui, Segoe UI, Arial"
-    g.textAlign = "left"
-    g.fillText("Multiplier rule", W / 2 + 20, H / 2 + 36)
-    g.fillText("1 gem = x2", W / 2 + 20, H / 2 + 58)
-    g.fillText("2 gems = x3", W / 2 + 20, H / 2 + 78)
-    g.fillText("3 gems = x4", W / 2 + 20, H / 2 + 98)
-    g.fillText("6 gems = x7", W / 2 + 20, H / 2 + 118)
+    g.fillStyle = "rgba(255,255,255,0.55)"
+    g.font = "600 12px system-ui, Segoe UI, Arial"
+    g.fillText("Multiplier rule", W / 2 + 6, H / 2 + 48)
+    g.fillText("1 gem = x2", W / 2 + 6, H / 2 + 66)
+    g.fillText("2 gems = x3", W / 2 + 6, H / 2 + 82)
+    g.fillText("3 gems = x4", W / 2 + 6, H / 2 + 98)
+    g.fillText("6 gems = x7", W / 2 + 6, H / 2 + 114)
     g.textAlign = "center"
 
     const gx = W / 2 - 140
