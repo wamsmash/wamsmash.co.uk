@@ -1273,3 +1273,13 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   -webkit-touch-callout:none;
   user-select:none;
 }
+
+body.wm-state-guest{
+}
+
+body.wm-state-member{
+}
+
+body.wm-state-premium{
+}
+
