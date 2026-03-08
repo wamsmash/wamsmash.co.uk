@@ -624,6 +624,27 @@ let wmProfile = null;
   musicList.classList.add("wm-music-guest")
 }
 
+function applyMusicViewState() {
+  const musicList = document.getElementById("wmMusicList")
+  if (!musicList) return
+
+  musicList.classList.remove("wm-music-guest", "wm-music-member", "wm-music-premium")
+
+  if (hasPremiumAccess()) {
+    musicList.classList.add("wm-music-premium")
+    return
+  }
+
+  const state = wmProfile && wmProfile.account_state ? wmProfile.account_state : "guest"
+
+  if (state === "member") {
+    musicList.classList.add("wm-music-member")
+    return
+  }
+
+  musicList.classList.add("wm-music-guest")
+}
+
 
   
   function renderMusicList() {
