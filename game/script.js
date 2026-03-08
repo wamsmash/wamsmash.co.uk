@@ -2569,89 +2569,138 @@ function playGameOverSfx() {
   }
 
   function drawGameOver() {
-    g.fillStyle = "rgba(0,0,0,0.65)"
-    g.fillRect(0, 0, W, H)
+  g.fillStyle = "rgba(0,0,0,0.65)"
+  g.fillRect(0, 0, W, H)
 
-    g.fillStyle = "rgba(255,255,255,0.92)"
-    g.font = "900 64px system-ui, Segoe UI, Arial"
-    g.textAlign = "center"
-    g.fillText("GAME OVER", W / 2, H / 2 - 86)
+  g.fillStyle = "rgba(255,255,255,0.92)"
+  g.font = "900 64px system-ui, Segoe UI, Arial"
+  g.textAlign = "center"
+  g.fillText("GAME OVER", W / 2, H / 2 - 86)
 
-        const burstCx = W / 2 + 235
-    const burstCy = H / 2 - 34
-    const pulse = 1 + 0.025 * Math.sin(ui.thankYouBreath * 3.2)
+  const burstCx = W / 2 + 235
+  const burstCy = H / 2 - 34
+  const pulse = 1 + 0.025 * Math.sin(ui.thankYouBreath * 3.2)
 
-    g.save()
-    g.translate(burstCx, burstCy)
-    g.rotate(-0.10)
-    g.scale(pulse, pulse)
-    g.translate(-burstCx, -burstCy)
+  g.save()
+  g.translate(burstCx, burstCy)
+  g.rotate(-0.10)
+  g.scale(pulse, pulse)
+  g.translate(-burstCx, -burstCy)
 
-    g.fillStyle = "rgba(0,0,0,0.95)"
+  g.fillStyle = "rgba(0,0,0,0.95)"
+  g.beginPath()
+  g.moveTo(burstCx - 62, burstCy - 18)
+  g.lineTo(burstCx - 34, burstCy - 30)
+  g.lineTo(burstCx - 22, burstCy - 58)
+  g.lineTo(burstCx + 2, burstCy - 34)
+  g.lineTo(burstCx + 34, burstCy - 42)
+  g.lineTo(burstCx + 24, burstCy - 10)
+  g.lineTo(burstCx + 60, burstCy + 6)
+  g.lineTo(burstCx + 24, burstCy + 18)
+  g.lineTo(burstCx + 8, burstCy + 54)
+  g.lineTo(burstCx - 14, burstCy + 24)
+  g.lineTo(burstCx - 52, burstCy + 34)
+  g.lineTo(burstCx - 34, burstCy + 2)
+  g.closePath()
+  g.fill()
+
+  g.fillStyle = "rgba(255,220,40,1)"
+  g.beginPath()
+  g.moveTo(burstCx - 54, burstCy - 14)
+  g.lineTo(burstCx - 28, burstCy - 24)
+  g.lineTo(burstCx - 18, burstCy - 48)
+  g.lineTo(burstCx + 2, burstCy - 28)
+  g.lineTo(burstCx + 28, burstCy - 34)
+  g.lineTo(burstCx + 20, burstCy - 8)
+  g.lineTo(burstCx + 52, burstCy + 6)
+  g.lineTo(burstCx + 20, burstCy + 16)
+  g.lineTo(burstCx + 8, burstCy + 44)
+  g.lineTo(burstCx - 10, burstCy + 20)
+  g.lineTo(burstCx - 44, burstCy + 28)
+  g.lineTo(burstCx - 28, burstCy + 2)
+  g.closePath()
+  g.fill()
+
+  g.strokeStyle = "rgba(0,0,0,1)"
+  g.lineWidth = 4
+  g.stroke()
+
+  g.fillStyle = "rgba(255,80,80,0.28)"
+  for (let i = 0; i < 18; i++) {
+    const dx = -26 + (i % 6) * 10
+    const dy = -14 + Math.floor(i / 6) * 10
     g.beginPath()
-    g.moveTo(burstCx - 62, burstCy - 18)
-    g.lineTo(burstCx - 34, burstCy - 30)
-    g.lineTo(burstCx - 22, burstCy - 58)
-    g.lineTo(burstCx + 2, burstCy - 34)
-    g.lineTo(burstCx + 34, burstCy - 42)
-    g.lineTo(burstCx + 24, burstCy - 10)
-    g.lineTo(burstCx + 60, burstCy + 6)
-    g.lineTo(burstCx + 24, burstCy + 18)
-    g.lineTo(burstCx + 8, burstCy + 54)
-    g.lineTo(burstCx - 14, burstCy + 24)
-    g.lineTo(burstCx - 52, burstCy + 34)
-    g.lineTo(burstCx - 34, burstCy + 2)
-    g.closePath()
+    g.arc(burstCx + dx, burstCy + dy, 2.2, 0, Math.PI * 2)
     g.fill()
-
-    g.fillStyle = "rgba(255,220,40,1)"
-    g.beginPath()
-    g.moveTo(burstCx - 54, burstCy - 14)
-    g.lineTo(burstCx - 28, burstCy - 24)
-    g.lineTo(burstCx - 18, burstCy - 48)
-    g.lineTo(burstCx + 2, burstCy - 28)
-    g.lineTo(burstCx + 28, burstCy - 34)
-    g.lineTo(burstCx + 20, burstCy - 8)
-    g.lineTo(burstCx + 52, burstCy + 6)
-    g.lineTo(burstCx + 20, burstCy + 16)
-    g.lineTo(burstCx + 8, burstCy + 44)
-    g.lineTo(burstCx - 10, burstCy + 20)
-    g.lineTo(burstCx - 44, burstCy + 28)
-    g.lineTo(burstCx - 28, burstCy + 2)
-    g.closePath()
-    g.fill()
-
-    g.strokeStyle = "rgba(0,0,0,1)"
-    g.lineWidth = 4
-    g.stroke()
-
-    g.fillStyle = "rgba(255,80,80,0.28)"
-    for (let i = 0; i < 18; i++) {
-      const dx = -26 + (i % 6) * 10
-      const dy = -14 + Math.floor(i / 6) * 10
-      g.beginPath()
-      g.arc(burstCx + dx, burstCy + dy, 2.2, 0, Math.PI * 2)
-      g.fill()
-    }
-
-    g.fillStyle = "rgba(0,0,0,0.85)"
-    g.font = "900 11px system-ui, Segoe UI, Arial"
-    g.textAlign = "center"
-    g.fillText("SCORE", burstCx + 2, burstCy - 16)
-
-    g.fillStyle = "rgba(0,0,0,0.75)"
-    g.font = "900 28px system-ui, Segoe UI, Arial"
-    g.fillText(String(state.score), burstCx + 4, burstCy + 14)
-
-    g.fillStyle = "rgba(255,40,40,1)"
-    g.fillText(String(state.score), burstCx, burstCy + 10)
-
-    g.lineWidth = 2.5
-    g.strokeStyle = "rgba(0,0,0,1)"
-    g.strokeText(String(state.score), burstCx, burstCy + 10)
-
-    g.restore()
   }
+
+  g.fillStyle = "rgba(0,0,0,0.85)"
+  g.font = "900 11px system-ui, Segoe UI, Arial"
+  g.textAlign = "center"
+  g.fillText("SCORE", burstCx + 2, burstCy - 16)
+
+  g.fillStyle = "rgba(0,0,0,0.75)"
+  g.font = "900 28px system-ui, Segoe UI, Arial"
+  g.fillText(String(state.score), burstCx + 4, burstCy + 14)
+
+  g.fillStyle = "rgba(255,40,40,1)"
+  g.fillText(String(state.score), burstCx, burstCy + 10)
+
+  g.lineWidth = 2.5
+  g.strokeStyle = "rgba(0,0,0,1)"
+  g.strokeText(String(state.score), burstCx, burstCy + 10)
+
+  g.restore()
+
+  g.textAlign = "left"
+  g.fillStyle = "rgba(0,255,140,0.88)"
+  g.font = "800 14px system-ui, Segoe UI, Arial"
+  g.fillText(`Gems ${state.gems} / 6`, W / 2 + 6, H / 2 - 26)
+  g.fillText(`Mult x${state.gemMult}`, W / 2 + 6, H / 2 - 4)
+  g.fillText(`Final ${state.score}`, W / 2 + 6, H / 2 + 18)
+
+  g.fillStyle = "rgba(255,255,255,0.55)"
+  g.font = "600 12px system-ui, Segoe UI, Arial"
+  g.fillText("Multiplier rule", W / 2 + 6, H / 2 + 48)
+  g.fillText("1 gem = x2", W / 2 + 6, H / 2 + 66)
+  g.fillText("2 gems = x3", W / 2 + 6, H / 2 + 82)
+  g.fillText("3 gems = x4", W / 2 + 6, H / 2 + 98)
+  g.fillText("6 gems = x7", W / 2 + 6, H / 2 + 114)
+  g.textAlign = "center"
+
+  const gx = W / 2 - 140
+  const gy = H / 2 + 92
+  for (let i = 0; i < state.gems; i++) {
+    g.fillStyle = "rgba(0,255,140,0.72)"
+    g.beginPath()
+    g.arc(gx + i * 26, gy, 9, 0, Math.PI * 2)
+    g.fill()
+    g.fillStyle = "rgba(255,255,255,0.6)"
+    g.beginPath()
+    g.arc(gx + i * 26 - 3, gy - 3, 3, 0, Math.PI * 2)
+    g.fill()
+  }
+
+  g.textAlign = "left"
+  drawLeaderboard(64, 64)
+
+  ui.thankYouBreath += state.dt
+  const swell = 1.0 + 0.02 * Math.sin(ui.thankYouBreath * 2.2)
+
+  g.save()
+  g.translate(W - 240, H - 46)
+  g.scale(swell, swell)
+
+  g.fillStyle = "rgba(255,255,255,0.92)"
+  g.font = "800 14px system-ui, Segoe UI, Arial"
+  g.fillText("Good effort", 0, 0)
+
+  g.fillStyle = "rgba(255,255,255,0.68)"
+  g.font = "700 14px system-ui, Segoe UI, Arial"
+  g.fillText("click to reincarnate", 0, 22)
+
+  g.restore()
+}
 
   // ============================================================
   // GAME STATE HELPERS
