@@ -2588,12 +2588,18 @@ function playGameOverSfx() {
     g.fillText(`Final ${state.score}`, W / 2 + 20, H / 2 + 4)
     g.textAlign = "center"
 
-    g.fillStyle = "rgba(255,255,255,0.55)"
-    g.fillText("Multiplier rule", W / 2, H / 2 + 30)
-    g.fillText("1 gem = x2   2 gems = x3   3 gems = x4   6 gems = x7", W / 2, H / 2 + 52)
+      g.fillStyle = "rgba(255,255,255,0.55)"
+    g.font = "600 14px system-ui, Segoe UI, Arial"
+    g.textAlign = "left"
+    g.fillText("Multiplier rule", W / 2 + 20, H / 2 + 36)
+    g.fillText("1 gem = x2", W / 2 + 20, H / 2 + 58)
+    g.fillText("2 gems = x3", W / 2 + 20, H / 2 + 78)
+    g.fillText("3 gems = x4", W / 2 + 20, H / 2 + 98)
+    g.fillText("6 gems = x7", W / 2 + 20, H / 2 + 118)
+    g.textAlign = "center"
 
-    const gx = W / 2 - 92
-    const gy = H / 2 + 44
+    const gx = W / 2 - 140
+    const gy = H / 2 + 92
     for (let i = 0; i < state.gems; i++) {
       g.fillStyle = "rgba(0,255,140,0.72)"
       g.beginPath()
