@@ -275,7 +275,35 @@
     </footer>
 
   </div>
+<div id="wmAuthModal" class="wmAuthModal" style="display:none;">
+  <div class="wmAuthBackdrop" data-auth-close="true"></div>
 
+  <div class="wmAuthPanel" role="dialog" aria-modal="true" aria-labelledby="wmAuthTitle">
+    <button class="wmAuthClose" type="button" id="wmAuthCloseBtn" aria-label="Close">×</button>
+
+    <h2 id="wmAuthTitle">Account access</h2>
+    <p id="wmAuthSubtitle">Login or create your account</p>
+
+    <div class="wmAuthTabs">
+      <button class="btn btnPrimary" type="button" id="wmShowLoginBtn">Login</button>
+      <button class="btn" type="button" id="wmShowSignupBtn">Sign up</button>
+    </div>
+
+    <form id="wmLoginForm" class="wmAuthForm">
+      <input id="wmLoginEmail" type="email" placeholder="Email" required>
+      <input id="wmLoginPassword" type="password" placeholder="Password" required>
+      <button class="btn btnPrimary" type="submit">Login</button>
+    </form>
+
+    <form id="wmSignupForm" class="wmAuthForm" style="display:none;">
+      <input id="wmSignupEmail" type="email" placeholder="Email" required>
+      <input id="wmSignupPassword" type="password" placeholder="Password" required>
+      <button class="btn btnPrimary" type="submit">Create account</button>
+    </form>
+
+    <div id="wmAuthMessage" class="wmAuthMessage"></div>
+  </div>
+</div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/assets/js/supabase-client.js"></script>
 <script src="/assets/js/site.js"></script>
