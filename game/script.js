@@ -2577,7 +2577,7 @@ function playGameOverSfx() {
     g.textAlign = "center"
     g.fillText("GAME OVER", W / 2, H / 2 - 86)
 
-        const burstCx = W / 2 + 235
+    const burstCx = W / 2 + 235
     const burstCy = H / 2 - 42
     const pulse = 1 + 0.02 * Math.sin(ui.thankYouBreath * 2.8)
 
