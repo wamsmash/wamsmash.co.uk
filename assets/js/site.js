@@ -360,10 +360,11 @@
   }
 
   let wmAudio = null;
-  let currentTrackId = "";
-  let shuffleOn = true;
-  let recentQueue = [];
-  let vaultTimer = null;
+let currentTrackId = "";
+let shuffleOn = true;
+let recentQueue = [];
+let vaultTimer = null;
+let wmProfile = null;
 
   function pickNextTrackId() {
     const ids = TRACKS.map(t => t.id);
@@ -1717,6 +1718,34 @@ if (loginForm) {
     })
   }
 }
+
+async function loadProfile() {
+  wmProfile = null
+
+  if (!window.wmSupabase) return null
+
+  const { data: sessionData, error: sessionError } = await window.wmSupabase.auth.getSession()
+  if (sessionError) return null
+  if (!sessionData || !sessionData.session || !sessionData.session.user) return null
+
+  const user = sessionData.session.user
+
+  const { data, error } = await window.wmSupabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single()
+
+  if (error) {
+    console.error("loadProfile failed", error)
+    return null
+  }
+
+  wmProfile = data
+console.log("wmProfile loaded", wmProfile)
+return data
+}
+  
 async function ensureProfile() {
   if (!window.wmSupabase) return
 
@@ -1809,11 +1838,15 @@ async function syncAuthUI() {
     renderGames();
 
     window.addEventListener("hashchange", applyRoute);
-    applyRoute();
+applyRoute();
 
-    ensureProfile();
-    syncAuthUI();
-    setNowPlayingUI(null);
+ensureProfile().then(function () {
+  return loadProfile()
+}).then(function () {
+  return syncAuthUI()
+})
+
+setNowPlayingUI(null);
   }
 
   if (document.readyState === "loading") {
