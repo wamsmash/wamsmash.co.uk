@@ -751,6 +751,63 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   text-transform:uppercase;
 }
 
+.vaultHeroMedia{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.vaultIncludedPanel{
+  border:1px solid rgba(255,215,120,0.12);
+  border-radius:22px;
+  padding:18px 18px 16px;
+  background:
+    linear-gradient(180deg, rgba(14,15,22,0.76), rgba(6,7,12,0.88));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.03),
+    0 14px 34px rgba(0,0,0,0.22);
+}
+
+.vaultIncludedTitle{
+  margin:0 0 12px;
+  color:#f3cd83;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+}
+
+.vaultIncludedList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.vaultIncludedItem{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:rgba(240,230,219,0.84);
+  font-size:16px;
+  line-height:1.4;
+}
+
+.vaultIncludedIcon{
+  width:24px;
+  flex:0 0 24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#f5cb72;
+  font-size:16px;
+  line-height:1;
+}
+
+.vaultIncludedText{
+  display:block;
+}
+
 .vaultHero{
   display:grid;
   grid-template-columns:minmax(380px, 1.02fr) minmax(360px, 0.98fr);
