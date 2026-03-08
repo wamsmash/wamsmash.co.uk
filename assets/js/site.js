@@ -1795,18 +1795,24 @@ async function syncAuthUI() {
     memberBadge.style.display = hasSession ? "flex" : "none"
 
     if (hasSession) {
-      const isPremium = !!(wmProfile && wmProfile.premium_unlocked)
+      const isPremium = hasPremiumAccess()
       memberBadge.textContent = isPremium ? "Black Vault" : "Member"
     } else {
       memberBadge.textContent = "Member"
     }
   }
 }
+
+function hasPremiumAccess() {
+  return !!(wmProfile && wmProfile.premium_unlocked)
+}
+
+  
 function applyAccountStateUI() {
   document.body.classList.remove("wm-state-guest", "wm-state-member", "wm-state-premium")
 
   const state = wmProfile && wmProfile.account_state ? wmProfile.account_state : "guest"
-  const premiumUnlocked = !!(wmProfile && wmProfile.premium_unlocked)
+  const premiumUnlocked = hasPremiumAccess()
 
   if (premiumUnlocked) {
     document.body.classList.add("wm-state-premium")
