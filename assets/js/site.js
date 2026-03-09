@@ -630,9 +630,9 @@ let wmProductMap = {};
         <div class="badge">${track.year}</div>
       </div>
 <div class="cardActions">
-  <div class="cardPrice">${getDisplayPriceHtml(track.id)}</div>
   <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
   <button class="btn buyBtn" type="button" data-buy="${track.id}">Buy</button>
+  <div class="cardPrice">${getDisplayPriceHtml(track.id)}</div>
 </div>
     `;
   }
