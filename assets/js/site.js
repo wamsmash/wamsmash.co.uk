@@ -794,18 +794,43 @@ function switchView(view) {
   }
 
   function applyRoute() {
-    const route = parseHash();
-    switchView(route.view);
+  const route = parseHash()
 
-    if (route.scrollId) {
-      requestAnimationFrame(function () {
-        const target = document.getElementById(route.scrollId);
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      });
-    }
+  if (route.view === "vault" && !canAccessVault()) {
+    location.hash = "links"
+
+    const authModal = document.getElementById("wmAuthModal")
+    const loginForm = document.getElementById("wmLoginForm")
+    const signupForm = document.getElementById("wmSignupForm")
+    const authTitle = document.getElementById("wmAuthTitle")
+    const authSubtitle = document.getElementById("wmAuthSubtitle")
+    const authMessage = document.getElementById("wmAuthMessage")
+    const showLoginBtn = document.getElementById("wmShowLoginBtn")
+    const showSignupBtn = document.getElementById("wmShowSignupBtn")
+
+    if (authModal) authModal.style.display = "block"
+    if (loginForm) loginForm.style.display = "none"
+    if (signupForm) signupForm.style.display = "flex"
+    if (authTitle) authTitle.textContent = "Create account"
+    if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
+    if (authMessage) authMessage.textContent = ""
+    if (showLoginBtn) showLoginBtn.classList.remove("isActive")
+    if (showSignupBtn) showSignupBtn.classList.add("isActive")
+
+    return
   }
+
+  switchView(route.view)
+
+  if (route.scrollId) {
+    requestAnimationFrame(function () {
+      const target = document.getElementById(route.scrollId)
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" })
+      }
+    })
+  }
+}
 
 function canAccessVault() {
   const state = wmProfile && wmProfile.account_state ? wmProfile.account_state : "guest"
