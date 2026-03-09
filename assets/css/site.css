@@ -292,6 +292,29 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   gap:10px;
   flex-wrap:wrap;
 }
+.cardPrice{
+  margin-right:auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:40px;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:0.02em;
+  white-space:nowrap;
+}
+
+.cardPriceOld{
+  color:rgba(166,168,179,0.95);
+  text-decoration:line-through;
+  font-size:12px;
+  font-weight:600;
+}
+
+.cardPriceNow{
+  color:#f5cb72;
+  text-shadow:0 0 10px rgba(245,203,114,0.14);
+}
 
 .btn{
   border:1px solid rgba(255,255,255,0.18);
