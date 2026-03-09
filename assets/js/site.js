@@ -687,36 +687,40 @@ let wmOwnedProductSlugs = new Set();
     return `<img src="${track.cover}" alt="${track.title} cover" loading="${loading}" decoding="${decoding}">`;
   }
 
-  function cardMarkup(track, opts) {
-    return `
-      <div class="cardImg">
-        ${imgTag(track, !!(opts && opts.eagerImage))}
-        <div class="cardInfo">
-          <div class="cardInfoInner">
-            <div class="cardInfoTitle">${track.title}</div>
-            <div class="cardInfoMeta">${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}</div>
-            ${track.blurb ? `<div class="cardInfoBlurb">${track.blurb}</div>` : ``}
-            ${track.tags ? `<div class="cardInfoTags">${track.tags}</div>` : ``}
-          </div>
-        </div>
-      </div>
+function cardMarkup(track, opts) {
+  const owned = isProductOwned(track.id);
 
-      <div class="cardTop">
-        <div>
-          <h3 class="cardTitle" ${opts && opts.anchorId ? `id="${track.id}"` : ``}>${track.title}</h3>
-          <div class="cardMeta">
-            ${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}
-          </div>
+  return `
+    <div class="cardImg">
+      ${imgTag(track, !!(opts && opts.eagerImage))}
+      <div class="cardInfo">
+        <div class="cardInfoInner">
+          <div class="cardInfoTitle">${track.title}</div>
+          <div class="cardInfoMeta">${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}</div>
+          ${track.blurb ? `<div class="cardInfoBlurb">${track.blurb}</div>` : ``}
+          ${track.tags ? `<div class="cardInfoTags">${track.tags}</div>` : ``}
         </div>
-        <div class="badge">${track.year}</div>
       </div>
-<div class="cardActions">
-  <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
-  <button class="btn buyBtn ${isProductOwned(track.id) ? "isOwned" : ""}" type="button" data-buy="${track.id}" ${isProductOwned(track.id) ? "disabled aria-disabled=\"true\"" : ""}>${getBuyButtonLabel(track.id)}</button>
-  <div class="cardPrice">${getDisplayPriceHtml(track.id)}</div>
-</div>
-    `;
-  }
+    </div>
+
+    <div class="cardTop">
+      <div>
+        <h3 class="cardTitle" ${opts && opts.anchorId ? `id="${track.id}"` : ``}>${track.title}</h3>
+        <div class="cardMeta">
+          ${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}
+        </div>
+      </div>
+      <div class="badge">${track.year}</div>
+    </div>
+
+    <div class="cardActions">
+      <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
+      <button class="btn buyBtn ${owned ? "isOwned" : ""}" type="button" data-buy="${track.id}" ${owned ? "disabled aria-disabled=\"true\"" : ""}>${getBuyButtonLabel(track.id)}</button>
+      ${owned ? `<button class="btn downloadBtn" type="button" data-download="${track.id}">Download</button>` : ``}
+      <div class="cardPrice">${getDisplayPriceHtml(track.id)}</div>
+    </div>
+  `;
+}
 
 function renderFeaturedGrid() {
   const mount = document.getElementById("wmFeatured");
