@@ -454,7 +454,9 @@ function updateVaultOwnershipUI() {
     swimBtn.classList.add("isOwned");
     return;
   }
-
+function getBuyButtonLabel(trackId) {
+  return isProductOwned(trackId) ? "Owned" : "Buy";
+}
   swimBtn.textContent = "Unlock SWIM";
   swimBtn.disabled = false;
   swimBtn.removeAttribute("aria-disabled");
@@ -691,7 +693,7 @@ let wmOwnedProductSlugs = new Set();
       </div>
 <div class="cardActions">
   <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
-  <button class="btn buyBtn" type="button" data-buy="${track.id}">Buy</button>
+  <button class="btn buyBtn ${isProductOwned(track.id) ? "isOwned" : ""}" type="button" data-buy="${track.id}" ${isProductOwned(track.id) ? "disabled aria-disabled=\"true\"" : ""}>${getBuyButtonLabel(track.id)}</button>
   <div class="cardPrice">${getDisplayPriceHtml(track.id)}</div>
 </div>
     `;
@@ -847,6 +849,12 @@ function wireBuyButtons() {
   document.addEventListener("click", function (e) {
     const btn = e.target.closest("[data-buy]")
     if (!btn) return
+
+    const trackId = btn.getAttribute("data-buy")
+    if (!trackId) return
+    if (isProductOwned(trackId)) return
+
+    const product = getProductForTrack(trackId)
 
     if (!canAccessVault()) {
       const authModal = document.getElementById("wmAuthModal")
