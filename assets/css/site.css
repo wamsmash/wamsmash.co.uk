@@ -1261,16 +1261,38 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   flex-direction:column;
   gap:10px;
 }
-
 .vaultOwnedItem{
-  display:block;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 12px;
+  border:1px solid rgba(255,215,120,0.10);
+  border-radius:14px;
+  background:rgba(255,255,255,0.02);
+  color:rgba(240,230,219,0.88);
+  font-size:15px;
+  line-height:1.4;
   text-decoration:none;
+  transition:border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, color 0.18s ease;
+}
+
+.vaultOwnedItem::before{
+  content:"↳";
+  color:#f5cb72;
+  font-size:14px;
+  line-height:1;
+  flex:0 0 auto;
 }
 
 .vaultOwnedItem:hover{
   color:#f5cb72;
-  text-decoration:underline;
-  text-underline-offset:3px;
+  border-color:rgba(255,215,120,0.22);
+  background:rgba(255,215,120,0.05);
+  transform:translateY(-1px);
+}
+
+.vaultOwnedItem:hover::before{
+  color:#ffd98b;
 }
 
 
