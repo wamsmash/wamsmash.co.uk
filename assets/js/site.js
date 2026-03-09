@@ -360,6 +360,8 @@ function getProductForTrack(trackId) {
 }
 
 function getDisplayPriceHtml(trackId) {
+  if (isProductOwned(trackId)) return "";
+
   const product = getProductForTrack(trackId);
   if (!product) return "";
 
@@ -376,7 +378,6 @@ function getDisplayPriceHtml(trackId) {
 
   return `<span class="cardPriceNow">${formatPricePence(base)}</span>`;
 }
-
 async function loadProducts() {
   wmProducts = [];
   wmProductMap = {};
