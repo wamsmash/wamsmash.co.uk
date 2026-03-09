@@ -594,15 +594,14 @@ async function downloadOwnedTrackAssets(trackId) {
       console.error("No signed URL for asset", asset)
       continue
     }
-
-    const a = document.createElement("a")
-    a.href = url
-    a.download = ""
-    a.target = "_blank"
-    a.rel = "noopener"
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
+    
+const a = document.createElement("a")
+a.href = url
+a.download = ""
+a.rel = "noopener"
+document.body.appendChild(a)
+a.click()
+a.remove()
 
     started += 1
 
