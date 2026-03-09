@@ -356,6 +356,31 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   background:
     linear-gradient(180deg, #ffe7a8, #f5cb72);
 }
+
+.card.isOwned{
+  border-color:rgba(255,215,120,0.34);
+  background:
+    linear-gradient(180deg, rgba(36,28,12,0.38), rgba(14,15,22,0.56));
+  box-shadow:
+    0 14px 34px rgba(215,145,24,0.16),
+    0 0 0 1px rgba(255,215,120,0.10) inset;
+}
+
+.card.isOwned .badge{
+  border-color:rgba(255,215,120,0.34);
+  color:#f5cb72;
+}
+
+.card.isOwned .cardTitle{
+  color:#f7e2a2;
+}
+
+.card.isOwned .cardMeta{
+  color:rgba(245,203,114,0.82);
+}
+
+
+
 /* COVER IMAGE */
 .cardImg{
   position:relative;
