@@ -699,24 +699,24 @@ let wmOwnedProductSlugs = new Set();
     `;
   }
 
-  function renderFeaturedGrid() {
-    const mount = document.getElementById("wmFeatured");
-    if (!mount) return;
+function renderFeaturedGrid() {
+  const mount = document.getElementById("wmFeatured");
+  if (!mount) return;
 
-    mount.innerHTML = "";
+  mount.innerHTML = "";
 
-    const featured = TRACKS.slice(0, FEATURED_COUNT);
-    for (let i = 0; i < featured.length; i++) {
-      const track = featured[i];
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = cardMarkup(track, {
-        eagerImage: i < 3,
-        anchorId: false
-      });
-      mount.appendChild(card);
-    }
+  const featured = TRACKS.slice(0, FEATURED_COUNT);
+  for (let i = 0; i < featured.length; i++) {
+    const track = featured[i];
+    const card = document.createElement("div");
+    card.className = `card${isProductOwned(track.id) ? " isOwned" : ""}`;
+    card.innerHTML = cardMarkup(track, {
+      eagerImage: i < 3,
+      anchorId: false
+    });
+    mount.appendChild(card);
   }
+}
 
 
 
@@ -743,23 +743,23 @@ function applyMusicViewState() {
 
 
   
-  function renderMusicList() {
-    const mount = document.getElementById("wmMusicList");
-    if (!mount) return;
+function renderMusicList() {
+  const mount = document.getElementById("wmMusicList");
+  if (!mount) return;
 
-    mount.innerHTML = "";
+  mount.innerHTML = "";
 
-    for (let i = 0; i < TRACKS.length; i++) {
-      const track = TRACKS[i];
-      const row = document.createElement("div");
-      row.className = "card";
-      row.innerHTML = cardMarkup(track, {
-        eagerImage: i < 3,
-        anchorId: true
-      });
-      mount.appendChild(row);
-    }
+  for (let i = 0; i < TRACKS.length; i++) {
+    const track = TRACKS[i];
+    const row = document.createElement("div");
+    row.className = `card${isProductOwned(track.id) ? " isOwned" : ""}`;
+    row.innerHTML = cardMarkup(track, {
+      eagerImage: i < 3,
+      anchorId: true
+    });
+    mount.appendChild(row);
   }
+}
 
   function renderLinks() {
     const mount = document.getElementById("wmLinksList");
