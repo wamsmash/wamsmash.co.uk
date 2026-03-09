@@ -603,26 +603,7 @@ let wmProfile = null;
     }
   }
 
-  function applyMusicViewState() {
-  const musicList = document.getElementById("wmMusicList")
-  if (!musicList) return
 
-  musicList.classList.remove("wm-music-guest", "wm-music-member", "wm-music-premium")
-
-  if (hasPremiumAccess()) {
-    musicList.classList.add("wm-music-premium")
-    return
-  }
-
-  const state = wmProfile && wmProfile.account_state ? wmProfile.account_state : "guest"
-
-  if (state === "member") {
-    musicList.classList.add("wm-music-member")
-    return
-  }
-
-  musicList.classList.add("wm-music-guest")
-}
 
 function applyMusicViewState() {
   const musicList = document.getElementById("wmMusicList")
@@ -852,7 +833,10 @@ if (vaultLink) {
   if (authTitle) authTitle.textContent = "Create account"
   if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
   if (authMessage) authMessage.textContent = ""
-
+  const showLoginBtn = document.getElementById("wmShowLoginBtn")
+  const showSignupBtn = document.getElementById("wmShowSignupBtn")
+  if (showLoginBtn) showLoginBtn.classList.remove("isActive")
+  if (showSignupBtn) showSignupBtn.classList.add("isActive")
   return
 }
       const hero = e.target.closest(".heroIntro");
@@ -1663,18 +1647,24 @@ const logoutBtn = document.getElementById("wmLogoutBtn")
   }
 
   function showLoginMode() {
+    
     if (loginForm) loginForm.style.display = "flex"
     if (signupForm) signupForm.style.display = "none"
     if (authTitle) authTitle.textContent = "Account access"
     if (authSubtitle) authSubtitle.textContent = "Login to your account"
+    setAuthTab("login")
     clearMessage()
   }
-
+function setAuthTab(mode) {
+  if (showLoginBtn) showLoginBtn.classList.toggle("isActive", mode === "login")
+  if (showSignupBtn) showSignupBtn.classList.toggle("isActive", mode === "signup")
+}
   function showSignupMode() {
     if (loginForm) loginForm.style.display = "none"
     if (signupForm) signupForm.style.display = "flex"
     if (authTitle) authTitle.textContent = "Create account"
     if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
+    setAuthTab("signup")
     clearMessage()
   }
 
