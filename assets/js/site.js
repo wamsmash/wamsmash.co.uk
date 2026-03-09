@@ -444,42 +444,42 @@ function getBuyButtonLabel(trackId) {
   return isProductOwned(trackId) ? "Owned" : "Buy";
 }
 
-async function updateVaultOwnershipUI() {
-  const swimBtn = document.getElementById("buySwimBtn")
-  const ownedWrap = document.getElementById("vaultOwnedAssets")
-  const assetList = document.getElementById("vaultAssetList")
+function updateVaultOwnershipUI() {
+  const swimBtn = document.getElementById("buySwimBtn");
+  const ownedWrap = document.getElementById("vaultOwnedAssets");
+  const assetList = document.getElementById("vaultAssetList");
 
-  if (!swimBtn) return
+  if (!swimBtn) return;
 
-  const owned = isProductOwned("swim")
+  const owned = isProductOwned("swim");
 
   if (owned) {
-    swimBtn.textContent = "Unlocked"
-    swimBtn.disabled = true
-    swimBtn.setAttribute("aria-disabled", "true")
-    swimBtn.classList.add("isOwned")
+    swimBtn.textContent = "Unlocked";
+    swimBtn.disabled = true;
+    swimBtn.setAttribute("aria-disabled", "true");
+    swimBtn.classList.add("isOwned");
 
-    if (ownedWrap) ownedWrap.style.display = "block"
+    if (ownedWrap) ownedWrap.style.display = "block";
 
     if (assetList) {
       assetList.innerHTML = `
-        <div class="vaultOwnedItem">High quality digital download</div>
+        <div class="vaultOwnedItem">SWIM, high quality digital download</div>
         <div class="vaultOwnedItem">Collector note</div>
         <div class="vaultOwnedItem">Artwork pack</div>
         <div class="vaultOwnedItem">Vault presentation access</div>
-      `
+      `;
     }
 
-    return
+    return;
   }
 
-  swimBtn.textContent = "Unlock SWIM"
-  swimBtn.disabled = false
-  swimBtn.removeAttribute("aria-disabled")
-  swimBtn.classList.remove("isOwned")
+  swimBtn.textContent = "Unlock SWIM";
+  swimBtn.disabled = false;
+  swimBtn.removeAttribute("aria-disabled");
+  swimBtn.classList.remove("isOwned");
 
-  if (ownedWrap) ownedWrap.style.display = "none"
-  if (assetList) assetList.innerHTML = ""
+  if (ownedWrap) ownedWrap.style.display = "none";
+  if (assetList) assetList.innerHTML = "";
 }
   function hardenAudioElement(audioEl) {
     if (!audioEl) return;
