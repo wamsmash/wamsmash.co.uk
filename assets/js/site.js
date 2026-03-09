@@ -2097,12 +2097,12 @@ loadProducts().then(function () {
   renderGames()
 
   window.addEventListener("hashchange", applyRoute)
-  applyRoute()
 
   return ensureProfile()
 }).then(function () {
   return loadProfile()
 }).then(function () {
+  applyRoute()
   return loadOwnedEntitlements()
 }).then(function () {
   applyAccountStateUI()
