@@ -1263,9 +1263,14 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
 }
 
 .vaultOwnedItem{
-  color:rgba(240,230,219,0.88);
-  font-size:15px;
-  line-height:1.4;
+  display:block;
+  text-decoration:none;
+}
+
+.vaultOwnedItem:hover{
+  color:#f5cb72;
+  text-decoration:underline;
+  text-underline-offset:3px;
 }
 
 
