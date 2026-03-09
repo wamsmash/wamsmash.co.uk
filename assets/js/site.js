@@ -597,7 +597,7 @@ async function downloadOwnedTrackAssets(trackId) {
     
 const a = document.createElement("a")
 a.href = url
-a.download = ""
+a.download = asset.storage_path.split("/").pop()
 a.rel = "noopener"
 document.body.appendChild(a)
 a.click()
