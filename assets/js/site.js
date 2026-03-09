@@ -350,7 +350,57 @@
   function findTrackById(id) {
     return TRACKS.find(t => t.id === id) || null;
   }
+function formatPricePence(pence) {
+  if (typeof pence !== "number" || Number.isNaN(pence)) return "";
+  return `£${(pence / 100).toFixed(2)}`;
+}
 
+function getProductForTrack(trackId) {
+  return wmProductMap[trackId] || null;
+}
+
+function getDisplayPriceHtml(trackId) {
+  const product = getProductForTrack(trackId);
+  if (!product) return "";
+
+  const base = typeof product.base_price_pence === "number" ? product.base_price_pence : null;
+  const saleEnabled = !!product.sale_enabled;
+  const sale = typeof product.sale_price_pence === "number" ? product.sale_price_pence : null;
+
+  if (saleEnabled && sale !== null) {
+    return `
+      <span class="cardPriceOld">${formatPricePence(base)}</span>
+      <span class="cardPriceNow">${formatPricePence(sale)}</span>
+    `;
+  }
+
+  return `<span class="cardPriceNow">${formatPricePence(base)}</span>`;
+}
+
+async function loadProducts() {
+  wmProducts = [];
+  wmProductMap = {};
+
+  if (!window.wmSupabase) return;
+
+  const { data, error } = await window.wmSupabase
+    .from("products")
+    .select("product_code, product_type, slug, title, lane, base_price_pence, sale_price_pence, sale_enabled, sale_group, guest_visible, premium_visible, purchase_grants_premium_mode");
+
+  if (error) {
+    console.error("loadProducts failed", error);
+    return;
+  }
+
+  wmProducts = Array.isArray(data) ? data : [];
+
+  for (const product of wmProducts) {
+    if (!product) continue;
+    if (product.product_type !== "track") continue;
+    if (!product.slug) continue;
+    wmProductMap[product.slug] = product;
+  }
+}
   function hardenAudioElement(audioEl) {
     if (!audioEl) return;
     audioEl.setAttribute("preload", "none");
@@ -359,12 +409,14 @@
     audioEl.setAttribute("disableRemotePlayback", "");
   }
 
-  let wmAudio = null;
+let wmAudio = null;
 let currentTrackId = "";
 let shuffleOn = true;
 let recentQueue = [];
 let vaultTimer = null;
 let wmProfile = null;
+let wmProducts = [];
+let wmProductMap = {};
 
   function pickNextTrackId() {
     const ids = TRACKS.map(t => t.id);
@@ -578,6 +630,7 @@ let wmProfile = null;
         <div class="badge">${track.year}</div>
       </div>
 <div class="cardActions">
+  <div class="cardPrice">${getDisplayPriceHtml(track.id)}</div>
   <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
   <button class="btn buyBtn" type="button" data-buy="${track.id}">Buy</button>
 </div>
