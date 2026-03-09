@@ -355,7 +355,21 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   background:
     linear-gradient(180deg, #ffe7a8, #f5cb72);
 }
+.downloadBtn{
+  border-color:rgba(255,215,120,0.26);
+  color:#f3cd83;
+  background:
+    linear-gradient(180deg, rgba(32,24,14,0.92), rgba(14,13,16,0.96));
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
 
+.downloadBtn:hover{
+  border-color:rgba(255,215,120,0.42);
+  background:
+    linear-gradient(180deg, rgba(44,33,18,0.96), rgba(18,16,18,0.98));
+}
 .card.isOwned{
   border-color:rgba(255,215,120,0.34);
   background:
