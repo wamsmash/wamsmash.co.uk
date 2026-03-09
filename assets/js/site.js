@@ -392,7 +392,18 @@ async function loadProducts() {
     return;
   }
 
-  async function loadOwnedEntitlements() {
+  wmProducts = Array.isArray(data) ? data : [];
+  console.log("wmProducts loaded", wmProducts);
+
+  for (const product of wmProducts) {
+    if (!product) continue;
+    if (product.product_type !== "track") continue;
+    if (!product.slug) continue;
+    wmProductMap[product.slug] = product;
+  }
+}
+
+async function loadOwnedEntitlements() {
   wmOwnedProductSlugs = new Set();
 
   if (!window.wmSupabase) return;
@@ -448,17 +459,6 @@ function updateVaultOwnershipUI() {
   swimBtn.disabled = false;
   swimBtn.removeAttribute("aria-disabled");
   swimBtn.classList.remove("isOwned");
-}
-  
-wmProducts = Array.isArray(data) ? data : [];
-console.log("wmProducts loaded", wmProducts);
-
-  for (const product of wmProducts) {
-    if (!product) continue;
-    if (product.product_type !== "track") continue;
-    if (!product.slug) continue;
-    wmProductMap[product.slug] = product;
-  }
 }
   function hardenAudioElement(audioEl) {
     if (!audioEl) return;
@@ -1117,14 +1117,6 @@ function wireVaultButtons() {
     });
   }
 }
-
-    if (bundleBtn) {
-      bundleBtn.addEventListener("click", function () {
-        alert("Bundle checkout wiring is the next step");
-      });
-    }
-  }
-
   function clamp(n, a, b) {
     return Math.max(a, Math.min(b, n));
   }
@@ -2100,6 +2092,8 @@ loadProducts().then(function () {
   applyRoute()
 
   return ensureProfile()
+}).then(function () {
+  return loadProfile()
 }).then(function () {
   return loadOwnedEntitlements()
 }).then(function () {
