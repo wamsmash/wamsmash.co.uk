@@ -391,6 +391,65 @@ async function loadProducts() {
     console.error("loadProducts failed", error);
     return;
   }
+
+  async function loadOwnedEntitlements() {
+  wmOwnedProductSlugs = new Set();
+
+  if (!window.wmSupabase) return;
+  if (!wmProfile || !wmProfile.id) return;
+
+  const { data, error } = await window.wmSupabase
+    .from("entitlements")
+    .select(`
+      entitlement_type,
+      active,
+      product:product_id (
+        slug
+      )
+    `)
+    .eq("profile_id", wmProfile.id)
+    .eq("active", true);
+
+  if (error) {
+    console.error("loadOwnedEntitlements failed", error);
+    return;
+  }
+
+  const rows = Array.isArray(data) ? data : [];
+
+  for (const row of rows) {
+    if (!row) continue;
+    if (!row.product) continue;
+    const slug = row.product.slug;
+    if (!slug) continue;
+    wmOwnedProductSlugs.add(slug);
+  }
+}
+
+function isProductOwned(slug) {
+  return wmOwnedProductSlugs.has(slug);
+}
+
+function updateVaultOwnershipUI() {
+  const swimBtn = document.getElementById("buySwimBtn");
+  if (!swimBtn) return;
+
+  const owned = isProductOwned("swim");
+
+  if (owned) {
+    swimBtn.textContent = "Unlocked";
+    swimBtn.disabled = true;
+    swimBtn.setAttribute("aria-disabled", "true");
+    swimBtn.classList.add("isOwned");
+    return;
+  }
+
+  swimBtn.textContent = "Unlock SWIM";
+  swimBtn.disabled = false;
+  swimBtn.removeAttribute("aria-disabled");
+  swimBtn.classList.remove("isOwned");
+}
+  
 wmProducts = Array.isArray(data) ? data : [];
 console.log("wmProducts loaded", wmProducts);
 
@@ -417,6 +476,7 @@ let vaultTimer = null;
 let wmProfile = null;
 let wmProducts = [];
 let wmProductMap = {};
+let wmOwnedProductSlugs = new Set();
 
   function pickNextTrackId() {
     const ids = TRACKS.map(t => t.id);
@@ -1040,15 +1100,23 @@ return
     }
   }
 
-  function wireVaultButtons() {
-    const swimBtn = document.getElementById("buySwimBtn");
-    const bundleBtn = document.getElementById("buyBundleBtn");
+function wireVaultButtons() {
+  const swimBtn = document.getElementById("buySwimBtn");
+  const bundleBtn = document.getElementById("buyBundleBtn");
 
-    if (swimBtn) {
-      swimBtn.addEventListener("click", function () {
-        alert("SWIM checkout wiring is the next step");
-      });
-    }
+  if (swimBtn) {
+    swimBtn.addEventListener("click", function () {
+      if (isProductOwned("swim")) return;
+      alert("SWIM checkout wiring is the next step");
+    });
+  }
+
+  if (bundleBtn) {
+    bundleBtn.addEventListener("click", function () {
+      alert("Bundle checkout wiring is the next step");
+    });
+  }
+}
 
     if (bundleBtn) {
       bundleBtn.addEventListener("click", function () {
@@ -2033,13 +2101,14 @@ loadProducts().then(function () {
 
   return ensureProfile()
 }).then(function () {
-  return loadProfile()
+  return loadOwnedEntitlements()
 }).then(function () {
   applyAccountStateUI()
   applyMusicViewState()
   renderMusicList()
   renderFeaturedGrid()
   renderLinks()
+  updateVaultOwnershipUI()
   return syncAuthUI()
 })
 
