@@ -577,10 +577,10 @@ let wmProfile = null;
         </div>
         <div class="badge">${track.year}</div>
       </div>
-
-      <div class="cardActions">
-        <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
-      </div>
+<div class="cardActions">
+  <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
+  <button class="btn buyBtn" type="button" data-buy="${track.id}">Buy</button>
+</div>
     `;
   }
 
@@ -729,6 +729,40 @@ function applyMusicViewState() {
       playTrack(audioEl, id);
     });
   }
+
+function wireBuyButtons() {
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-buy]")
+    if (!btn) return
+
+    if (!canAccessVault()) {
+      const authModal = document.getElementById("wmAuthModal")
+      const loginForm = document.getElementById("wmLoginForm")
+      const signupForm = document.getElementById("wmSignupForm")
+      const authTitle = document.getElementById("wmAuthTitle")
+      const authSubtitle = document.getElementById("wmAuthSubtitle")
+      const authMessage = document.getElementById("wmAuthMessage")
+      const showLoginBtn = document.getElementById("wmShowLoginBtn")
+      const showSignupBtn = document.getElementById("wmShowSignupBtn")
+
+      if (authModal) authModal.style.display = "block"
+      if (loginForm) loginForm.style.display = "none"
+      if (signupForm) signupForm.style.display = "flex"
+      if (authTitle) authTitle.textContent = "Create account"
+      if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
+      if (authMessage) authMessage.textContent = ""
+      if (showLoginBtn) showLoginBtn.classList.remove("isActive")
+      if (showSignupBtn) showSignupBtn.classList.add("isActive")
+
+      return
+    }
+
+    location.hash = "vault"
+  })
+}
+
+
+  
 
 function switchView(view) {
   const home = document.getElementById("homeView");
@@ -1925,9 +1959,10 @@ function applyAccountStateUI() {
 
     clearState();
 
-    wireAudioPersistence(wmAudio);
-    wirePlayButtons(wmAudio);
-    wireNavigation();
+wireAudioPersistence(wmAudio);
+wirePlayButtons(wmAudio);
+wireBuyButtons();
+wireNavigation();
     wirePlayerControls();
     wireGamesControls();
     wireVaultButtons();
