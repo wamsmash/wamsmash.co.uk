@@ -439,6 +439,8 @@ async function loadOwnedEntitlements() {
 
 function isProductOwned(slug) {
   return wmOwnedProductSlugs.has(slug);
+}function getBuyButtonLabel(trackId) {
+  return isProductOwned(trackId) ? "Owned" : "Buy";
 }
 
 function updateVaultOwnershipUI() {
@@ -454,9 +456,7 @@ function updateVaultOwnershipUI() {
     swimBtn.classList.add("isOwned");
     return;
   }
-function getBuyButtonLabel(trackId) {
-  return isProductOwned(trackId) ? "Owned" : "Buy";
-}
+
   swimBtn.textContent = "Unlock SWIM";
   swimBtn.disabled = false;
   swimBtn.removeAttribute("aria-disabled");
