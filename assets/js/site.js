@@ -826,7 +826,8 @@ if (vaultLink) {
   const authTitle = document.getElementById("wmAuthTitle")
   const authSubtitle = document.getElementById("wmAuthSubtitle")
   const authMessage = document.getElementById("wmAuthMessage")
-
+  const showLoginBtn = document.getElementById("wmShowLoginBtn")
+  const showSignupBtn = document.getElementById("wmShowSignupBtn")
   if (authModal) authModal.style.display = "block"
   if (loginForm) loginForm.style.display = "none"
   if (signupForm) signupForm.style.display = "flex"
@@ -835,6 +836,8 @@ if (vaultLink) {
   if (authMessage) authMessage.textContent = ""
   const showLoginBtn = document.getElementById("wmShowLoginBtn")
   const showSignupBtn = document.getElementById("wmShowSignupBtn")
+  if (showLoginBtn) showLoginBtn.classList.remove("isActive")
+  if (showSignupBtn) showSignupBtn.classList.add("isActive")
   if (showLoginBtn) showLoginBtn.classList.remove("isActive")
   if (showSignupBtn) showSignupBtn.classList.add("isActive")
   return
