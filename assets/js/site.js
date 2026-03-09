@@ -482,6 +482,90 @@ function updateVaultOwnershipUI() {
   if (ownedWrap) ownedWrap.style.display = "none";
   if (assetList) assetList.innerHTML = "";
 }
+
+async function getOwnedAssetsForTrack(trackId) {
+  if (!window.wmSupabase) return [];
+  if (!wmProfile || !wmProfile.id) return [];
+
+  const { data, error } = await window.wmSupabase
+    .from("entitlement_assets")
+    .select(`
+      premium_asset:premium_asset_id (
+        id,
+        asset_key,
+        title,
+        asset_type,
+        storage_path,
+        active
+      ),
+      entitlement:entitlement_id!inner (
+        id,
+        active,
+        profile_id,
+        product:product_id!inner (
+          slug
+        )
+      )
+    `)
+    .eq("entitlement.profile_id", wmProfile.id)
+    .eq("entitlement.active", true)
+    .eq("entitlement.product.slug", trackId)
+
+  if (error) {
+    console.error("getOwnedAssetsForTrack failed", error)
+    return []
+  }
+
+  const rows = Array.isArray(data) ? data : []
+
+  return rows
+    .map(row => row && row.premium_asset ? row.premium_asset : null)
+    .filter(asset => asset && asset.active && asset.storage_path)
+}
+
+async function getSignedAssetUrl(storagePath) {
+  if (!window.wmSupabase || !storagePath) return ""
+
+  const { data, error } = await window.wmSupabase
+    .storage
+    .from("vault")
+    .createSignedUrl(storagePath, 120)
+
+  if (error) {
+    console.error("getSignedAssetUrl failed", error)
+    return ""
+  }
+
+  return data && data.signedUrl ? data.signedUrl : ""
+}
+
+async function downloadOwnedTrackAssets(trackId) {
+  if (!isProductOwned(trackId)) return
+
+  const assets = await getOwnedAssetsForTrack(trackId)
+  if (!assets.length) {
+    alert("No assets found for this track yet")
+    return
+  }
+
+  for (const asset of assets) {
+    const url = await getSignedAssetUrl(asset.storage_path)
+    if (!url) continue
+
+    const a = document.createElement("a")
+    a.href = url
+    a.download = ""
+    a.rel = "noopener"
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+
+    await new Promise(resolve => setTimeout(resolve, 220))
+  }
+}
+
+
+  
   function hardenAudioElement(audioEl) {
     if (!audioEl) return;
     audioEl.setAttribute("preload", "none");
@@ -698,7 +782,8 @@ function cardMarkup(track, opts) {
         <div class="cardInfoInner">
 <div class="cardInfoTitle">${track.title}</div>
 <div class="cardInfoMeta">
-  ${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}${isProductOwned(track.id) ? `, from your collection` : ``}
+  ${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}
+  ${owned ? `, from your collection` : ``}
 </div>
           ${track.blurb ? `<div class="cardInfoBlurb">${track.blurb}</div>` : ``}
           ${track.tags ? `<div class="cardInfoTags">${track.tags}</div>` : ``}
@@ -716,12 +801,12 @@ function cardMarkup(track, opts) {
       <div class="badge">${track.year}</div>
     </div>
 
-    <div class="cardActions">
-      <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
-      <button class="btn buyBtn ${owned ? "isOwned" : ""}" type="button" data-buy="${track.id}" ${owned ? "disabled aria-disabled=\"true\"" : ""}>${getBuyButtonLabel(track.id)}</button>
-      ${owned ? `<button class="btn downloadBtn" type="button" data-download="${track.id}">Download</button>` : ``}
-      <div class="cardPrice">${getDisplayPriceHtml(track.id)}</div>
-    </div>
+<div class="cardActions">
+  <button class="btn btnPrimary" type="button" data-play="${track.id}">Play</button>
+<button class="btn buyBtn ${owned ? "isOwned" : ""}" type="button" data-buy="${track.id}" ${owned ? "disabled aria-disabled=\"true\"" : ""}>${getBuyButtonLabel(track.id)}</button> 
+${owned ? `<button class="btn" type="button" data-download="${track.id}">Download</button>` : ``}
+  <div class="cardPrice">${getDisplayPriceHtml(track.id)}</div>
+</div>
   `;
 }
 
@@ -910,15 +995,14 @@ function wireBuyButtons() {
 
 function wireDownloadButtons() {
   document.addEventListener("click", function (e) {
-    const btn = e.target.closest("[data-download]");
-    if (!btn) return;
+    const btn = e.target.closest("[data-download]")
+    if (!btn) return
 
-    const trackId = btn.getAttribute("data-download");
-    if (!trackId) return;
-    if (!isProductOwned(trackId)) return;
+    const trackId = btn.getAttribute("data-download")
+    if (!trackId) return
 
-    alert(`Download pack for ${trackId.toUpperCase()} will be wired next`);
-  });
+    downloadOwnedTrackAssets(trackId)
+  })
 }
   
 
