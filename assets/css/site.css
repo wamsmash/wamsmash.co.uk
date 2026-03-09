@@ -339,7 +339,23 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   border-color:rgba(255,43,214,0.55);
   box-shadow:0 0 0 1px rgba(0,229,255,0.15) inset;
 }
+.buyBtn.isOwned{
+  border-color:rgba(255,215,120,0.34);
+  color:#20150a;
+  background:
+    linear-gradient(180deg, #ffe7a8, #f5cb72);
+  box-shadow:
+    0 10px 22px rgba(215,145,24,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.52);
+  cursor:default;
+}
 
+.buyBtn.isOwned:hover{
+  transform:none;
+  border-color:rgba(255,215,120,0.34);
+  background:
+    linear-gradient(180deg, #ffe7a8, #f5cb72);
+}
 /* COVER IMAGE */
 .cardImg{
   position:relative;
