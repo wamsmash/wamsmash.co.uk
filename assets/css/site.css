@@ -340,13 +340,12 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   box-shadow:0 0 0 1px rgba(0,229,255,0.15) inset;
 }
 .buyBtn.isOwned{
-  border-color:rgba(255,215,120,0.34);
-  color:#20150a;
-  background:
-    linear-gradient(180deg, #ffe7a8, #f5cb72);
+  background:linear-gradient(180deg,#f6d68b,#d7a23d);
+  color:#0a0a0a;
+  border-color:rgba(255,215,120,0.5);
   box-shadow:
-    0 10px 22px rgba(215,145,24,0.22),
-    inset 0 1px 0 rgba(255,255,255,0.52);
+    0 4px 14px rgba(215,145,24,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.35);
   cursor:default;
 }
 
@@ -378,6 +377,59 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
 .card.isOwned .cardMeta{
   color:rgba(245,203,114,0.82);
 }
+
+.card.isOwned{
+  position:relative;
+  overflow:hidden;
+}
+
+.card.isOwned::after{
+  content:"";
+  position:absolute;
+  top:-40%;
+  left:-60%;
+  width:60%;
+  height:180%;
+  pointer-events:none;
+
+  background:linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255,235,170,0.0) 35%,
+    rgba(255,235,170,0.35) 50%,
+    rgba(255,235,170,0.0) 65%,
+    transparent 100%
+  );
+
+  transform:rotate(12deg);
+  opacity:0;
+
+  animation:wmOwnedSweep 12s ease-in-out infinite;
+}
+
+@keyframes wmOwnedSweep{
+
+  0%{
+    left:-60%;
+    opacity:0;
+  }
+
+  5%{
+    opacity:0.7;
+  }
+
+  10%{
+    left:120%;
+    opacity:0;
+  }
+
+  100%{
+    left:120%;
+    opacity:0;
+  }
+
+}
+
 
 
 
