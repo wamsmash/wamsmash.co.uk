@@ -696,8 +696,10 @@ function cardMarkup(track, opts) {
       ${imgTag(track, !!(opts && opts.eagerImage))}
       <div class="cardInfo">
         <div class="cardInfoInner">
-          <div class="cardInfoTitle">${track.title}</div>
-          <div class="cardInfoMeta">${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}</div>
+<div class="cardInfoTitle">${track.title}</div>
+<div class="cardInfoMeta">
+  ${laneLabel(track.lane)}${track.note ? `, ${track.note}` : ``}${isProductOwned(track.id) ? `, from your collection` : ``}
+</div>
           ${track.blurb ? `<div class="cardInfoBlurb">${track.blurb}</div>` : ``}
           ${track.tags ? `<div class="cardInfoTags">${track.tags}</div>` : ``}
         </div>
