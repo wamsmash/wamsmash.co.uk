@@ -445,44 +445,76 @@ function getBuyButtonLabel(trackId) {
   return isProductOwned(trackId) ? "Owned" : "Buy";
 }
 
-function updateVaultOwnershipUI() {
-  const swimBtn = document.getElementById("buySwimBtn");
-  const ownedWrap = document.getElementById("vaultOwnedAssets");
-  const assetList = document.getElementById("vaultAssetList");
+async function updateVaultOwnershipUI() {
+  const swimBtn = document.getElementById("buySwimBtn")
+  const ownedWrap = document.getElementById("vaultOwnedAssets")
+  const assetList = document.getElementById("vaultAssetList")
 
-  if (!swimBtn) return;
+  if (!swimBtn) return
 
-  const owned = isProductOwned("swim");
+  const owned = isProductOwned("swim")
 
-  if (owned) {
-    swimBtn.textContent = "Unlocked";
-    swimBtn.disabled = true;
-    swimBtn.setAttribute("aria-disabled", "true");
-    swimBtn.classList.add("isOwned");
+  if (!owned) {
+    swimBtn.textContent = "Unlock SWIM"
+    swimBtn.disabled = false
+    swimBtn.removeAttribute("aria-disabled")
+    swimBtn.classList.remove("isOwned")
 
-    if (ownedWrap) ownedWrap.style.display = "block";
+    if (ownedWrap) ownedWrap.style.display = "none"
+    if (assetList) assetList.innerHTML = ""
 
-    if (assetList) {
-      assetList.innerHTML = `
-        <div class="vaultOwnedItem">SWIM, high quality digital download</div>
-        <div class="vaultOwnedItem">Collector note</div>
-        <div class="vaultOwnedItem">Artwork pack</div>
-        <div class="vaultOwnedItem">Vault presentation access</div>
-      `;
-    }
-
-    return;
+    return
   }
 
-  swimBtn.textContent = "Unlock SWIM";
-  swimBtn.disabled = false;
-  swimBtn.removeAttribute("aria-disabled");
-  swimBtn.classList.remove("isOwned");
+  swimBtn.textContent = "Unlocked"
+  swimBtn.disabled = true
+  swimBtn.setAttribute("aria-disabled", "true")
+  swimBtn.classList.add("isOwned")
 
-  if (ownedWrap) ownedWrap.style.display = "none";
-  if (assetList) assetList.innerHTML = "";
+  if (ownedWrap) ownedWrap.style.display = "block"
+  if (!assetList) return
+
+  const assets = await getOwnedAssetsForTrack("swim")
+
+  if (!assets.length) {
+    assetList.innerHTML = `<div class="vaultOwnedItem">Assets not available yet</div>`
+    return
+  }
+
+  const labelMap = {
+    swim_wav: "Download SWIM (WAV)",
+    swim_note: "Download collector note",
+    swim_artwork: "Download artwork pack",
+    swim_presentation: "Enter vault presentation"
+  }
+
+  const orderedKeys = ["swim_wav", "swim_note", "swim_artwork", "swim_presentation"]
+
+  const htmlParts = []
+
+  for (const key of orderedKeys) {
+    const asset = assets.find(a => a.asset_key === key)
+    if (!asset) continue
+
+    const signedUrl = await getSignedAssetUrl(asset.storage_path)
+    if (!signedUrl) continue
+
+    const isPresentation = key === "swim_presentation"
+    const label = labelMap[key] || asset.title || key
+
+    htmlParts.push(`
+      <a
+        class="vaultOwnedItem"
+        href="${signedUrl}"
+        ${isPresentation ? `target="_blank" rel="noopener"` : `download`}
+      >${label}</a>
+    `)
+  }
+
+  assetList.innerHTML = htmlParts.length
+    ? htmlParts.join("")
+    : `<div class="vaultOwnedItem">Assets not available yet</div>`
 }
-
 async function getOwnedAssetsForTrack(trackId) {
   if (!window.wmSupabase) return [];
   if (!wmProfile || !wmProfile.id) return [];
@@ -2249,7 +2281,8 @@ loadProducts().then(function () {
   renderMusicList()
   renderFeaturedGrid()
   renderLinks()
-  updateVaultOwnershipUI()
+  return updateVaultOwnershipUI()
+}).then(function () {
   return syncAuthUI()
 })
 
