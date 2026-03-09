@@ -391,8 +391,8 @@ async function loadProducts() {
     console.error("loadProducts failed", error);
     return;
   }
-
-  wmProducts = Array.isArray(data) ? data : [];
+wmProducts = Array.isArray(data) ? data : [];
+console.log("wmProducts loaded", wmProducts);
 
   for (const product of wmProducts) {
     if (!product) continue;
@@ -2021,25 +2021,29 @@ wireNavigation();
     wireVaultButtons();
     wireAuthButtons();
     
-    renderFeaturedGrid();
-    renderMusicList();
-    renderLinks();
-    renderPress();
-    renderGames();
+loadProducts().then(function () {
+  renderFeaturedGrid()
+  renderMusicList()
+  renderLinks()
+  renderPress()
+  renderGames()
 
-    window.addEventListener("hashchange", applyRoute);
-applyRoute();
+  window.addEventListener("hashchange", applyRoute)
+  applyRoute()
 
-ensureProfile().then(function () {
+  return ensureProfile()
+}).then(function () {
   return loadProfile()
 }).then(function () {
   applyAccountStateUI()
   applyMusicViewState()
+  renderMusicList()
+  renderFeaturedGrid()
   renderLinks()
   return syncAuthUI()
 })
 
-setNowPlayingUI(null);
+setNowPlayingUI(null)
 
     
   }
