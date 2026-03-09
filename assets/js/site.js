@@ -905,7 +905,18 @@ function wireBuyButtons() {
   })
 }
 
+function wireDownloadButtons() {
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-download]");
+    if (!btn) return;
 
+    const trackId = btn.getAttribute("data-download");
+    if (!trackId) return;
+    if (!isProductOwned(trackId)) return;
+
+    alert(`Download pack for ${trackId.toUpperCase()} will be wired next`);
+  });
+}
   
 
 function switchView(view) {
@@ -2102,10 +2113,10 @@ function applyAccountStateUI() {
     hardenAudioElement(wmAudio);
 
     clearState();
-
 wireAudioPersistence(wmAudio);
 wirePlayButtons(wmAudio);
 wireBuyButtons();
+wireDownloadButtons();
 wireNavigation();
     wirePlayerControls();
     wireGamesControls();
