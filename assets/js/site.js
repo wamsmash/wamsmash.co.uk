@@ -1043,16 +1043,106 @@ function wireBuyButtons() {
 }
 
 function wireDownloadButtons() {
-  document.addEventListener("click", function (e) {
+  document.addEventListener("click", async function (e) {
     const btn = e.target.closest("[data-download]")
     if (!btn) return
 
     const trackId = btn.getAttribute("data-download")
     if (!trackId) return
+    if (!isProductOwned(trackId)) return
 
-    downloadOwnedTrackAssets(trackId)
+    const assets = await getOwnedAssetsForTrack(trackId)
+
+    if (!assets.length) {
+      alert(`No assets found for ${trackId.toUpperCase()} yet`)
+      return
+    }
+
+    openDownloadModal(trackId, assets)
   })
 }
+
+document.addEventListener("click", function (e) {
+  const closeTarget = e.target.closest("[data-download-close='true']")
+  if (!closeTarget) return
+
+  const modal = document.getElementById("wmDownloadModal")
+  if (modal) modal.style.display = "none"
+})
+
+  
+document.addEventListener("keydown", function (e) {
+  if (e.key !== "Escape") return
+
+  const modal = document.getElementById("wmDownloadModal")
+  if (modal) modal.style.display = "none"
+})
+
+
+  
+async function openDownloadModal(trackId, assets) {
+  let modal = document.getElementById("wmDownloadModal")
+
+  if (!modal) {
+    modal = document.createElement("div")
+    modal.id = "wmDownloadModal"
+    modal.className = "wmAuthModal"
+    modal.innerHTML = `
+      <div class="wmAuthBackdrop" data-download-close="true"></div>
+      <div class="wmAuthPanel">
+        <button class="wmAuthClose" type="button" data-download-close="true">×</button>
+        <h2 id="wmDownloadTitle">Downloads</h2>
+        <p id="wmDownloadSubtitle">Choose an asset</p>
+        <div id="wmDownloadList" class="vaultWhatList"></div>
+      </div>
+    `
+    document.body.appendChild(modal)
+  }
+
+  const title = document.getElementById("wmDownloadTitle")
+  const subtitle = document.getElementById("wmDownloadSubtitle")
+  const list = document.getElementById("wmDownloadList")
+
+  if (!list) return
+
+  if (title) title.textContent = `${trackId.toUpperCase()} Downloads`
+  if (subtitle) subtitle.textContent = "Choose an asset"
+
+  const labelMap = {
+    wav: "Download WAV",
+    mp3: "Download MP3",
+    pdf: "Download collector note",
+    image: "Download artwork pack",
+    zip: "Download pack"
+  }
+
+  const htmlParts = []
+
+  for (const asset of assets) {
+    const signedUrl = await getSignedAssetUrl(asset.storage_path)
+    if (!signedUrl) continue
+
+    const label = labelMap[asset.asset_type] || asset.title || "Download asset"
+    const filename = asset.storage_path.split("/").pop()
+
+    htmlParts.push(`
+      <a
+        class="vaultOwnedItem"
+        href="${signedUrl}"
+        download="${filename}"
+        rel="noopener"
+      >${label}</a>
+    `)
+  }
+
+  list.innerHTML = htmlParts.length
+    ? htmlParts.join("")
+    : `<div class="vaultOwnedItem">Assets not available yet</div>`
+
+  modal.style.display = "block"
+}
+
+  
   
 
 function switchView(view) {
