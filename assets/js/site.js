@@ -820,27 +820,25 @@ function canAccessVault() {
 if (vaultLink) {
   e.preventDefault()
 
-  const authModal = document.getElementById("wmAuthModal")
-  const loginForm = document.getElementById("wmLoginForm")
-  const signupForm = document.getElementById("wmSignupForm")
-  const authTitle = document.getElementById("wmAuthTitle")
-  const authSubtitle = document.getElementById("wmAuthSubtitle")
-  const authMessage = document.getElementById("wmAuthMessage")
-  const showLoginBtn = document.getElementById("wmShowLoginBtn")
-  const showSignupBtn = document.getElementById("wmShowSignupBtn")
-  if (authModal) authModal.style.display = "block"
-  if (loginForm) loginForm.style.display = "none"
-  if (signupForm) signupForm.style.display = "flex"
-  if (authTitle) authTitle.textContent = "Create account"
-  if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
-  if (authMessage) authMessage.textContent = ""
-  const showLoginBtn = document.getElementById("wmShowLoginBtn")
-  const showSignupBtn = document.getElementById("wmShowSignupBtn")
-  if (showLoginBtn) showLoginBtn.classList.remove("isActive")
-  if (showSignupBtn) showSignupBtn.classList.add("isActive")
-  if (showLoginBtn) showLoginBtn.classList.remove("isActive")
-  if (showSignupBtn) showSignupBtn.classList.add("isActive")
-  return
+const authModal = document.getElementById("wmAuthModal")
+const loginForm = document.getElementById("wmLoginForm")
+const signupForm = document.getElementById("wmSignupForm")
+const authTitle = document.getElementById("wmAuthTitle")
+const authSubtitle = document.getElementById("wmAuthSubtitle")
+const authMessage = document.getElementById("wmAuthMessage")
+const showLoginBtn = document.getElementById("wmShowLoginBtn")
+const showSignupBtn = document.getElementById("wmShowSignupBtn")
+
+if (authModal) authModal.style.display = "block"
+if (loginForm) loginForm.style.display = "none"
+if (signupForm) signupForm.style.display = "flex"
+if (authTitle) authTitle.textContent = "Create account"
+if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
+if (authMessage) authMessage.textContent = ""
+if (showLoginBtn) showLoginBtn.classList.remove("isActive")
+if (showSignupBtn) showSignupBtn.classList.add("isActive")
+
+return
 }
       const hero = e.target.closest(".heroIntro");
       if (hero) {
