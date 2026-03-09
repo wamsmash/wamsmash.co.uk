@@ -1108,13 +1108,15 @@ async function openDownloadModal(trackId, assets) {
   if (title) title.textContent = `${trackId.toUpperCase()} Downloads`
   if (subtitle) subtitle.textContent = "Choose an asset"
 
-  const labelMap = {
-    wav: "Download WAV",
-    mp3: "Download MP3",
-    pdf: "Download collector note",
-    image: "Download artwork pack",
-    zip: "Download pack"
-  }
+const prettyTrack = trackId.toUpperCase()
+
+const labelMap = {
+  wav: `${prettyTrack} – WAV (Studio Quality)`,
+  mp3: `${prettyTrack} – MP3`,
+  pdf: `${prettyTrack} – Collector Note`,
+  image: `${prettyTrack} – Artwork Pack`,
+  zip: `${prettyTrack} – Download Pack`
+}
 
   const htmlParts = []
 
