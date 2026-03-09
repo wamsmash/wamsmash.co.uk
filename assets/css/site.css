@@ -1197,6 +1197,30 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   transform:none;
 }
 
+@keyframes vaultOwnedPulse{
+  0%{
+    box-shadow:
+      0 16px 36px rgba(215,145,24,0.30),
+      inset 0 1px 0 rgba(255,255,255,0.52);
+  }
+
+  50%{
+    box-shadow:
+      0 22px 46px rgba(255,185,60,0.55),
+      inset 0 1px 0 rgba(255,255,255,0.65);
+  }
+
+  100%{
+    box-shadow:
+      0 16px 36px rgba(215,145,24,0.30),
+      inset 0 1px 0 rgba(255,255,255,0.52);
+  }
+}
+
+.vaultBtnPrimary.isOwned{
+  animation:vaultOwnedPulse 12s ease-in-out infinite;
+}
+
 .vaultOwnedAssets{
   margin-top:16px;
   padding:16px 18px;
