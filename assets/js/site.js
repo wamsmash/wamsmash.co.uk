@@ -439,7 +439,11 @@ async function loadOwnedEntitlements() {
 
 function isProductOwned(slug) {
   return wmOwnedProductSlugs.has(slug);
-}function getBuyButtonLabel(trackId) {
+}
+
+function getBuyButtonLabel(trackId) {
+  return isProductOwned(trackId) ? "Owned" : "Buy";
+}
   return isProductOwned(trackId) ? "Owned" : "Buy";
 }
 
