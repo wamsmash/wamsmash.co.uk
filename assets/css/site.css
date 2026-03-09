@@ -292,16 +292,19 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   gap:10px;
   flex-wrap:wrap;
 }
+
 .cardPrice{
-  margin-right:auto;
+  margin-left:auto;
   display:flex;
   align-items:center;
+  justify-content:flex-end;
   gap:8px;
   min-height:40px;
   font-size:14px;
   font-weight:800;
   letter-spacing:0.02em;
   white-space:nowrap;
+  order:3;
 }
 
 .cardPriceOld{
