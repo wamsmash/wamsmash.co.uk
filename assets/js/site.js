@@ -29,7 +29,7 @@
       id: "star",
       title: "STAR",
       lane: "yellow",
-      year: "2026",
+      year: "2025",
       audio: "/assets/audio/star.mp3",
       cover: "/assets/img/covers/star.jpg",
       note: "",
