@@ -540,27 +540,45 @@ async function getSignedAssetUrl(storagePath) {
 }
 
 async function downloadOwnedTrackAssets(trackId) {
-  if (!isProductOwned(trackId)) return
-
-  const assets = await getOwnedAssetsForTrack(trackId)
-  if (!assets.length) {
-    alert("No assets found for this track yet")
+  if (!isProductOwned(trackId)) {
+    alert("This track is not marked as owned")
     return
   }
 
+  const assets = await getOwnedAssetsForTrack(trackId)
+
+  if (!assets.length) {
+    console.error("No assets returned for", trackId)
+    alert(`No assets found for ${trackId.toUpperCase()} yet`)
+    return
+  }
+
+  let started = 0
+
   for (const asset of assets) {
     const url = await getSignedAssetUrl(asset.storage_path)
-    if (!url) continue
+
+    if (!url) {
+      console.error("No signed URL for asset", asset)
+      continue
+    }
 
     const a = document.createElement("a")
     a.href = url
     a.download = ""
+    a.target = "_blank"
     a.rel = "noopener"
     document.body.appendChild(a)
     a.click()
     a.remove()
 
-    await new Promise(resolve => setTimeout(resolve, 220))
+    started += 1
+
+    await new Promise(resolve => setTimeout(resolve, 250))
+  }
+
+  if (!started) {
+    alert(`Download links could not be created for ${trackId.toUpperCase()}`)
   }
 }
 
