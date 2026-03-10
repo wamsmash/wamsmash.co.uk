@@ -379,28 +379,28 @@ function getDisplayPriceHtml(trackId) {
   return `<span class="cardPriceNow">${formatPricePence(base)}</span>`;
 }
 async function loadProducts() {
-  wmProducts = [];
-  wmProductMap = {};
+  wmProducts = []
+  wmProductMap = {}
 
-  if (!window.wmSupabase) return;
+  if (!window.wmSupabase) return
 
   const { data, error } = await window.wmSupabase
     .from("products")
-    .select("product_code, product_type, slug, title, lane, base_price_pence, sale_price_pence, sale_enabled, sale_group, guest_visible, premium_visible, purchase_grants_premium_mode");
+    .select("product_code, product_type, slug, title, lane, base_price_pence, sale_price_pence, sale_enabled, sale_group, guest_visible, premium_visible, purchase_grants_premium_mode")
+    .eq("active", true)
 
   if (error) {
-    console.error("loadProducts failed", error);
-    return;
+    console.error("loadProducts failed", error)
+    return
   }
 
-  wmProducts = Array.isArray(data) ? data : [];
-  console.log("wmProducts loaded", wmProducts);
+  wmProducts = Array.isArray(data) ? data : []
+  console.log("wmProducts loaded", wmProducts)
 
   for (const product of wmProducts) {
-    if (!product) continue;
-    if (product.product_type !== "track") continue;
-    if (!product.slug) continue;
-    wmProductMap[product.slug] = product;
+    if (!product) continue
+    if (!product.slug) continue
+    wmProductMap[product.slug] = product
   }
 }
 
@@ -1456,15 +1456,99 @@ return
   }
 
 function wireVaultButtons() {
-  const swimBtn = document.getElementById("buySwimBtn");
-  const bundleBtn = document.getElementById("buyBundleBtn");
+  const swimBtn = document.getElementById("buySwimBtn")
+  const bundleBtn = document.getElementById("buyBundleBtn")
 
   if (swimBtn) {
-    swimBtn.addEventListener("click", function () {
-      if (isProductOwned("swim")) return;
-      alert("SWIM checkout wiring is the next step");
-    });
+    swimBtn.addEventListener("click", async function () {
+      if (isProductOwned("swim")) return
+      if (!canAccessVault()) {
+        const authModal = document.getElementById("wmAuthModal")
+        const loginForm = document.getElementById("wmLoginForm")
+        const signupForm = document.getElementById("wmSignupForm")
+        const authTitle = document.getElementById("wmAuthTitle")
+        const authSubtitle = document.getElementById("wmAuthSubtitle")
+        const authMessage = document.getElementById("wmAuthMessage")
+        const showLoginBtn = document.getElementById("wmShowLoginBtn")
+        const showSignupBtn = document.getElementById("wmShowSignupBtn")
+
+        if (authModal) authModal.style.display = "block"
+        if (loginForm) loginForm.style.display = "none"
+        if (signupForm) signupForm.style.display = "flex"
+        if (authTitle) authTitle.textContent = "Create account"
+        if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
+        if (authMessage) authMessage.textContent = ""
+        if (showLoginBtn) showLoginBtn.classList.remove("isActive")
+        if (showSignupBtn) showSignupBtn.classList.add("isActive")
+        return
+      }
+
+      const originalText = swimBtn.textContent
+      swimBtn.disabled = true
+      swimBtn.setAttribute("aria-disabled", "true")
+      swimBtn.textContent = "Opening..."
+      swimBtn.style.opacity = "0.7"
+      swimBtn.style.cursor = "wait"
+
+      try {
+        await startCheckoutForTrack("swim")
+      } catch (err) {
+        console.error("SWIM checkout failed", err)
+        alert("Checkout could not be created")
+        swimBtn.disabled = false
+        swimBtn.removeAttribute("aria-disabled")
+        swimBtn.textContent = originalText
+        swimBtn.style.opacity = ""
+        swimBtn.style.cursor = ""
+      }
+    })
   }
+
+  if (bundleBtn) {
+    bundleBtn.addEventListener("click", async function () {
+      if (isProductOwned("bundle-01")) return
+      if (!canAccessVault()) {
+        const authModal = document.getElementById("wmAuthModal")
+        const loginForm = document.getElementById("wmLoginForm")
+        const signupForm = document.getElementById("wmSignupForm")
+        const authTitle = document.getElementById("wmAuthTitle")
+        const authSubtitle = document.getElementById("wmAuthSubtitle")
+        const authMessage = document.getElementById("wmAuthMessage")
+        const showLoginBtn = document.getElementById("wmShowLoginBtn")
+        const showSignupBtn = document.getElementById("wmShowSignupBtn")
+
+        if (authModal) authModal.style.display = "block"
+        if (loginForm) loginForm.style.display = "none"
+        if (signupForm) signupForm.style.display = "flex"
+        if (authTitle) authTitle.textContent = "Create account"
+        if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
+        if (authMessage) authMessage.textContent = ""
+        if (showLoginBtn) showLoginBtn.classList.remove("isActive")
+        if (showSignupBtn) showSignupBtn.classList.add("isActive")
+        return
+      }
+
+      const originalText = bundleBtn.textContent
+      bundleBtn.disabled = true
+      bundleBtn.setAttribute("aria-disabled", "true")
+      bundleBtn.textContent = "Opening..."
+      bundleBtn.style.opacity = "0.7"
+      bundleBtn.style.cursor = "wait"
+
+      try {
+        await startCheckoutForTrack("bundle-01")
+      } catch (err) {
+        console.error("Bundle checkout failed", err)
+        alert("Checkout could not be created")
+        bundleBtn.disabled = false
+        bundleBtn.removeAttribute("aria-disabled")
+        bundleBtn.textContent = originalText
+        bundleBtn.style.opacity = ""
+        bundleBtn.style.cursor = ""
+      }
+    })
+  }
+}
 
   if (bundleBtn) {
     bundleBtn.addEventListener("click", function () {
