@@ -1075,6 +1075,16 @@ document.addEventListener("click", function (e) {
 
   const modal = document.getElementById("wmDownloadModal")
   if (modal) modal.style.display = "none"
+  wmDownloadModalOpen = false
+})
+
+document.addEventListener("click", function (e) {
+  const assetLink = e.target.closest("#wmDownloadList a")
+  if (!assetLink) return
+
+  const modal = document.getElementById("wmDownloadModal")
+  if (modal) modal.style.display = "none"
+  wmDownloadModalOpen = false
 })
 
   
@@ -1136,12 +1146,13 @@ const labelMap = {
     const prettyTrack = trackId.toUpperCase()
 
 let filename = asset.storage_path.split("/").pop()
+let filename = asset.storage_path.split("/").pop()
 
-if (asset.asset_type === "wav") filename = `${prettyTrack}-wamsmash.wav`
-if (asset.asset_type === "mp3") filename = `${prettyTrack}-wamsmash.mp3`
-if (asset.asset_type === "pdf") filename = `${prettyTrack}-collector-note.pdf`
-if (asset.asset_type === "image") filename = `${prettyTrack}-wamsmash-coverart-4k.jpg`
-if (asset.asset_type === "zip") filename = `${prettyTrack}-download-pack.zip`
+if (asset.asset_key === `${trackId}_wav`) filename = `${prettyTrack}-wamsmash.wav`
+if (asset.asset_key === `${trackId}_mp3`) filename = `${prettyTrack}-wamsmash.mp3`
+if (asset.asset_key === `${trackId}_note`) filename = `${prettyTrack}-collector-note.pdf`
+if (asset.asset_key === `${trackId}_artwork`) filename = `${prettyTrack}-wamsmash-coverart-4k.jpg`
+if (asset.asset_key === `${trackId}_zip`) filename = `${prettyTrack}-download-pack.zip`
 
     htmlParts.push(`
       <a
