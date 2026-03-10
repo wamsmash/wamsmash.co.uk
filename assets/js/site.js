@@ -1084,7 +1084,7 @@ function wireBuyButtons() {
       return
     }
 
-    location.hash = "startCheckoutForTrack(trackId)vault"
+    startCheckoutForTrack(trackId)
   })
 }
 
