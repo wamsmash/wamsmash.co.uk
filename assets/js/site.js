@@ -1146,7 +1146,7 @@ const labelMap = {
     const prettyTrack = trackId.toUpperCase()
 
 let filename = asset.storage_path.split("/").pop()
-let filename = asset.storage_path.split("/").pop()
+
 
 if (asset.asset_key === `${trackId}_wav`) filename = `${prettyTrack}-wamsmash.wav`
 if (asset.asset_key === `${trackId}_mp3`) filename = `${prettyTrack}-wamsmash.mp3`
