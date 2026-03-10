@@ -1504,6 +1504,7 @@ function wireVaultButtons() {
       }
     })
   }
+}
 
   if (bundleBtn) {
     bundleBtn.addEventListener("click", async function () {
