@@ -1504,60 +1504,62 @@ function wireVaultButtons() {
       }
     })
   }
-if (bundleBtn) {
-  bundleBtn.addEventListener("click", async function () {
-    console.log("bundle click fired")
 
-    if (isProductOwned("bundle-01")) {
-      console.log("bundle already owned")
-      return
-    }
+  if (bundleBtn) {
+    bundleBtn.addEventListener("click", async function () {
+      console.log("bundle click fired")
 
-    if (!canAccessVault()) {
-      console.log("bundle blocked by canAccessVault")
+      if (isProductOwned("bundle-01")) {
+        console.log("bundle already owned")
+        return
+      }
 
-      const authModal = document.getElementById("wmAuthModal")
-      const loginForm = document.getElementById("wmLoginForm")
-      const signupForm = document.getElementById("wmSignupForm")
-      const authTitle = document.getElementById("wmAuthTitle")
-      const authSubtitle = document.getElementById("wmAuthSubtitle")
-      const authMessage = document.getElementById("wmAuthMessage")
-      const showLoginBtn = document.getElementById("wmShowLoginBtn")
-      const showSignupBtn = document.getElementById("wmShowSignupBtn")
+      if (!canAccessVault()) {
+        console.log("bundle blocked by canAccessVault")
 
-      if (authModal) authModal.style.display = "block"
-      if (loginForm) loginForm.style.display = "none"
-      if (signupForm) signupForm.style.display = "flex"
-      if (authTitle) authTitle.textContent = "Create account"
-      if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
-      if (authMessage) authMessage.textContent = ""
-      if (showLoginBtn) showLoginBtn.classList.remove("isActive")
-      if (showSignupBtn) showSignupBtn.classList.add("isActive")
-      return
-    }
+        const authModal = document.getElementById("wmAuthModal")
+        const loginForm = document.getElementById("wmLoginForm")
+        const signupForm = document.getElementById("wmSignupForm")
+        const authTitle = document.getElementById("wmAuthTitle")
+        const authSubtitle = document.getElementById("wmAuthSubtitle")
+        const authMessage = document.getElementById("wmAuthMessage")
+        const showLoginBtn = document.getElementById("wmShowLoginBtn")
+        const showSignupBtn = document.getElementById("wmShowSignupBtn")
 
-    const originalText = bundleBtn.textContent
-    bundleBtn.disabled = true
-    bundleBtn.setAttribute("aria-disabled", "true")
-    bundleBtn.textContent = "Opening..."
-    bundleBtn.style.opacity = "0.7"
-    bundleBtn.style.cursor = "wait"
+        if (authModal) authModal.style.display = "block"
+        if (loginForm) loginForm.style.display = "none"
+        if (signupForm) signupForm.style.display = "flex"
+        if (authTitle) authTitle.textContent = "Create account"
+        if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
+        if (authMessage) authMessage.textContent = ""
+        if (showLoginBtn) showLoginBtn.classList.remove("isActive")
+        if (showSignupBtn) showSignupBtn.classList.add("isActive")
+        return
+      }
 
-    try {
-      console.log("starting bundle checkout")
-      await startCheckoutForTrack("bundle-01")
-    } catch (err) {
-      console.error("Bundle checkout failed", err)
-      alert("Checkout could not be created")
-      bundleBtn.disabled = false
-      bundleBtn.removeAttribute("aria-disabled")
-      bundleBtn.textContent = originalText
-      bundleBtn.style.opacity = ""
-      bundleBtn.style.cursor = ""
-    }
-  })
+      const originalText = bundleBtn.textContent
+      bundleBtn.disabled = true
+      bundleBtn.setAttribute("aria-disabled", "true")
+      bundleBtn.textContent = "Opening..."
+      bundleBtn.style.opacity = "0.7"
+      bundleBtn.style.cursor = "wait"
+
+      try {
+        console.log("starting bundle checkout")
+        await startCheckoutForTrack("bundle-01")
+      } catch (err) {
+        console.error("Bundle checkout failed", err)
+        alert("Checkout could not be created")
+        bundleBtn.disabled = false
+        bundleBtn.removeAttribute("aria-disabled")
+        bundleBtn.textContent = originalText
+        bundleBtn.style.opacity = ""
+        bundleBtn.style.cursor = ""
+      }
+    })
+  }
 }
-  
+
 function clamp(n, a, b) {
   return Math.max(a, Math.min(b, n));
 }
