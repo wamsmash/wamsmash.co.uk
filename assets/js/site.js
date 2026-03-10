@@ -1008,6 +1008,49 @@ function renderMusicList() {
     });
   }
 
+async function startCheckoutForTrack(trackId) {
+  if (!window.wmSupabase) {
+    alert("Supabase not available")
+    return
+  }
+
+  const { data: sessionData, error: sessionError } = await window.wmSupabase.auth.getSession()
+
+  if (
+    sessionError ||
+    !sessionData ||
+    !sessionData.session ||
+    !sessionData.session.access_token
+  ) {
+    alert("Please log in first")
+    return
+  }
+
+  const token = sessionData.session.access_token
+
+  const res = await fetch("https://fkqachwvdeswollxgobd.supabase.co/functions/v1/create-checkout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ trackId })
+  })
+
+  const json = await res.json()
+
+  if (!res.ok || !json.url) {
+    console.error("create-checkout failed", { status: res.status, json })
+    alert("Checkout could not be created")
+    return
+  }
+
+  window.location.href = json.url
+}
+
+
+
+  
 function wireBuyButtons() {
   document.addEventListener("click", function (e) {
     const btn = e.target.closest("[data-buy]")
@@ -1041,7 +1084,7 @@ function wireBuyButtons() {
       return
     }
 
-    location.hash = "vault"
+    location.hash = "startCheckoutForTrack(trackId)vault"
   })
 }
 
