@@ -1117,13 +1117,13 @@ async function openDownloadModal(trackId, assets) {
   if (subtitle) subtitle.textContent = "Choose an asset"
 
 const prettyTrack = trackId.toUpperCase()
-
+  
 const labelMap = {
-  wav: `${prettyTrack} – WAV (Studio Quality)`,
-  mp3: `${prettyTrack} – MP3`,
-  pdf: `${prettyTrack} – Collector Note`,
-  image: `${prettyTrack} – Artwork Pack`,
-  zip: `${prettyTrack} – Download Pack`
+  [`${trackId}_wav`]: `${prettyTrack} – WAV (Studio Quality)`,
+  [`${trackId}_mp3`]: `${prettyTrack} – MP3`,
+  [`${trackId}_note`]: `${prettyTrack} – Collector Note`,
+  [`${trackId}_artwork`]: `${prettyTrack} – Artwork Pack`,
+  [`${trackId}_zip`]: `${prettyTrack} – Download Pack`
 }
 
   const htmlParts = []
@@ -1131,8 +1131,8 @@ const labelMap = {
   for (const asset of assets) {
     const signedUrl = await getSignedAssetUrl(asset.storage_path)
     if (!signedUrl) continue
-
-    const label = labelMap[asset.asset_type] || asset.title || "Download asset"
+    
+    const label = labelMap[asset.asset_key] || asset.title || "Download asset"
     const prettyTrack = trackId.toUpperCase()
 
 let filename = asset.storage_path.split("/").pop()
