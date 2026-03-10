@@ -1039,10 +1039,10 @@ async function startCheckoutForTrack(trackId) {
 
   const json = await res.json()
 
+  
   if (!res.ok || !json.url) {
     console.error("create-checkout failed", { status: res.status, json })
-    alert("Checkout could not be created")
-    return
+    throw new Error("Checkout could not be created")
   }
 
   window.location.href = json.url
@@ -1052,15 +1052,14 @@ async function startCheckoutForTrack(trackId) {
 
   
 function wireBuyButtons() {
-  document.addEventListener("click", function (e) {
+  document.addEventListener("click", async function (e) {
     const btn = e.target.closest("[data-buy]")
     if (!btn) return
 
     const trackId = btn.getAttribute("data-buy")
     if (!trackId) return
     if (isProductOwned(trackId)) return
-
-    const product = getProductForTrack(trackId)
+    if (btn.disabled) return
 
     if (!canAccessVault()) {
       const authModal = document.getElementById("wmAuthModal")
@@ -1080,11 +1079,27 @@ function wireBuyButtons() {
       if (authMessage) authMessage.textContent = ""
       if (showLoginBtn) showLoginBtn.classList.remove("isActive")
       if (showSignupBtn) showSignupBtn.classList.add("isActive")
-
       return
     }
 
-    startCheckoutForTrack(trackId)
+    const originalText = btn.textContent
+    btn.disabled = true
+    btn.setAttribute("aria-disabled", "true")
+    btn.textContent = "Opening..."
+    btn.style.opacity = "0.7"
+    btn.style.cursor = "wait"
+
+    try {
+      await startCheckoutForTrack(trackId)
+    } catch (err) {
+      console.error("startCheckoutForTrack failed", err)
+      alert("Checkout could not be created")
+      btn.disabled = false
+      btn.removeAttribute("aria-disabled")
+      btn.textContent = originalText
+      btn.style.opacity = ""
+      btn.style.cursor = ""
+    }
   })
 }
 
