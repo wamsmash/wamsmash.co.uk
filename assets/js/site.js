@@ -1541,22 +1541,19 @@ function wireVaultButtons() {
         console.error("Bundle checkout failed", err)
         alert("Checkout could not be created")
         bundleBtn.disabled = false
-        bundleBtn.removeAttribute("aria-disabled")
-        bundleBtn.textContent = originalText
-        bundleBtn.style.opacity = ""
-        bundleBtn.style.cursor = ""
-      }
-    })
-  }
+              bundleBtn.removeAttribute("aria-disabled")
+      bundleBtn.textContent = originalText
+      bundleBtn.style.opacity = ""
+      bundleBtn.style.cursor = ""
+    }
+  })
 }
 
-
+function clamp(n, a, b) {
+  return Math.max(a, Math.min(b, n));
 }
-  function clamp(n, a, b) {
-    return Math.max(a, Math.min(b, n));
-  }
 
-  function ensureGameStyles() {
+function ensureGameStyles() {
     if (document.getElementById("wmGameStyles")) return;
     const style = document.createElement("style");
     style.id = "wmGameStyles";
