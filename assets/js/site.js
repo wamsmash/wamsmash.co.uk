@@ -632,7 +632,10 @@ let wmProfile = null;
 let wmProducts = [];
 let wmProductMap = {};
 let wmOwnedProductSlugs = new Set();
+let wmDownloadModalOpen = false
 
+
+  
   function pickNextTrackId() {
     const ids = TRACKS.map(t => t.id);
     if (!ids.length) return "";
@@ -1046,14 +1049,18 @@ function wireDownloadButtons() {
   document.addEventListener("click", async function (e) {
     const btn = e.target.closest("[data-download]")
     if (!btn) return
+    if (wmDownloadModalOpen) return
 
     const trackId = btn.getAttribute("data-download")
     if (!trackId) return
     if (!isProductOwned(trackId)) return
 
+    wmDownloadModalOpen = true
+
     const assets = await getOwnedAssetsForTrack(trackId)
 
     if (!assets.length) {
+      wmDownloadModalOpen = false
       alert(`No assets found for ${trackId.toUpperCase()} yet`)
       return
     }
@@ -1075,7 +1082,8 @@ document.addEventListener("keydown", function (e) {
   if (e.key !== "Escape") return
 
   const modal = document.getElementById("wmDownloadModal")
-  if (modal) modal.style.display = "none"
+if (modal) modal.style.display = "none"
+wmDownloadModalOpen = false
 })
 
 
@@ -1125,7 +1133,15 @@ const labelMap = {
     if (!signedUrl) continue
 
     const label = labelMap[asset.asset_type] || asset.title || "Download asset"
-    const filename = asset.storage_path.split("/").pop()
+    const prettyTrack = trackId.toUpperCase()
+
+let filename = asset.storage_path.split("/").pop()
+
+if (asset.asset_type === "wav") filename = `${prettyTrack}-wamsmash.wav`
+if (asset.asset_type === "mp3") filename = `${prettyTrack}-wamsmash.mp3`
+if (asset.asset_type === "pdf") filename = `${prettyTrack}-collector-note.pdf`
+if (asset.asset_type === "image") filename = `${prettyTrack}-wamsmash-coverart-4k.jpg`
+if (asset.asset_type === "zip") filename = `${prettyTrack}-download-pack.zip`
 
     htmlParts.push(`
       <a
