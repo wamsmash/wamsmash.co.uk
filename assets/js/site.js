@@ -1040,10 +1040,10 @@ async function startCheckoutForTrack(trackId) {
   const json = await res.json()
 
   
-  if (!res.ok || !json.url) {
-    console.error("create-checkout failed", { status: res.status, json })
-    throw new Error("Checkout could not be created")
-  }
+if (!res.ok || !json.url) {
+  console.error("create-checkout failed", { status: res.status, json })
+  throw new Error("Checkout could not be created")
+}
 
   window.location.href = json.url
 }
