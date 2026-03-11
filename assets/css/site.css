@@ -1599,7 +1599,91 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   color:var(--muted);
 }
 
+#wmSupportForm{
+  margin-top:14px;
+}
 
+#wmSupportForm textarea{
+  width:100%;
+  min-height:140px;
+  padding:14px;
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:14px;
+  background:rgba(0,0,0,0.24);
+  color:var(--text);
+  font:inherit;
+  resize:vertical;
+}
+
+#wmSupportForm textarea::placeholder{
+  color:var(--muted);
+}
+
+#wmSupportCount{
+  font-weight:700;
+  color:rgba(242,243,247,0.9);
+}
+
+.inboxCard{
+  display:block;
+  padding:16px;
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:20px;
+  background:rgba(14,15,22,0.40);
+  transition:transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.inboxCard:hover{
+  transform:translateY(-2px);
+  border-color:rgba(255,255,255,0.26);
+  background:rgba(14,15,22,0.62);
+}
+
+.inboxCardTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.inboxCardTitle{
+  font-size:14px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+}
+
+.inboxCardMeta{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.4;
+  margin-top:6px;
+}
+
+.inboxCardBadge{
+  font-size:11px;
+  padding:6px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.18);
+  background:rgba(0,0,0,0.25);
+  white-space:nowrap;
+  text-transform:uppercase;
+}
+
+.inboxCardBody{
+  font-size:13px;
+  color:rgba(242,243,247,0.88);
+  line-height:1.55;
+  white-space:pre-wrap;
+}
+
+.inboxEmpty{
+  padding:18px;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:18px;
+  background:rgba(14,15,22,0.28);
+  color:var(--muted);
+}
 
 
 
