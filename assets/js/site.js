@@ -713,34 +713,70 @@ const WM_OWNER_EMAIL = "willedit@proton.me"
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
-  function createPlayerBar() {
-    const existing = document.querySelector(".playerBar");
-    if (existing) return existing;
+function createPlayerBar() {
+  const existing = document.querySelector(".playerBar");
+  if (existing) return existing;
 
-    const bar = document.createElement("div");
-    bar.className = "playerBar";
-    bar.innerHTML = `
-      <div class="playerInner">
-        <div class="playerNow">
-          <div class="playerNowTitle" id="wmNowTitle">WAMSMASH</div>
-          <div class="playerNowSub" id="wmNowSub">Select a track</div>
-        </div>
-        <div class="playerControls">
-          <button class="btn" type="button" id="wmPrevBtn" aria-label="Previous track">Prev</button>
-          <button class="btn btnPrimary" type="button" id="wmNextBtn" aria-label="Next track">Next</button>
-          <button class="btn" type="button" id="wmShuffleBtn" aria-label="Shuffle toggle">Shuffle: On</button>
-          <audio id="wmAudio" controls preload="none" playsinline controlsList="nodownload noplaybackrate noremoteplayback"></audio>
-        </div>
+  const bar = document.createElement("div");
+  bar.className = "playerBar";
+  bar.innerHTML = `
+    <div class="playerInner">
+      <div class="playerNow">
+        <div class="playerNowTitle" id="wmNowTitle">WAMSMASH</div>
+        <div class="playerNowSub" id="wmNowSub">Select a track</div>
       </div>
-    `;
 
-    document.body.appendChild(bar);
+      <div class="playerControls">
+        <button class="btn" type="button" id="wmPrevBtn" aria-label="Previous track">Prev</button>
+        <button class="btn btnPrimary" type="button" id="wmPlayPauseBtn" aria-label="Play or pause">Play</button>
+        <button class="btn btnPrimary" type="button" id="wmNextBtn" aria-label="Next track">Next</button>
+        <button class="btn" type="button" id="wmShuffleBtn" aria-label="Shuffle toggle">Shuffle: On</button>
 
-    const audioEl = bar.querySelector("#wmAudio");
-    hardenAudioElement(audioEl);
+        <div class="wmPlayerMain">
+          <div class="wmPlayerTimeRow">
+            <span id="wmCurrentTime">0:00</span>
+            <span id="wmDuration">0:00</span>
+          </div>
 
-    return bar;
-  }
+          <input
+            id="wmSeek"
+            class="wmSeek"
+            type="range"
+            min="0"
+            max="1000"
+            value="0"
+            step="1"
+            aria-label="Seek"
+          >
+
+          <div class="wmPlayerBottomRow">
+            <button class="wmMuteBtn" type="button" id="wmMuteBtn" aria-label="Mute">Mute</button>
+
+            <input
+              id="wmVolume"
+              class="wmVolume"
+              type="range"
+              min="0"
+              max="1"
+              value="0.8"
+              step="0.01"
+              aria-label="Volume"
+            >
+          </div>
+        </div>
+
+        <audio id="wmAudio" preload="none" playsinline></audio>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(bar);
+
+  const audioEl = bar.querySelector("#wmAudio");
+  hardenAudioElement(audioEl);
+
+  return bar;
+}
 
   function setNowPlayingUI(track) {
     const title = $("#wmNowTitle");
@@ -811,6 +847,48 @@ function applyPlayerLaneTheme(track) {
   const color = getLaneAccent(track && track.lane ? track.lane : "")
   document.documentElement.style.setProperty("--wmPlayerAccent", color)
 }
+  function formatPlayerTime(seconds) {
+  const s = Math.max(0, Math.floor(seconds || 0));
+  const mins = Math.floor(s / 60);
+  const secs = s % 60;
+  return `${mins}:${String(secs).padStart(2, "0")}`;
+}
+
+function updatePlayerProgressUI() {
+  if (!wmAudio) return;
+
+  const seek = document.getElementById("wmSeek");
+  const currentTimeEl = document.getElementById("wmCurrentTime");
+  const durationEl = document.getElementById("wmDuration");
+  const playPauseBtn = document.getElementById("wmPlayPauseBtn");
+  const muteBtn = document.getElementById("wmMuteBtn");
+  const volume = document.getElementById("wmVolume");
+
+  const duration = Number.isFinite(wmAudio.duration) ? wmAudio.duration : 0;
+  const current = Number.isFinite(wmAudio.currentTime) ? wmAudio.currentTime : 0;
+
+  if (seek) {
+    const ratio = duration > 0 ? current / duration : 0;
+    seek.value = String(Math.round(ratio * 1000));
+    seek.style.setProperty("--wmSeekFill", `${ratio * 100}%`);
+  }
+
+  if (currentTimeEl) currentTimeEl.textContent = formatPlayerTime(current);
+  if (durationEl) durationEl.textContent = formatPlayerTime(duration);
+
+  if (playPauseBtn) {
+    playPauseBtn.textContent = wmAudio.paused ? "Play" : "Pause";
+  }
+
+  if (muteBtn) {
+    muteBtn.textContent = wmAudio.muted || wmAudio.volume === 0 ? "Unmute" : "Mute";
+  }
+
+  if (volume) {
+    volume.value = String(wmAudio.muted ? 0 : wmAudio.volume);
+    volume.style.setProperty("--wmVolumeFill", `${(wmAudio.muted ? 0 : wmAudio.volume) * 100}%`);
+  }
+}
 
 function ensureAmbientStart() {
   if (!wmAudio) return
@@ -858,43 +936,104 @@ function ensureAmbientStart() {
     playTrackById(prev.id);
   }
 
-  function wirePlayerControls() {
-    const prevBtn = $("#wmPrevBtn");
-    const nextBtn = $("#wmNextBtn");
-    const shuffleBtn = $("#wmShuffleBtn");
+function wirePlayerControls() {
+  const prevBtn = $("#wmPrevBtn");
+  const nextBtn = $("#wmNextBtn");
+  const shuffleBtn = $("#wmShuffleBtn");
+  const playPauseBtn = $("#wmPlayPauseBtn");
+  const muteBtn = $("#wmMuteBtn");
+  const seek = $("#wmSeek");
+  const volume = $("#wmVolume");
 
-    if (prevBtn) prevBtn.addEventListener("click", playPrev);
-    if (nextBtn) nextBtn.addEventListener("click", playNext);
+  if (prevBtn) prevBtn.addEventListener("click", playPrev);
+  if (nextBtn) nextBtn.addEventListener("click", playNext);
 
-    if (shuffleBtn) {
-      shuffleBtn.addEventListener("click", function () {
-        shuffleOn = !shuffleOn;
-        shuffleBtn.textContent = `Shuffle: ${shuffleOn ? "On" : "Off"}`;
-      });
-    }
-
-    if (wmAudio) {
-      wmAudio.addEventListener("ended", function () {
-        playNext();
-      });
-    }
-
-    document.addEventListener("keydown", function (e) {
-      const tag = (e.target && e.target.tagName) ? String(e.target.tagName).toLowerCase() : "";
-      const inInput = tag === "input" || tag === "textarea" || (e.target && e.target.isContentEditable);
-      if (inInput) return;
-
-      if (e.code === "Space") {
-        if (!wmAudio) return;
-        e.preventDefault();
-        if (wmAudio.paused) wmAudio.play().catch(() => {});
-        else wmAudio.pause();
-      }
-
-      if (e.code === "ArrowRight") playNext();
-      if (e.code === "ArrowLeft") playPrev();
+  if (shuffleBtn) {
+    shuffleBtn.addEventListener("click", function () {
+      shuffleOn = !shuffleOn;
+      shuffleBtn.textContent = `Shuffle: ${shuffleOn ? "On" : "Off"}`;
     });
   }
+
+  if (playPauseBtn) {
+    playPauseBtn.addEventListener("click", function () {
+      if (!wmAudio) return;
+
+      if (!wmAudio.currentSrc) {
+        playNext();
+        return;
+      }
+
+      if (wmAudio.paused) wmAudio.play().catch(() => {});
+      else wmAudio.pause();
+    });
+  }
+
+  if (muteBtn) {
+    muteBtn.addEventListener("click", function () {
+      if (!wmAudio) return;
+      wmAudio.muted = !wmAudio.muted;
+      updatePlayerProgressUI();
+    });
+  }
+
+  if (seek) {
+    seek.addEventListener("input", function () {
+      if (!wmAudio) return;
+      const duration = Number.isFinite(wmAudio.duration) ? wmAudio.duration : 0;
+      if (duration <= 0) return;
+
+      const ratio = Number(seek.value) / 1000;
+      wmAudio.currentTime = duration * ratio;
+      updatePlayerProgressUI();
+    });
+  }
+
+  if (volume) {
+    volume.addEventListener("input", function () {
+      if (!wmAudio) return;
+      wmAudio.muted = false;
+      wmAudio.volume = clamp(Number(volume.value), 0, 1);
+      updatePlayerProgressUI();
+    });
+  }
+
+  if (wmAudio) {
+    wmAudio.addEventListener("ended", function () {
+      playNext();
+    });
+
+    wmAudio.addEventListener("timeupdate", updatePlayerProgressUI);
+    wmAudio.addEventListener("loadedmetadata", updatePlayerProgressUI);
+    wmAudio.addEventListener("play", updatePlayerProgressUI);
+    wmAudio.addEventListener("pause", updatePlayerProgressUI);
+    wmAudio.addEventListener("volumechange", updatePlayerProgressUI);
+  }
+
+  document.addEventListener("keydown", function (e) {
+    const tag = (e.target && e.target.tagName) ? String(e.target.tagName).toLowerCase() : "";
+    const inInput = tag === "input" || tag === "textarea" || (e.target && e.target.isContentEditable);
+    if (inInput) return;
+
+    if (e.code === "Space") {
+      if (!wmAudio) return;
+      e.preventDefault();
+
+      if (!wmAudio.currentSrc) {
+        playNext();
+        return;
+      }
+
+      if (wmAudio.paused) wmAudio.play().catch(() => {});
+      else wmAudio.pause();
+    }
+
+    if (e.code === "ArrowRight") playNext();
+    if (e.code === "ArrowLeft") playPrev();
+  });
+
+  updatePlayerProgressUI();
+}
 
   function wireAudioPersistence(audioEl) {
     if (!audioEl) return;
