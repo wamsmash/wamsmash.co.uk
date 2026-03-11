@@ -445,6 +445,27 @@ function getBuyButtonLabel(trackId) {
   return isProductOwned(trackId) ? "Owned" : "Buy";
 }
 
+function isBundle01FullyOwned() {
+  return (
+    isProductOwned("bundle-01") ||
+    (
+      isProductOwned("chaos") &&
+      isProductOwned("star") &&
+      isProductOwned("bonfire")
+    )
+  )
+}
+
+function isBundle01PartiallyOwned() {
+  const ownedCount = [
+    isProductOwned("chaos"),
+    isProductOwned("star"),
+    isProductOwned("bonfire")
+  ].filter(Boolean).length
+
+  return ownedCount > 0 && ownedCount < 3
+}
+
 async function updateVaultOwnershipUI() {
   const swimBtn = document.getElementById("buySwimBtn")
   const bundleBtn = document.getElementById("buyBundleBtn")
@@ -513,12 +534,25 @@ async function updateVaultOwnershipUI() {
     }
   }
 
+  if (bundleBtn) {
+    const bundleOwned = isBundle01FullyOwned()
 
-
-  assetList.innerHTML = htmlParts.length
-    ? htmlParts.join("")
-    : `<div class="vaultOwnedItem">Assets not available yet</div>`
+    if (!bundleOwned) {
+      bundleBtn.textContent = "Unlock bundle"
+      bundleBtn.disabled = false
+      bundleBtn.removeAttribute("aria-disabled")
+      bundleBtn.classList.remove("isOwned")
+    } else {
+      bundleBtn.textContent = "Owned"
+      bundleBtn.disabled = true
+      bundleBtn.setAttribute("aria-disabled", "true")
+      bundleBtn.classList.add("isOwned")
+    }
+  }
 }
+
+
+
 async function getOwnedAssetsForTrack(trackId) {
   if (!window.wmSupabase) return [];
   if (!wmProfile || !wmProfile.id) return [];
@@ -1513,7 +1547,7 @@ function wireVaultButtons() {
     bundleBtn.addEventListener("click", async function () {
       console.log("bundle click fired")
 
-      if (isProductOwned("bundle-01")) {
+if (isBundle01FullyOwned()) {
         console.log("bundle already owned")
         return
       }
