@@ -1323,9 +1323,9 @@ function switchView(view) {
 
   setActiveNav(view === "vault" ? "links" : view)
 
-  if (view === "games" && wmAudio && !wmAudio.currentSrc) {
-    playNext()
-  }
+if ((view === "music" || view === "links" || view === "games") && wmAudio && !wmAudio.currentSrc) {
+  playNext()
+}
 
   if (view === "inbox") {
     renderInboxView()
@@ -2789,8 +2789,9 @@ function applyAccountStateUI() {
   function init() {
     createPlayerBar();
 
-    wmAudio = $("#wmAudio");
-    hardenAudioElement(wmAudio);
+wmAudio = $("#wmAudio");
+hardenAudioElement(wmAudio);
+if (wmAudio) wmAudio.volume = 0.9
 
     clearState();
 wireAudioPersistence(wmAudio);
