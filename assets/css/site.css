@@ -1295,8 +1295,6 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   color:#ffd98b;
 }
 
-
-
 .vaultBtnSecondary{
   border:1px solid rgba(255,215,120,0.24);
   color:#f3cd83;
@@ -1306,6 +1304,51 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
     0 12px 28px rgba(0,0,0,0.24),
     inset 0 1px 0 rgba(255,255,255,0.04);
 }
+
+
+.vaultBtnSecondary.isOwned{
+  border:1px solid rgba(255,215,120,0.34);
+  color:#20150a;
+  background:
+    linear-gradient(180deg, #ffe7a8, #f5cb72);
+  box-shadow:
+    0 16px 36px rgba(215,145,24,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.52);
+  cursor:default;
+  opacity:1;
+  animation:vaultOwnedSweepSecondary 10s ease-in-out infinite;
+}
+
+.vaultBtnSecondary.isOwned:hover{
+  transform:none;
+}
+
+@keyframes vaultOwnedSweepSecondary{
+  0%{
+    box-shadow:
+      0 16px 36px rgba(215,145,24,0.30),
+      inset 0 1px 0 rgba(255,255,255,0.52);
+  }
+
+  4%{
+    box-shadow:
+      0 18px 40px rgba(255,185,60,0.55),
+      inset 0 1px 0 rgba(255,255,255,0.66);
+  }
+
+  8%{
+    box-shadow:
+      0 16px 36px rgba(215,145,24,0.30),
+      inset 0 1px 0 rgba(255,255,255,0.52);
+  }
+
+  100%{
+    box-shadow:
+      0 16px 36px rgba(215,145,24,0.30),
+      inset 0 1px 0 rgba(255,255,255,0.52);
+  }
+}
+
 
 .vaultBundleSection{
   margin-bottom:26px;
