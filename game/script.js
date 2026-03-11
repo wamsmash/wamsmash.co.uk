@@ -3540,31 +3540,7 @@ function updatePlayer(dt) {
     }
   })
 
-  document.addEventListener("keyup", (e) => {
-    const key = e.key.toLowerCase()
 
-    if (key === "x") {
-      state.rightHeld = false
-      return
-    }
-
-    if (key === "z") {
-      if (state.mode !== "play") return
-
-      if (state.charging && player.onGround) {
-        state.charging = false
-        const held = performance.now() - state.chargeAt
-        resolveJump(held, false)
-        state.dropArmed = false
-        return
-      }
-
-      if (state.jumpQueued && state.queuedCharging) {
-        state.queuedCharging = false
-        state.queuedChargeMs = performance.now() - state.queuedChargeAt
-      }
-    }
-  })
 
   document.addEventListener("keyup", (e) => {
     const key = e.key.toLowerCase()
