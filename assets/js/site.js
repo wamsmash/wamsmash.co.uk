@@ -447,69 +447,88 @@ function getBuyButtonLabel(trackId) {
 
 async function updateVaultOwnershipUI() {
   const swimBtn = document.getElementById("buySwimBtn")
+  const bundleBtn = document.getElementById("buyBundleBtn")
   const ownedWrap = document.getElementById("vaultOwnedAssets")
   const assetList = document.getElementById("vaultAssetList")
 
-  if (!swimBtn) return
+  if (swimBtn) {
+    const swimOwned = isProductOwned("swim")
 
-  const owned = isProductOwned("swim")
+    if (!swimOwned) {
+      swimBtn.textContent = "Unlock SWIM"
+      swimBtn.disabled = false
+      swimBtn.removeAttribute("aria-disabled")
+      swimBtn.classList.remove("isOwned")
 
-  if (!owned) {
-    swimBtn.textContent = "Unlock SWIM"
-    swimBtn.disabled = false
-    swimBtn.removeAttribute("aria-disabled")
-    swimBtn.classList.remove("isOwned")
+      if (ownedWrap) ownedWrap.style.display = "none"
+      if (assetList) assetList.innerHTML = ""
+    } else {
+      swimBtn.textContent = "Unlocked"
+      swimBtn.disabled = true
+      swimBtn.setAttribute("aria-disabled", "true")
+      swimBtn.classList.add("isOwned")
 
-    if (ownedWrap) ownedWrap.style.display = "none"
-    if (assetList) assetList.innerHTML = ""
+      if (ownedWrap) ownedWrap.style.display = "block"
 
-    return
+      if (assetList) {
+        const assets = await getOwnedAssetsForTrack("swim")
+
+        if (!assets.length) {
+          assetList.innerHTML = `<div class="vaultOwnedItem">Assets not available yet</div>`
+        } else {
+          const labelMap = {
+            swim_wav: "Download SWIM (WAV)",
+            swim_note: "Download collector note",
+            swim_artwork: "Download artwork pack",
+            swim_presentation: "Enter vault presentation"
+          }
+
+          const orderedKeys = ["swim_wav", "swim_note", "swim_artwork", "swim_presentation"]
+          const htmlParts = []
+
+          for (const key of orderedKeys) {
+            const asset = assets.find(a => a.asset_key === key)
+            if (!asset) continue
+
+            const signedUrl = await getSignedAssetUrl(asset.storage_path)
+            if (!signedUrl) continue
+
+            const isPresentation = key === "swim_presentation"
+            const label = labelMap[key] || asset.title || key
+
+            htmlParts.push(`
+              <a
+                class="vaultOwnedItem"
+                href="${signedUrl}"
+                ${isPresentation ? `target="_blank" rel="noopener"` : `download`}
+              >${label}</a>
+            `)
+          }
+
+          assetList.innerHTML = htmlParts.length
+            ? htmlParts.join("")
+            : `<div class="vaultOwnedItem">Assets not available yet</div>`
+        }
+      }
+    }
   }
 
-  swimBtn.textContent = "Unlocked"
-  swimBtn.disabled = true
-  swimBtn.setAttribute("aria-disabled", "true")
-  swimBtn.classList.add("isOwned")
+  if (bundleBtn) {
+    const bundleOwned = isProductOwned("bundle-01")
 
-  if (ownedWrap) ownedWrap.style.display = "block"
-  if (!assetList) return
-
-  const assets = await getOwnedAssetsForTrack("swim")
-
-  if (!assets.length) {
-    assetList.innerHTML = `<div class="vaultOwnedItem">Assets not available yet</div>`
-    return
+    if (!bundleOwned) {
+      bundleBtn.textContent = "Unlock bundle"
+      bundleBtn.disabled = false
+      bundleBtn.removeAttribute("aria-disabled")
+      bundleBtn.classList.remove("isOwned")
+    } else {
+      bundleBtn.textContent = "Owned"
+      bundleBtn.disabled = true
+      bundleBtn.setAttribute("aria-disabled", "true")
+      bundleBtn.classList.add("isOwned")
+    }
   }
-
-  const labelMap = {
-    swim_wav: "Download SWIM (WAV)",
-    swim_note: "Download collector note",
-    swim_artwork: "Download artwork pack",
-    swim_presentation: "Enter vault presentation"
-  }
-
-  const orderedKeys = ["swim_wav", "swim_note", "swim_artwork", "swim_presentation"]
-
-  const htmlParts = []
-
-  for (const key of orderedKeys) {
-    const asset = assets.find(a => a.asset_key === key)
-    if (!asset) continue
-
-    const signedUrl = await getSignedAssetUrl(asset.storage_path)
-    if (!signedUrl) continue
-
-    const isPresentation = key === "swim_presentation"
-    const label = labelMap[key] || asset.title || key
-
-    htmlParts.push(`
-      <a
-        class="vaultOwnedItem"
-        href="${signedUrl}"
-        ${isPresentation ? `target="_blank" rel="noopener"` : `download`}
-      >${label}</a>
-    `)
-  }
+}
 
   assetList.innerHTML = htmlParts.length
     ? htmlParts.join("")
