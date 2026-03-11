@@ -2600,7 +2600,6 @@ function hasPremiumAccess() {
 
 
 
-  const WM_OWNER_EMAIL = "willedit@proton.me"
 function isOwnerAccount() {
   if (!wmProfile || !wmProfile.email) return false
   return String(wmProfile.email).toLowerCase() === WM_OWNER_EMAIL
