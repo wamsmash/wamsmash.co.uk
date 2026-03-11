@@ -513,22 +513,7 @@ async function updateVaultOwnershipUI() {
     }
   }
 
-  if (bundleBtn) {
-    const bundleOwned = isProductOwned("bundle-01")
 
-    if (!bundleOwned) {
-      bundleBtn.textContent = "Unlock bundle"
-      bundleBtn.disabled = false
-      bundleBtn.removeAttribute("aria-disabled")
-      bundleBtn.classList.remove("isOwned")
-    } else {
-      bundleBtn.textContent = "Owned"
-      bundleBtn.disabled = true
-      bundleBtn.setAttribute("aria-disabled", "true")
-      bundleBtn.classList.add("isOwned")
-    }
-  }
-}
 
   assetList.innerHTML = htmlParts.length
     ? htmlParts.join("")
