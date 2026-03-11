@@ -3489,6 +3489,80 @@ if (e.button === 0) {
     return
   }
 }
+    document.addEventListener("keydown", (e) => {
+    if (e.repeat) return
+
+    const key = e.key.toLowerCase()
+
+    if (key === "x") {
+      state.rightHeld = true
+
+      if (state.startPending) return
+      if (state.mode !== "play") return
+
+      if (state.charging && player.onGround) {
+        state.dropArmed = true
+        state.charging = false
+        resolveJump(120, true)
+        state.dropArmed = false
+      }
+
+      return
+    }
+
+    if (key === "z") {
+      if (state.startPending) return
+
+      if (state.mode === "gameover") return
+      if (state.mode === "intro") return
+      if (state.mode !== "play") return
+
+      state.dropArmed = false
+
+      if (player.onGround) {
+        state.charging = true
+        state.jumpQueued = false
+        state.queuedChargeAt = 0
+        state.queuedCharging = false
+        state.queuedChargeMs = 0
+        state.chargeAt = performance.now()
+        return
+      }
+
+      if (!state.jumpQueued) {
+        state.jumpQueued = true
+        state.queuedCharging = true
+        state.queuedChargeAt = performance.now()
+        state.queuedChargeMs = 0
+      }
+    }
+  })
+
+  document.addEventListener("keyup", (e) => {
+    const key = e.key.toLowerCase()
+
+    if (key === "x") {
+      state.rightHeld = false
+      return
+    }
+
+    if (key === "z") {
+      if (state.mode !== "play") return
+
+      if (state.charging && player.onGround) {
+        state.charging = false
+        const held = performance.now() - state.chargeAt
+        resolveJump(held, false)
+        state.dropArmed = false
+        return
+      }
+
+      if (state.jumpQueued && state.queuedCharging) {
+        state.queuedCharging = false
+        state.queuedChargeMs = performance.now() - state.queuedChargeAt
+      }
+    }
+  })
   })
 
   canvas.style.touchAction = "none"
