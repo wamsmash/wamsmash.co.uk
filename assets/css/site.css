@@ -771,7 +771,6 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   color:var(--muted);
   margin-top:4px;
 }
-
 .playerControls{
   display:flex;
   gap:10px;
@@ -783,6 +782,7 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   width:100%;
   border-radius:10px;
   overflow:hidden;
+  accent-color:var(--wmPlayerAccent);
 }
 
 .playerControls audio::-webkit-media-controls-panel{
