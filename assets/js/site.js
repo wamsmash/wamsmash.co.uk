@@ -1374,35 +1374,35 @@ function parseHash() {
 
 function applyRoute() {
   const route = parseHash()
+  
+if (route.view === "vault" && !canAccessVault()) {
+  location.hash = "links"
 
-  if (route.view === "vault" && !canAccessVault()) {
-    location.hash = "links"
+  const authModal = document.getElementById("wmAuthModal")
+  const loginForm = document.getElementById("wmLoginForm")
+  const signupForm = document.getElementById("wmSignupForm")
+  const authTitle = document.getElementById("wmAuthTitle")
+  const authSubtitle = document.getElementById("wmAuthSubtitle")
+  const authMessage = document.getElementById("wmAuthMessage")
+  const showLoginBtn = document.getElementById("wmShowLoginBtn")
+  const showSignupBtn = document.getElementById("wmShowSignupBtn")
 
-    const authModal = document.getElementById("wmAuthModal")
-    const loginForm = document.getElementById("wmLoginForm")
-    const signupForm = document.getElementById("wmSignupForm")
-    const authTitle = document.getElementById("wmAuthTitle")
-    const authSubtitle = document.getElementById("wmAuthSubtitle")
-    const authMessage = document.getElementById("wmAuthMessage")
-    const showLoginBtn = document.getElementById("wmShowLoginBtn")
-    const showSignupBtn = document.getElementById("wmShowSignupBtn")
+  if (authModal) authModal.style.display = "block"
+  if (loginForm) loginForm.style.display = "none"
+  if (signupForm) signupForm.style.display = "flex"
+  if (authTitle) authTitle.textContent = "Create account"
+  if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
+  if (authMessage) authMessage.textContent = ""
+  if (showLoginBtn) showLoginBtn.classList.remove("isActive")
+  if (showSignupBtn) showSignupBtn.classList.add("isActive")
 
-    if (authModal) authModal.style.display = "block"
-    if (loginForm) loginForm.style.display = "none"
-    if (signupForm) signupForm.style.display = "flex"
-    if (authTitle) authTitle.textContent = "Create account"
-    if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
-    if (authMessage) authMessage.textContent = ""
-    if (showLoginBtn) showLoginBtn.classList.remove("isActive")
-    if (showSignupBtn) showSignupBtn.classList.add("isActive")
+  return
+}
 
-    return
-  }
-
-  if (route.view === "inbox" && !isOwnerAccount()) {
-    location.hash = "links"
-    return
-  }
+if (route.view === "inbox" && !isOwnerAccount()) {
+  location.hash = "links"
+  return
+}
 
   switchView(route.view)
 
