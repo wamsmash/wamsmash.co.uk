@@ -526,6 +526,31 @@ async function updateVaultOwnershipUI() {
             `)
           }
 
+async function forceDownloadFromSignedUrl(url, filename) {
+  try {
+    const res = await fetch(url)
+    if (!res.ok) {
+      throw new Error(`Download failed with status ${res.status}`)
+    }
+
+    const blob = await res.blob()
+    const blobUrl = window.URL.createObjectURL(blob)
+
+    const a = document.createElement("a")
+    a.href = blobUrl
+    a.download = filename || "download"
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+
+    window.URL.revokeObjectURL(blobUrl)
+  } catch (err) {
+    console.error("forceDownloadFromSignedUrl failed", err)
+    alert("Download could not be started")
+  }
+}
+
+          
           assetList.innerHTML = htmlParts.length
             ? htmlParts.join("")
             : `<div class="vaultOwnedItem">Assets not available yet</div>`
@@ -1174,9 +1199,16 @@ document.addEventListener("click", function (e) {
   wmDownloadModalOpen = false
 })
 
-document.addEventListener("click", function (e) {
-  const assetLink = e.target.closest("#wmDownloadList a")
-  if (!assetLink) return
+document.addEventListener("click", async function (e) {
+  const assetBtn = e.target.closest("#wmDownloadList [data-download-url]")
+  if (!assetBtn) return
+
+  const url = assetBtn.getAttribute("data-download-url")
+  const filename = assetBtn.getAttribute("data-download-filename") || "download"
+
+  if (!url) return
+
+  await forceDownloadFromSignedUrl(url, filename)
 
   const modal = document.getElementById("wmDownloadModal")
   if (modal) modal.style.display = "none"
@@ -1250,15 +1282,15 @@ if (asset.asset_key === `${trackId}_note`) filename = `${prettyTrack}-collector-
 if (asset.asset_key === `${trackId}_artwork`) filename = `${prettyTrack}-wamsmash-coverart-4k.jpg`
 if (asset.asset_key === `${trackId}_zip`) filename = `${prettyTrack}-download-pack.zip`
 
+    
     htmlParts.push(`
-      <a
+      <button
         class="vaultOwnedItem"
-        href="${signedUrl}"
-        download="${filename}"
-        rel="noopener"
-      >${label}</a>
+        type="button"
+        data-download-url="${signedUrl}"
+        data-download-filename="${filename}"
+      >${label}</button>
     `)
-  }
 
   list.innerHTML = htmlParts.length
     ? htmlParts.join("")
