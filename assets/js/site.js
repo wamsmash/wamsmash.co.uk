@@ -697,7 +697,7 @@ let wmProducts = [];
 let wmProductMap = {};
 let wmOwnedProductSlugs = new Set();
 let wmDownloadModalOpen = false
-
+const WM_OWNER_EMAIL = "willedit@proton.me"
 
   
   function pickNextTrackId() {
@@ -1302,20 +1302,22 @@ async function openDownloadModal(trackId, assets) {
   
 
 function switchView(view) {
-  const home = document.getElementById("homeView");
-  const music = document.getElementById("musicView");
-  const links = document.getElementById("linksView");
-  const vault = document.getElementById("vaultView");
-  const games = document.getElementById("gamesView");
-  const hero = document.querySelector(".heroIntro");
+const home = document.getElementById("homeView");
+const music = document.getElementById("musicView");
+const links = document.getElementById("linksView");
+const vault = document.getElementById("vaultView");
+const inbox = document.getElementById("inboxView");
+const games = document.getElementById("gamesView");
+const hero = document.querySelector(".heroIntro");
 
-  if (!home || !music || !links || !vault || !games) return;
+if (!home || !music || !links || !vault || !inbox || !games) return;
 
-  home.style.display = view === "home" ? "block" : "none";
-  music.style.display = view === "music" ? "block" : "none";
-  links.style.display = view === "links" ? "block" : "none";
-  vault.style.display = view === "vault" ? "block" : "none";
-  games.style.display = view === "games" ? "block" : "none";
+home.style.display = view === "home" ? "block" : "none";
+music.style.display = view === "music" ? "block" : "none";
+links.style.display = view === "links" ? "block" : "none";
+vault.style.display = view === "vault" ? "block" : "none";
+inbox.style.display = view === "inbox" ? "block" : "none";
+games.style.display = view === "games" ? "block" : "none";
 
   if (hero) hero.style.display = view === "home" ? "block" : "none";
 
@@ -1324,6 +1326,8 @@ function switchView(view) {
   if (view === "games" && wmAudio && !wmAudio.currentSrc) {
     playNext();
   }
+if (view === "inbox") {
+  renderInboxView()
 
   if (view === "vault") {
     startVaultCountdown();
@@ -1357,9 +1361,10 @@ function switchView(view) {
 
     if (raw === "music") return { view: "music", scrollId: "" };
     if (raw.startsWith("music#")) return { view: "music", scrollId: raw.split("#")[1] || "" };
-    if (raw === "links") return { view: "links", scrollId: "" };
-    if (raw === "vault") return { view: "vault", scrollId: "" };
-    if (raw === "games") return { view: "games", scrollId: "" };
+if (raw === "links") return { view: "links", scrollId: "" };
+if (raw === "vault") return { view: "vault", scrollId: "" };
+if (raw === "inbox") return { view: "inbox", scrollId: "" };
+if (raw === "games") return { view: "games", scrollId: "" };
 
     return { view: "home", scrollId: "" };
   }
@@ -1457,15 +1462,19 @@ return
         location.hash = "links";
         return;
       }
+if (view === "games") {
+  location.hash = "games";
+  return;
+}
 
-      if (view === "games") {
-        location.hash = "games";
-        return;
-      }
+if (view === "inbox") {
+  location.hash = "inbox";
+  return;
+}
 
-      if (view === "home") {
-        location.hash = "";
-      }
+if (view === "home") {
+  location.hash = "";
+}
     });
 
     document.addEventListener("keydown", function (e) {
@@ -2572,7 +2581,170 @@ async function syncAuthUI() {
 function hasPremiumAccess() {
   return !!(wmProfile && wmProfile.premium_unlocked)
 }
+function isOwnerAccount() {
+  if (!wmProfile || !wmProfile.email) return false
+  return String(wmProfile.email).toLowerCase() === WM_OWNER_EMAIL
+}
 
+function formatSupportDate(value) {
+  if (!value) return ""
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return ""
+  return d.toLocaleString("en-GB")
+}
+
+async function submitSupportMessage(payload) {
+  if (!window.wmSupabase) {
+    throw new Error("Supabase not available")
+  }
+
+  const { error } = await window.wmSupabase
+    .from("support_messages")
+    .insert(payload)
+
+  if (error) {
+    throw error
+  }
+}
+
+async function loadInboxMessages() {
+  if (!window.wmSupabase) return []
+  if (!isOwnerAccount()) return []
+
+  const { data, error } = await window.wmSupabase
+    .from("support_messages")
+    .select("id, created_at, sender_name, sender_email, subject, message_body, status")
+    .order("created_at", { ascending: false })
+
+  if (error) {
+    console.error("loadInboxMessages failed", error)
+    return []
+  }
+
+  return Array.isArray(data) ? data : []
+}
+
+async function renderInboxView() {
+  const mount = document.getElementById("wmInboxList")
+  if (!mount) return
+
+  if (!isOwnerAccount()) {
+    mount.innerHTML = `<div class="inboxEmpty">Inbox not available</div>`
+    return
+  }
+
+  const rows = await loadInboxMessages()
+
+  if (!rows.length) {
+    mount.innerHTML = `<div class="inboxEmpty">No messages yet</div>`
+    return
+  }
+
+  mount.innerHTML = rows.map(function (row) {
+    return `
+      <article class="inboxCard">
+        <div class="inboxCardTop">
+          <div>
+            <div class="inboxCardTitle">${row.subject || "No subject"}</div>
+            <div class="inboxCardMeta">
+              ${row.sender_name || ""}<br>
+              ${row.sender_email || ""}<br>
+              ${formatSupportDate(row.created_at)}
+            </div>
+          </div>
+          <div class="inboxCardBadge">${row.status || "new"}</div>
+        </div>
+        <div class="inboxCardBody">${row.message_body || ""}</div>
+      </article>
+    `
+  }).join("")
+}
+
+function syncInboxButton() {
+  const inboxBtn = document.getElementById("wmInboxBtn")
+  if (!inboxBtn) return
+
+  const shouldShow = !!(wmProfile && isOwnerAccount())
+  inboxBtn.style.display = shouldShow ? "" : "none"
+}
+
+function wireSupportForm() {
+  const form = document.getElementById("wmSupportForm")
+  const nameInput = document.getElementById("wmSupportName")
+  const emailInput = document.getElementById("wmSupportEmail")
+  const subjectInput = document.getElementById("wmSupportSubject")
+  const messageInput = document.getElementById("wmSupportMessage")
+  const countEl = document.getElementById("wmSupportCount")
+  const messageBox = document.getElementById("wmSupportMessageBox")
+  const sendBtn = document.getElementById("wmSupportSendBtn")
+
+  if (messageInput && countEl) {
+    const updateCount = function () {
+      countEl.textContent = String(messageInput.value.length)
+    }
+
+    updateCount()
+    messageInput.addEventListener("input", updateCount)
+  }
+
+  if (!form) return
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault()
+
+    if (messageBox) messageBox.textContent = ""
+
+    if (!wmProfile || !wmProfile.id) {
+      if (messageBox) messageBox.textContent = "You must be logged in"
+      return
+    }
+
+    const senderName = nameInput ? nameInput.value.trim() : ""
+    const senderEmail = emailInput ? emailInput.value.trim() : ""
+    const subject = subjectInput ? subjectInput.value.trim() : ""
+    const messageBody = messageInput ? messageInput.value.trim() : ""
+
+    if (!senderName || !senderEmail || !subject || !messageBody) {
+      if (messageBox) messageBox.textContent = "Complete all fields"
+      return
+    }
+
+    if (messageBody.length > 500) {
+      if (messageBox) messageBox.textContent = "Message too long"
+      return
+    }
+
+    if (sendBtn) {
+      sendBtn.disabled = true
+      sendBtn.textContent = "Sending..."
+    }
+
+    try {
+      await submitSupportMessage({
+        profile_id: wmProfile.id,
+        sender_name: senderName,
+        sender_email: senderEmail,
+        subject: subject,
+        message_body: messageBody,
+        status: "new"
+      })
+
+      form.reset()
+
+      if (countEl) countEl.textContent = "0"
+      if (messageBox) messageBox.textContent = "Message sent"
+
+    } catch (err) {
+      console.error("submitSupportMessage failed", err)
+      if (messageBox) messageBox.textContent = "Message could not be sent"
+    } finally {
+      if (sendBtn) {
+        sendBtn.disabled = false
+        sendBtn.textContent = "Send message"
+      }
+    }
+  })
+}
   
 function applyAccountStateUI() {
   document.body.classList.remove("wm-state-guest", "wm-state-member", "wm-state-premium")
@@ -2607,10 +2779,11 @@ wirePlayButtons(wmAudio);
 wireBuyButtons();
 wireDownloadButtons();
 wireNavigation();
-    wirePlayerControls();
-    wireGamesControls();
-    wireVaultButtons();
-    wireAuthButtons();
+wirePlayerControls();
+wireGamesControls();
+wireVaultButtons();
+wireAuthButtons();
+wireSupportForm();
     
 loadProducts().then(function () {
   renderFeaturedGrid()
@@ -2635,6 +2808,7 @@ loadProducts().then(function () {
   renderLinks()
   return updateVaultOwnershipUI()
 }).then(function () {
+  syncInboxButton()
   return syncAuthUI()
 })
 
