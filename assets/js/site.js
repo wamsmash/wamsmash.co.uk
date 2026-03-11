@@ -526,29 +526,7 @@ async function updateVaultOwnershipUI() {
             `)
           }
 
-async function forceDownloadFromSignedUrl(url, filename) {
-  try {
-    const res = await fetch(url)
-    if (!res.ok) {
-      throw new Error(`Download failed with status ${res.status}`)
-    }
 
-    const blob = await res.blob()
-    const blobUrl = window.URL.createObjectURL(blob)
-
-    const a = document.createElement("a")
-    a.href = blobUrl
-    a.download = filename || "download"
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-
-    window.URL.revokeObjectURL(blobUrl)
-  } catch (err) {
-    console.error("forceDownloadFromSignedUrl failed", err)
-    alert("Download could not be started")
-  }
-}
 
           
           assetList.innerHTML = htmlParts.length
@@ -676,7 +654,30 @@ a.remove()
   }
 }
 
+async function forceDownloadFromSignedUrl(url, filename) {
+  try {
+    const res = await fetch(url)
+    if (!res.ok) {
+      throw new Error(`Download failed with status ${res.status}`)
+    }
 
+    const blob = await res.blob()
+    const blobUrl = window.URL.createObjectURL(blob)
+
+    const a = document.createElement("a")
+    a.href = blobUrl
+    a.download = filename || "download"
+    a.rel = "noopener"
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+
+    window.URL.revokeObjectURL(blobUrl)
+  } catch (err) {
+    console.error("forceDownloadFromSignedUrl failed", err)
+    alert("Download could not be started")
+  }
+}
   
   function hardenAudioElement(audioEl) {
     if (!audioEl) return;
@@ -1251,38 +1252,35 @@ async function openDownloadModal(trackId, assets) {
 
   if (!list) return
 
-  if (title) title.textContent = `${trackId.toUpperCase()} Downloads`
+  const prettyTrack = (findTrackById(trackId)?.title || trackId).toUpperCase()
+
+  if (title) title.textContent = `${prettyTrack} DOWNLOADS`
   if (subtitle) subtitle.textContent = "Choose an asset"
 
-const prettyTrack = trackId.toUpperCase()
-  
-const labelMap = {
-  [`${trackId}_wav`]: `${prettyTrack} – WAV (Studio Quality)`,
-  [`${trackId}_mp3`]: `${prettyTrack} – MP3`,
-  [`${trackId}_note`]: `${prettyTrack} – Collector Note`,
-  [`${trackId}_artwork`]: `${prettyTrack} – Artwork Pack`,
-  [`${trackId}_zip`]: `${prettyTrack} – Download Pack`
-}
+  const labelMap = {
+    [`${trackId}_wav`]: `${prettyTrack} – WAV (Studio Quality)`,
+    [`${trackId}_mp3`]: `${prettyTrack} – MP3`,
+    [`${trackId}_note`]: `${prettyTrack} – Collector Note`,
+    [`${trackId}_artwork`]: `${prettyTrack} – Artwork Pack`,
+    [`${trackId}_zip`]: `${prettyTrack} – Download Pack`
+  }
 
   const htmlParts = []
 
   for (const asset of assets) {
     const signedUrl = await getSignedAssetUrl(asset.storage_path)
     if (!signedUrl) continue
-    
+
     const label = labelMap[asset.asset_key] || asset.title || "Download asset"
-    const prettyTrack = trackId.toUpperCase()
 
-let filename = asset.storage_path.split("/").pop()
+    let filename = asset.storage_path.split("/").pop()
 
+    if (asset.asset_key === `${trackId}_wav`) filename = `${prettyTrack}-wamsmash.wav`
+    if (asset.asset_key === `${trackId}_mp3`) filename = `${prettyTrack}-wamsmash.mp3`
+    if (asset.asset_key === `${trackId}_note`) filename = `${prettyTrack}-collector-note.pdf`
+    if (asset.asset_key === `${trackId}_artwork`) filename = `${prettyTrack}-wamsmash-coverart-4k.jpg`
+    if (asset.asset_key === `${trackId}_zip`) filename = `${prettyTrack}-download-pack.zip`
 
-if (asset.asset_key === `${trackId}_wav`) filename = `${prettyTrack}-wamsmash.wav`
-if (asset.asset_key === `${trackId}_mp3`) filename = `${prettyTrack}-wamsmash.mp3`
-if (asset.asset_key === `${trackId}_note`) filename = `${prettyTrack}-collector-note.pdf`
-if (asset.asset_key === `${trackId}_artwork`) filename = `${prettyTrack}-wamsmash-coverart-4k.jpg`
-if (asset.asset_key === `${trackId}_zip`) filename = `${prettyTrack}-download-pack.zip`
-
-    
     htmlParts.push(`
       <button
         class="vaultOwnedItem"
@@ -1291,6 +1289,7 @@ if (asset.asset_key === `${trackId}_zip`) filename = `${prettyTrack}-download-pa
         data-download-filename="${filename}"
       >${label}</button>
     `)
+  }
 
   list.innerHTML = htmlParts.length
     ? htmlParts.join("")
