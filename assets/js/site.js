@@ -1302,44 +1302,45 @@ async function openDownloadModal(trackId, assets) {
   
 
 function switchView(view) {
-  const home = document.getElementById("homeView");
-  const music = document.getElementById("musicView");
-  const links = document.getElementById("linksView");
-  const vault = document.getElementById("vaultView");
-  const inbox = document.getElementById("inboxView");
-  const games = document.getElementById("gamesView");
-  const hero = document.querySelector(".heroIntro");
+  const home = document.getElementById("homeView")
+  const music = document.getElementById("musicView")
+  const links = document.getElementById("linksView")
+  const vault = document.getElementById("vaultView")
+  const inbox = document.getElementById("inboxView")
+  const games = document.getElementById("gamesView")
+  const hero = document.querySelector(".heroIntro")
 
-  if (!home || !music || !links || !vault || !inbox || !games) return;
+  if (!home || !music || !links || !vault || !inbox || !games) return
 
-  home.style.display = view === "home" ? "block" : "none";
-  music.style.display = view === "music" ? "block" : "none";
-  links.style.display = view === "links" ? "block" : "none";
-  vault.style.display = view === "vault" ? "block" : "none";
-  inbox.style.display = view === "inbox" ? "block" : "none";
-  games.style.display = view === "games" ? "block" : "none";
+  home.style.display = view === "home" ? "block" : "none"
+  music.style.display = view === "music" ? "block" : "none"
+  links.style.display = view === "links" ? "block" : "none"
+  vault.style.display = view === "vault" ? "block" : "none"
+  inbox.style.display = view === "inbox" ? "block" : "none"
+  games.style.display = view === "games" ? "block" : "none"
 
-  if (hero) hero.style.display = view === "home" ? "block" : "none";
+  if (hero) hero.style.display = view === "home" ? "block" : "none"
 
-  setActiveNav(view === "vault" ? "links" : view);
+  setActiveNav(view === "vault" ? "links" : view)
 
   if (view === "games" && wmAudio && !wmAudio.currentSrc) {
-    playNext();
+    playNext()
   }
 
   if (view === "inbox") {
-    renderInboxView();
+    renderInboxView()
   }
 
   if (view === "vault") {
-    startVaultCountdown();
+    startVaultCountdown()
     requestAnimationFrame(function () {
-      window.scrollTo({ top: 0, behavior: "instant" });
-    });
+      window.scrollTo({ top: 0, behavior: "instant" })
+    })
   } else {
-    stopVaultCountdown();
+    stopVaultCountdown()
   }
 }
+  
   function setActiveNav(view) {
     const navRoot = document.querySelector("header nav");
     if (!navRoot) return;
@@ -1357,21 +1358,21 @@ function switchView(view) {
     }
   }
 
-  function parseHash() {
-    const raw = (location.hash || "").replace(/^#/, "");
-    if (!raw) return { view: "home", scrollId: "" };
+function parseHash() {
+  const raw = (location.hash || "").replace(/^#/, "");
+  if (!raw) return { view: "home", scrollId: "" };
 
-    if (raw === "music") return { view: "music", scrollId: "" };
-    if (raw.startsWith("music#")) return { view: "music", scrollId: raw.split("#")[1] || "" };
-if (raw === "links") return { view: "links", scrollId: "" };
-if (raw === "vault") return { view: "vault", scrollId: "" };
-if (raw === "inbox") return { view: "inbox", scrollId: "" };
-if (raw === "games") return { view: "games", scrollId: "" };
+  if (raw === "music") return { view: "music", scrollId: "" };
+  if (raw.startsWith("music#")) return { view: "music", scrollId: raw.split("#")[1] || "" };
+  if (raw === "links") return { view: "links", scrollId: "" };
+  if (raw === "vault") return { view: "vault", scrollId: "" };
+  if (raw === "inbox") return { view: "inbox", scrollId: "" };
+  if (raw === "games") return { view: "games", scrollId: "" };
 
-    return { view: "home", scrollId: "" };
-  }
+  return { view: "home", scrollId: "" };
+}
 
-  function applyRoute() {
+function applyRoute() {
   const route = parseHash()
 
   if (route.view === "vault" && !canAccessVault()) {
@@ -1398,6 +1399,11 @@ if (raw === "games") return { view: "games", scrollId: "" };
     return
   }
 
+  if (route.view === "inbox" && !isOwnerAccount()) {
+    location.hash = "links"
+    return
+  }
+
   switchView(route.view)
 
   if (route.scrollId) {
@@ -1416,79 +1422,85 @@ function canAccessVault() {
 }
 
   
-  function wireNavigation() {
-    document.addEventListener("click", function (e) {
+function wireNavigation() {
+  document.addEventListener("click", function (e) {
+    const vaultLink = e.target.closest(".linkCard[href='#']")
+    if (vaultLink) {
+      e.preventDefault()
 
-      const vaultLink = e.target.closest(".linkCard[href='#']")
-if (vaultLink) {
-  e.preventDefault()
+      const authModal = document.getElementById("wmAuthModal")
+      const loginForm = document.getElementById("wmLoginForm")
+      const signupForm = document.getElementById("wmSignupForm")
+      const authTitle = document.getElementById("wmAuthTitle")
+      const authSubtitle = document.getElementById("wmAuthSubtitle")
+      const authMessage = document.getElementById("wmAuthMessage")
+      const showLoginBtn = document.getElementById("wmShowLoginBtn")
+      const showSignupBtn = document.getElementById("wmShowSignupBtn")
 
-const authModal = document.getElementById("wmAuthModal")
-const loginForm = document.getElementById("wmLoginForm")
-const signupForm = document.getElementById("wmSignupForm")
-const authTitle = document.getElementById("wmAuthTitle")
-const authSubtitle = document.getElementById("wmAuthSubtitle")
-const authMessage = document.getElementById("wmAuthMessage")
-const showLoginBtn = document.getElementById("wmShowLoginBtn")
-const showSignupBtn = document.getElementById("wmShowSignupBtn")
+      if (authModal) authModal.style.display = "block"
+      if (loginForm) loginForm.style.display = "none"
+      if (signupForm) signupForm.style.display = "flex"
+      if (authTitle) authTitle.textContent = "Create account"
+      if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
+      if (authMessage) authMessage.textContent = ""
+      if (showLoginBtn) showLoginBtn.classList.remove("isActive")
+      if (showSignupBtn) showSignupBtn.classList.add("isActive")
 
-if (authModal) authModal.style.display = "block"
-if (loginForm) loginForm.style.display = "none"
-if (signupForm) signupForm.style.display = "flex"
-if (authTitle) authTitle.textContent = "Create account"
-if (authSubtitle) authSubtitle.textContent = "Sign up to unlock member access"
-if (authMessage) authMessage.textContent = ""
-if (showLoginBtn) showLoginBtn.classList.remove("isActive")
-if (showSignupBtn) showSignupBtn.classList.add("isActive")
+      return
+    }
 
-return
+    const hero = e.target.closest(".heroIntro")
+    if (hero) {
+      location.hash = "music"
+      return
+    }
+
+    const btn = e.target.closest("[data-view]")
+    if (!btn) return
+
+    const view = btn.getAttribute("data-view")
+    const scrollId = btn.getAttribute("data-scroll")
+
+    if (view === "music") {
+      location.hash = scrollId ? `music#${scrollId}` : "music"
+      return
+    }
+
+    if (view === "links") {
+      location.hash = "links"
+      return
+    }
+
+    if (view === "vault") {
+      location.hash = "vault"
+      return
+    }
+
+    if (view === "games") {
+      location.hash = "games"
+      return
+    }
+
+    if (view === "inbox") {
+      location.hash = "inbox"
+      return
+    }
+
+    if (view === "home") {
+      location.hash = ""
+    }
+  })
+
+  document.addEventListener("keydown", function (e) {
+    const hero = e.target.closest && e.target.closest(".heroIntro")
+    if (!hero) return
+
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault()
+      location.hash = "music"
+    }
+  })
 }
-      const hero = e.target.closest(".heroIntro");
-      if (hero) {
-        location.hash = "music";
-        return;
-      }
-
-      const btn = e.target.closest("[data-view]");
-      if (!btn) return;
-
-      const view = btn.getAttribute("data-view");
-      const scrollId = btn.getAttribute("data-scroll");
-
-      if (view === "music") {
-        location.hash = scrollId ? `music#${scrollId}` : "music";
-        return;
-      }
-
-      if (view === "links") {
-        location.hash = "links";
-        return;
-      }
-if (view === "games") {
-  location.hash = "games";
-  return;
-}
-
-if (view === "inbox") {
-  location.hash = "inbox";
-  return;
-}
-
-if (view === "home") {
-  location.hash = "";
-}
-    });
-
-    document.addEventListener("keydown", function (e) {
-      const hero = e.target.closest && e.target.closest(".heroIntro");
-      if (!hero) return;
-
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        location.hash = "music";
-      }
-    });
-  }
 
   function pad2(n) {
     return String(n).padStart(2, "0");
