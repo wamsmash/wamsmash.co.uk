@@ -2508,11 +2508,6 @@ async function ensureProfile() {
   }
 }
 
-  if (error) {
-    console.error("ensureProfile insert failed", error)
-  }
-}
-
   
 async function syncAuthUI() {
   const loginBtn = document.getElementById("wmLoginBtn")
