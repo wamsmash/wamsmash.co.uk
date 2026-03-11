@@ -1932,6 +1932,63 @@ a:focus{outline:2px solid var(--focus);outline-offset:3px}
   user-select:none;
 }
 
+@media (max-width: 900px){
+  .playerInner{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .playerNow{
+    min-width:0;
+  }
+
+  .playerControls{
+    width:100%;
+    flex-wrap:wrap;
+  }
+
+  .wmPlayerMain{
+    min-width:0;
+    width:100%;
+    order:10;
+  }
+}
+
+@media (max-width: 640px){
+  .playerBar{
+    padding-bottom:env(safe-area-inset-bottom, 0);
+  }
+
+  .playerInner{
+    padding:10px 12px;
+    gap:10px;
+  }
+
+  .playerControls{
+    gap:8px;
+  }
+
+  .playerControls > .btn,
+  .wmMuteBtn{
+    min-height:40px;
+    padding:8px 10px;
+    font-size:12px;
+  }
+
+  .wmPlayerMain{
+    gap:6px;
+  }
+
+  .wmPlayerTimeRow,
+  .wmPlayerBottomRow{
+    font-size:11px;
+  }
+
+  .wmVolume{
+    max-width:84px;
+  }
+}
+
 body.wm-state-guest .mainHeader{
   background-image:url("/assets/img/covers/wamhero.jpg");
 }
