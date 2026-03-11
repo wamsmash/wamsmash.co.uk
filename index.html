@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -9,12 +8,11 @@
 
   <meta name="description" content="WAMSMASH creates structured electronic built around tension and contrast. Neon noir sound design. Music catalogue, games, Black Vault, and official links">
   <meta name="robots" content="index,follow">
-<link rel="canonical" href="https://wamsmash.co.uk/">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
-<link rel="icon" href="/favicon-48.png">
+  <link rel="canonical" href="https://wamsmash.co.uk/">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+  <link rel="icon" href="/favicon-48.png">
 
-  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="WAMSMASH">
   <meta property="og:title" content="WAMSMASH">
@@ -22,13 +20,11 @@
   <meta property="og:url" content="https://wamsmash.co.uk/">
   <meta property="og:image" content="https://wamsmash.co.uk/assets/img/covers/lion-monika.jpg">
 
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="WAMSMASH">
   <meta name="twitter:description" content="Structured electronic built around tension and contrast. Neon noir sound design">
   <meta name="twitter:image" content="https://wamsmash.co.uk/assets/img/covers/lion-monika.jpg">
 
-  <!-- Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -53,46 +49,41 @@
 <body>
   <div class="wrap">
 
-    <!-- HEADER -->
-<header class="mainHeader">
-  <div class="brand">
-<div class="brandSubStack">
-  <div class="brandSubLine">Structured electronic. Neon noir sound design.</div>
-  <div class="brandTagLine">👊 Smash is for the people.</div>
-</div>
+    <header class="mainHeader">
+      <div class="brand">
+        <div class="brandSubStack">
+          <div class="brandSubLine">Structured electronic. Neon noir sound design.</div>
+          <div class="brandTagLine">👊 Smash is for the people.</div>
+        </div>
 
-    <nav class="navUnderSub" aria-label="Primary navigation">
-      <a class="navlink isActive" data-view="home" href="/">Home</a>
-      <a class="navlink" data-view="music" href="/#music">Music</a>
-      <a class="navlink" data-view="links" href="/#links">Links</a>
-      <a class="navlink" data-view="games" href="/#games">Games</a>
+        <nav class="navUnderSub" aria-label="Primary navigation">
+          <a class="navlink isActive" data-view="home" href="/">Home</a>
+          <a class="navlink" data-view="music" href="/#music">Music</a>
+          <a class="navlink" data-view="links" href="/#links">Links</a>
+          <a class="navlink" data-view="games" href="/#games">Games</a>
 
-      <button class="navlink" type="button" id="wmLoginBtn">Login</button>
-      <button class="navlink" type="button" id="wmSignupBtn">Sign up</button>
-      <div class="navMemberBadge" id="wmMemberBadge" style="display:none;">Member</div>
-      <button class="navlink" type="button" id="wmLogoutBtn" style="display:none;">Logout</button>
-    </nav>
+          <button class="navlink" type="button" id="wmLoginBtn">Login</button>
+          <button class="navlink" type="button" id="wmSignupBtn">Sign up</button>
+          <div class="navMemberBadge" id="wmMemberBadge" style="display:none;">Member</div>
+          <button class="navlink" id="wmInboxBtn" type="button" data-view="inbox" style="display:none;">Inbox</button>
+          <button class="navlink" type="button" id="wmLogoutBtn" style="display:none;">Logout</button>
+        </nav>
+      </div>
+    </header>
 
-  </div>
-</header>
+    <section class="hero heroIntro" role="button" tabindex="0" data-view="music" aria-label="Explore the music">
+      <h2>Explore the music</h2>
+      <p>Play a track or <strong>CLICK HERE</strong></p>
+    </section>
 
-    <!-- HERO ENTRY -->
-<section class="hero heroIntro" role="button" tabindex="0" data-view="music" aria-label="Explore the music">
-  <h2>Explore the music</h2>
-  <p>Play a track or <strong>CLICK HERE</strong></p>
-</section>
-
-    <!-- HOME VIEW -->
     <section id="homeView">
       <div id="wmFeatured" class="grid"></div>
     </section>
 
-    <!-- MUSIC VIEW -->
     <section id="musicView" style="display:none;">
       <div id="wmMusicList" class="grid"></div>
     </section>
 
-    <!-- BLACK VAULT VIEW -->
     <section id="vaultView" style="display:none;">
       <section id="black-vault" class="vaultPage">
         <div class="vaultBg"></div>
@@ -100,7 +91,6 @@
         <div class="vaultSparks" aria-hidden="true"></div>
 
         <div class="vaultWrap">
-
           <header class="hero vaultHeroHead">
             <div class="vaultEyebrow">edition 1 access</div>
             <h2>THE BLACK VAULT</h2>
@@ -108,62 +98,62 @@
           </header>
 
           <section class="vaultHero">
-<div class="vaultHeroMedia">
-  <div class="vaultCoverShell">
-    <div class="vaultCoverFire"></div>
-    <div class="vaultGoldRing"></div>
-    <div class="vaultGoldShimmer"></div>
-    <img
-      src="/assets/img/covers/swim.jpg"
-      alt="SWIM cover art"
-      class="vaultCoverImage"
-      id="vaultSwimCover"
-    >
-    <div class="vaultCoverSparkle"></div>
-  </div>
+            <div class="vaultHeroMedia">
+              <div class="vaultCoverShell">
+                <div class="vaultCoverFire"></div>
+                <div class="vaultGoldRing"></div>
+                <div class="vaultGoldShimmer"></div>
+                <img
+                  src="/assets/img/covers/swim.jpg"
+                  alt="SWIM cover art"
+                  class="vaultCoverImage"
+                  id="vaultSwimCover"
+                >
+                <div class="vaultCoverSparkle"></div>
+              </div>
 
-  <div class="vaultIncludedPanel">
-<div class="vaultIncludedTitle">Edition includes</div>
+              <div class="vaultIncludedPanel">
+                <div class="vaultIncludedTitle">Edition includes</div>
 
-    <div class="vaultIncludedList">
-      <div class="vaultIncludedItem">
-        <span class="vaultIncludedIcon" aria-hidden="true">♫</span>
-        <span class="vaultIncludedText">High quality digital download</span>
-      </div>
+                <div class="vaultIncludedList">
+                  <div class="vaultIncludedItem">
+                    <span class="vaultIncludedIcon" aria-hidden="true">♫</span>
+                    <span class="vaultIncludedText">High quality digital download</span>
+                  </div>
 
-      <div class="vaultIncludedItem">
-        <span class="vaultIncludedIcon" aria-hidden="true">✎</span>
-        <span class="vaultIncludedText">Collector note</span>
-      </div>
+                  <div class="vaultIncludedItem">
+                    <span class="vaultIncludedIcon" aria-hidden="true">✎</span>
+                    <span class="vaultIncludedText">Collector note</span>
+                  </div>
 
-      <div class="vaultIncludedItem">
-        <span class="vaultIncludedIcon" aria-hidden="true">🎨</span>
-        <span class="vaultIncludedText">Artwork pack</span>
-      </div>
+                  <div class="vaultIncludedItem">
+                    <span class="vaultIncludedIcon" aria-hidden="true">🎨</span>
+                    <span class="vaultIncludedText">Artwork pack</span>
+                  </div>
 
-      <div class="vaultIncludedItem">
-        <span class="vaultIncludedIcon" aria-hidden="true">🔐</span>
-        <span class="vaultIncludedText">Vault presentation access</span>
-      </div>
-    </div>
-  </div>
-</div>
+                  <div class="vaultIncludedItem">
+                    <span class="vaultIncludedIcon" aria-hidden="true">🔐</span>
+                    <span class="vaultIncludedText">Vault presentation access</span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <div class="vaultHeroInfo">
               <div class="vaultLabel">Limited edition exclusive, edition 1</div>
               <h3 class="vaultTrackTitle">SWIM</h3>
 
               <p class="vaultText">
-  One time Black Vault release
-  <br><br>
-  Never to return in this edition
-  <br>
-  Collector edition
-  <br>
-  Best way to support future WAMSMASH releases directly
-</p>
+                One time Black Vault release
+                <br><br>
+                Never to return in this edition
+                <br>
+                Collector edition
+                <br>
+                Best way to support future WAMSMASH releases directly
+              </p>
 
-<div class="vaultLane">🔴 RED LANE</div>
+              <div class="vaultLane">🔴 RED LANE</div>
 
               <div class="vaultCountdown" id="vaultCountdown" data-end="2026-06-19T23:59:59">
                 <div class="vaultCountdownItem">
@@ -192,11 +182,11 @@
               <button class="vaultBtn vaultBtnPrimary" id="buySwimBtn" type="button">
                 Unlock SWIM
               </button>
-<div id="vaultOwnedAssets" class="vaultOwnedAssets" style="display:none;">
-  <h4>Your unlocked assets</h4>
-  <div id="vaultAssetList"></div>
-</div>
-              
+
+              <div id="vaultOwnedAssets" class="vaultOwnedAssets" style="display:none;">
+                <h4>Your unlocked assets</h4>
+                <div id="vaultAssetList"></div>
+              </div>
             </div>
           </section>
 
@@ -236,37 +226,81 @@
             </div>
           </section>
 
-<section class="hero vaultNotes">
-  <h3>What you get</h3>
+          <section class="hero vaultNotes">
+            <h3>What you get</h3>
 
-  <div class="vaultWhatList">
-    <div class="vaultWhatItem">
-      <span class="vaultWhatIcon" aria-hidden="true">♪</span>
-      <span class="vaultWhatText">High quality digital download</span>
-    </div>
+            <div class="vaultWhatList">
+              <div class="vaultWhatItem">
+                <span class="vaultWhatIcon" aria-hidden="true">♪</span>
+                <span class="vaultWhatText">High quality digital download</span>
+              </div>
 
-    <div class="vaultWhatItem">
-      <span class="vaultWhatIcon" aria-hidden="true">✎</span>
-      <span class="vaultWhatText">Collector note</span>
-    </div>
+              <div class="vaultWhatItem">
+                <span class="vaultWhatIcon" aria-hidden="true">✎</span>
+                <span class="vaultWhatText">Collector note</span>
+              </div>
 
-    <div class="vaultWhatItem">
-      <span class="vaultWhatIcon" aria-hidden="true">🎨</span>
-      <span class="vaultWhatText">Artwork pack</span>
-    </div>
+              <div class="vaultWhatItem">
+                <span class="vaultWhatIcon" aria-hidden="true">🎨</span>
+                <span class="vaultWhatText">Artwork pack</span>
+              </div>
 
-    <div class="vaultWhatItem">
-      <span class="vaultWhatIcon" aria-hidden="true">🔐</span>
-      <span class="vaultWhatText">Vault presentation access</span>
-    </div>
-  </div>
-</section>
+              <div class="vaultWhatItem">
+                <span class="vaultWhatIcon" aria-hidden="true">🔐</span>
+                <span class="vaultWhatText">Vault presentation access</span>
+              </div>
+            </div>
+          </section>
 
+          <section class="hero vaultNotes">
+            <h3>Terms and support</h3>
+
+            <div class="vaultWhatList" style="margin-bottom:18px;">
+              <div class="vaultWhatItem">
+                <span class="vaultWhatIcon">•</span>
+                <span class="vaultWhatText">Digital products only, no physical shipping</span>
+              </div>
+              <div class="vaultWhatItem">
+                <span class="vaultWhatIcon">•</span>
+                <span class="vaultWhatText">Included files vary by product and may include MP3, WAV, artwork, collector note, or bundle content</span>
+              </div>
+              <div class="vaultWhatItem">
+                <span class="vaultWhatIcon">•</span>
+                <span class="vaultWhatText">Access is granted after successful payment</span>
+              </div>
+              <div class="vaultWhatItem">
+                <span class="vaultWhatIcon">•</span>
+                <span class="vaultWhatText">No refunds after digital access or downloads have been granted</span>
+              </div>
+              <div class="vaultWhatItem">
+                <span class="vaultWhatIcon">•</span>
+                <span class="vaultWhatText">Purchased files are for personal use only, do not redistribute, resell, re upload, or share them</span>
+              </div>
+            </div>
+
+            <h3 style="margin-top:24px;">Contact support</h3>
+            <p>If you have a technical problem with your purchase, send a message here</p>
+
+            <form id="wmSupportForm" class="wmAuthForm">
+              <input id="wmSupportName" type="text" maxlength="120" placeholder="Your name" required>
+              <input id="wmSupportEmail" type="email" maxlength="160" placeholder="Your contact email" required>
+              <input id="wmSupportSubject" type="text" maxlength="160" placeholder="Subject" required>
+              <textarea id="wmSupportMessage" maxlength="500" placeholder="Describe the issue, max 500 characters" required style="width:100%; min-height:140px; padding:14px; border:1px solid rgba(255,255,255,0.14); border-radius:14px; background:rgba(0,0,0,0.24); color:var(--text); font:inherit; resize:vertical;"></textarea>
+              <div class="wmTiny"><span id="wmSupportCount">0</span>/500</div>
+              <button class="btn btnPrimary" type="submit" id="wmSupportSendBtn">Send message</button>
+              <div class="wmAuthMessage" id="wmSupportMessageBox"></div>
+            </form>
+          </section>
         </div>
       </section>
     </section>
 
-    <!-- GAMES VIEW -->
+    <section id="inboxView" class="hero" style="display:none;">
+      <h2>Inbox</h2>
+      <p>Support messages sent through Black Vault</p>
+      <div id="wmInboxList" class="linksGrid"></div>
+    </section>
+
     <section id="gamesView" style="display:none;">
       <div class="hero">
         <h2>Games</h2>
@@ -274,10 +308,8 @@
       <div id="wmGames" class="grid"></div>
     </section>
 
-    <!-- LINKS + ABOUT VIEW -->
     <section id="linksView" style="display:none;">
       <div class="linksGrid">
-
         <section>
           <div class="hero" style="margin-bottom:16px;">
             <h2>Press</h2>
@@ -299,7 +331,11 @@
             Structured electronic built around tension and contrast<br><br>
             WAMSMASH moves between pressure and release, drift and impact, ownership and echo. Liquid drums, engineered sub weight, jazz and sax fragments, UK cadence and club energy coexist inside a controlled framework<br><br>
             Neon noir sound design<br>
-            👊 Smash is for the people
+            👊 Smash is for the people<br><br>
+            Digital products are for personal use only<br>
+            Do not redistribute, re upload, resell, duplicate, or share purchased files<br>
+            Purchases unlock access to the assets attached to that release<br>
+            For technical support, sign in and use the contact form in Black Vault
           </p>
         </section>
 
@@ -310,11 +346,9 @@
             <div class="aboutIdentitySub"></div>
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- FOOTER -->
     <footer class="footer">
       <div class="footerInner">
         <div class="footerLinks">
@@ -326,39 +360,40 @@
         </div>
       </div>
     </footer>
-
   </div>
-<div id="wmAuthModal" class="wmAuthModal" style="display:none;">
-  <div class="wmAuthBackdrop" data-auth-close="true"></div>
 
-  <div class="wmAuthPanel" role="dialog" aria-modal="true" aria-labelledby="wmAuthTitle">
-    <button class="wmAuthClose" type="button" id="wmAuthCloseBtn" aria-label="Close">×</button>
+  <div id="wmAuthModal" class="wmAuthModal" style="display:none;">
+    <div class="wmAuthBackdrop" data-auth-close="true"></div>
 
-    <h2 id="wmAuthTitle">Account access</h2>
-    <p id="wmAuthSubtitle">Login or create your account</p>
+    <div class="wmAuthPanel" role="dialog" aria-modal="true" aria-labelledby="wmAuthTitle">
+      <button class="wmAuthClose" type="button" id="wmAuthCloseBtn" aria-label="Close">×</button>
 
-    <div class="wmAuthTabs">
-      <button class="btn btnPrimary" type="button" id="wmShowLoginBtn">Login</button>
-      <button class="btn" type="button" id="wmShowSignupBtn">Sign up</button>
+      <h2 id="wmAuthTitle">Account access</h2>
+      <p id="wmAuthSubtitle">Login or create your account</p>
+
+      <div class="wmAuthTabs">
+        <button class="btn btnPrimary" type="button" id="wmShowLoginBtn">Login</button>
+        <button class="btn" type="button" id="wmShowSignupBtn">Sign up</button>
+      </div>
+
+      <form id="wmLoginForm" class="wmAuthForm">
+        <input id="wmLoginEmail" type="email" placeholder="Email" required>
+        <input id="wmLoginPassword" type="password" placeholder="Password" required>
+        <button class="btn btnPrimary" type="submit">Login</button>
+      </form>
+
+      <form id="wmSignupForm" class="wmAuthForm" style="display:none;">
+        <input id="wmSignupEmail" type="email" placeholder="Email" required>
+        <input id="wmSignupPassword" type="password" placeholder="Password" required>
+        <button class="btn btnPrimary" type="submit">Create account</button>
+      </form>
+
+      <div id="wmAuthMessage" class="wmAuthMessage"></div>
     </div>
-
-    <form id="wmLoginForm" class="wmAuthForm">
-      <input id="wmLoginEmail" type="email" placeholder="Email" required>
-      <input id="wmLoginPassword" type="password" placeholder="Password" required>
-      <button class="btn btnPrimary" type="submit">Login</button>
-    </form>
-
-    <form id="wmSignupForm" class="wmAuthForm" style="display:none;">
-      <input id="wmSignupEmail" type="email" placeholder="Email" required>
-      <input id="wmSignupPassword" type="password" placeholder="Password" required>
-      <button class="btn btnPrimary" type="submit">Create account</button>
-    </form>
-
-    <div id="wmAuthMessage" class="wmAuthMessage"></div>
   </div>
-</div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/assets/js/supabase-client.js"></script>
-<script src="/assets/js/site.js?v=103"></script>
+  <script src="/assets/js/supabase-client.js"></script>
+  <script src="/assets/js/site.js?v=103"></script>
 </body>
 </html>
