@@ -786,13 +786,43 @@ const WM_OWNER_EMAIL = "willedit@proton.me"
     currentTrackId = track.id;
     recentQueue.push(track.id);
     if (recentQueue.length > 20) recentQueue = recentQueue.slice(-20);
+setNowPlayingUI(track)
+setAudioSource(wmAudio, track)
+applyPlayerLaneTheme(track)
 
-    setNowPlayingUI(track);
-    setAudioSource(wmAudio, track);
-
-    wmAudio.play().catch(() => {});
+wmAudio.play().catch(() => {})
   }
 
+function getLaneAccent(lane) {
+  const v = String(lane || "").toLowerCase()
+
+  if (v === "red") return "#ff3b30"
+  if (v === "blue") return "#00cfff"
+  if (v === "green") return "#32d74b"
+  if (v === "yellow") return "#ffd60a"
+  if (v === "pink") return "#ff4fd8"
+  if (v === "orange") return "#ff9f0a"
+  if (v === "iridescent") return "#8a7dff"
+
+  return "#ffffff"
+}
+
+function applyPlayerLaneTheme(track) {
+  const color = getLaneAccent(track && track.lane ? track.lane : "")
+  document.documentElement.style.setProperty("--wmPlayerAccent", color)
+}
+
+function ensureAmbientStart() {
+  if (!wmAudio) return
+
+  wmAudio.volume = 0.9
+
+  if (wmAudio.currentSrc) return
+
+  playNext()
+}
+
+  
   function playNext() {
     if (!TRACKS.length) return;
 
@@ -1048,19 +1078,20 @@ function renderMusicList() {
     }
   }
 
-  function playTrack(audioEl, trackId) {
-    const track = findTrackById(trackId);
-    if (!track) return;
+function playTrack(audioEl, trackId) {
+  const track = findTrackById(trackId)
+  if (!track) return
 
-    currentTrackId = track.id;
-    recentQueue.push(track.id);
-    if (recentQueue.length > 20) recentQueue = recentQueue.slice(-20);
+  currentTrackId = track.id
+  recentQueue.push(track.id)
+  if (recentQueue.length > 20) recentQueue = recentQueue.slice(-20)
 
-    setNowPlayingUI(track);
-    setAudioSource(audioEl, track);
+  setNowPlayingUI(track)
+  setAudioSource(audioEl, track)
+  applyPlayerLaneTheme(track)
 
-    audioEl.play().catch(() => {});
-  }
+  audioEl.play().catch(() => {})
+}
 
   function wirePlayButtons(audioEl) {
     document.addEventListener("click", function (e) {
@@ -2791,7 +2822,7 @@ function applyAccountStateUI() {
 
 wmAudio = $("#wmAudio");
 hardenAudioElement(wmAudio);
-if (wmAudio) wmAudio.volume = 0.9
+if (wmAudio) wmAudio.volume = 0.8
 
     clearState();
 wireAudioPersistence(wmAudio);
@@ -2833,7 +2864,7 @@ loadProducts().then(function () {
 })
 
 setNowPlayingUI(null)
-
+applyPlayerLaneTheme(null)
     
   }
 
