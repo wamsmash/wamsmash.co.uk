@@ -2463,8 +2463,7 @@ console.log("wmProfile loaded", wmProfile)
 return data
 }
   
-
-  async function ensureProfile() {
+async function ensureProfile() {
   if (!window.wmSupabase) return
 
   const { data: sessionData, error: sessionError } = await window.wmSupabase.auth.getSession()
@@ -2474,22 +2473,42 @@ return data
   const user = sessionData.session.user
   const email = user.email || ""
 
+  const { data: existingProfile } = await window.wmSupabase
+    .from("profiles")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle()
+
+  if (existingProfile) {
+    const { error } = await window.wmSupabase
+      .from("profiles")
+      .update({
+        email: email
+      })
+      .eq("id", user.id)
+
+    if (error) {
+      console.error("ensureProfile update failed", error)
+    }
+
+    return
+  }
+
   const { error } = await window.wmSupabase
     .from("profiles")
-    .upsert(
-      {
-  id: user.id,
-  email: email,
-  account_state: "member",
-  premium_unlocked: false
-},
-      { onConflict: "id" }
-    )
+    .insert({
+      id: user.id,
+      email: email,
+      account_state: "member",
+      premium_unlocked: false
+    })
 
   if (error) {
-    console.error("ensureProfile failed", error)
+    console.error("ensureProfile insert failed", error)
   }
 }
+
+  
 async function syncAuthUI() {
   const loginBtn = document.getElementById("wmLoginBtn")
   const signupBtn = document.getElementById("wmSignupBtn")
