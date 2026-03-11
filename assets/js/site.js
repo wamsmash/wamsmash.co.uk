@@ -1302,22 +1302,22 @@ async function openDownloadModal(trackId, assets) {
   
 
 function switchView(view) {
-const home = document.getElementById("homeView");
-const music = document.getElementById("musicView");
-const links = document.getElementById("linksView");
-const vault = document.getElementById("vaultView");
-const inbox = document.getElementById("inboxView");
-const games = document.getElementById("gamesView");
-const hero = document.querySelector(".heroIntro");
+  const home = document.getElementById("homeView");
+  const music = document.getElementById("musicView");
+  const links = document.getElementById("linksView");
+  const vault = document.getElementById("vaultView");
+  const inbox = document.getElementById("inboxView");
+  const games = document.getElementById("gamesView");
+  const hero = document.querySelector(".heroIntro");
 
-if (!home || !music || !links || !vault || !inbox || !games) return;
+  if (!home || !music || !links || !vault || !inbox || !games) return;
 
-home.style.display = view === "home" ? "block" : "none";
-music.style.display = view === "music" ? "block" : "none";
-links.style.display = view === "links" ? "block" : "none";
-vault.style.display = view === "vault" ? "block" : "none";
-inbox.style.display = view === "inbox" ? "block" : "none";
-games.style.display = view === "games" ? "block" : "none";
+  home.style.display = view === "home" ? "block" : "none";
+  music.style.display = view === "music" ? "block" : "none";
+  links.style.display = view === "links" ? "block" : "none";
+  vault.style.display = view === "vault" ? "block" : "none";
+  inbox.style.display = view === "inbox" ? "block" : "none";
+  games.style.display = view === "games" ? "block" : "none";
 
   if (hero) hero.style.display = view === "home" ? "block" : "none";
 
@@ -1326,8 +1326,10 @@ games.style.display = view === "games" ? "block" : "none";
   if (view === "games" && wmAudio && !wmAudio.currentSrc) {
     playNext();
   }
-if (view === "inbox") {
-  renderInboxView()
+
+  if (view === "inbox") {
+    renderInboxView();
+  }
 
   if (view === "vault") {
     startVaultCountdown();
