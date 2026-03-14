@@ -2961,7 +2961,7 @@ function applyAccountStateUI() {
 
 wmAudio = $("#wmAudio");
 hardenAudioElement(wmAudio);
-if (wmAudio) wmAudio.volume = 0.8
+if (wmAudio) wmAudio.volume = 0.4
 
     clearState();
 wireAudioPersistence(wmAudio);
