@@ -268,7 +268,52 @@
       tags: "metal dubstep crossover\nfast live drums energy\nfuzzy guitar drive\nprimal aggression rhythm",
     }
   ];
-
+,
+    {
+      id: "cryintheclub",
+      title: "CRY IN THE CLUB",
+      lane: "pink",
+      year: "2026",
+      audio: "/assets/audio/CRYINTHECLUB-wamsmash.mp3",
+      cover: "/assets/img/covers/cryintheclub.jpg",
+      note: "",
+      blurb: "Reflected dual selves\nMotion with no release found\nFeeling held inside",
+      tags: "contained intensity\ndisco driven movement\nneon pressure\nemotional restraint",
+    },
+    {
+      id: "pressureseal",
+      title: "PRESSURE SEAL",
+      lane: "pink",
+      year: "2026",
+      audio: "/assets/audio/PRESSURESEAL-wamsmash.mp3",
+      cover: "/assets/img/covers/pressureseal.jpg",
+      note: "",
+      blurb: "Know the secrets\nHeld tension\nNo release",
+      tags: "restraint and containment\nsealed pressure\ncontrolled momentum\ndesire held under load",
+    },
+    {
+      id: "incoming",
+      title: "INCOMING",
+      lane: "pink",
+      year: "2026",
+      audio: "/assets/audio/INCOMING-wamsmash.mp3",
+      cover: "/assets/img/covers/incoming.jpg",
+      note: "",
+      blurb: "Moments before impact\nContained intensity\nHeld inward",
+      tags: "restrained pressure\nhigh contrast energy\nneon noir tension\ncontained momentum",
+    },
+    {
+      id: "recoil",
+      title: "RECOIL",
+      lane: "orange",
+      year: "2026",
+      audio: "/assets/audio/RECOIL-wamsmash.mp3",
+      cover: "/assets/img/covers/recoil.jpg",
+      note: "",
+      blurb: "Everything pressing at once\nJudgement without escape\nMeaning under weight",
+      tags: "warm low end\ncontrolled depth\nreflective pressure\norange lane tension",
+    }
+ 
   const LINKS = [
     { label: "Spotify", href: "https://open.spotify.com/artist/4s68tFsNBcKZSDB5Ja4HQl", note: "Canonical releases", icon: "spotify" },
     { label: "SoundCloud", href: "https://soundcloud.com/wamsmash", note: "Playground and iteration", icon: "soundcloud" },
