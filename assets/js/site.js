@@ -266,9 +266,7 @@
       note: "",
       blurb: "First swing lands on his brother\nWild beast in borrowed skin\nNo comment",
       tags: "metal dubstep crossover\nfast live drums energy\nfuzzy guitar drive\nprimal aggression rhythm",
-    }
-  ];
-,
+    },
     {
       id: "cryintheclub",
       title: "CRY IN THE CLUB",
