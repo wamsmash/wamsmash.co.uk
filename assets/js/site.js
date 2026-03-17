@@ -311,7 +311,8 @@
       blurb: "Everything pressing at once\nJudgement without escape\nMeaning under weight",
       tags: "warm low end\ncontrolled depth\nreflective pressure\norange lane tension",
     }
- 
+  ];
+  
   const LINKS = [
     { label: "Spotify", href: "https://open.spotify.com/artist/4s68tFsNBcKZSDB5Ja4HQl", note: "Canonical releases", icon: "spotify" },
     { label: "SoundCloud", href: "https://soundcloud.com/wamsmash", note: "Playground and iteration", icon: "soundcloud" },
