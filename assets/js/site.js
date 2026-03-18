@@ -313,6 +313,38 @@ const TRACKS = [
   }
 ];
 
+const LINKS = [
+  { label: "Spotify", href: "https://open.spotify.com/artist/4s68tFsNBcKZSDB5Ja4HQl", note: "Canonical releases", icon: "spotify" },
+  { label: "SoundCloud", href: "https://soundcloud.com/wamsmash", note: "Playground and iteration", icon: "soundcloud" },
+  { label: "YouTube", href: "https://www.youtube.com/@wamsmash", note: "Visual hub", icon: "youtube" },
+  { label: "Instagram", href: "https://www.instagram.com/wamsmash", note: "Updates", icon: "instagram" },
+  { label: "X", href: "https://x.com/wamsmash_", note: "Updates", icon: "x" },
+  { label: "BLACK VAULT", href: "#vault", note: "Collector layer", icon: "vault" }
+];
+
+const PRESS = [
+  {
+    source: "RetroReverbRecords",
+    href: "https://www.retroreverbrecords.com/",
+    quote: "“CHAOS is a seriously hard, high pressure electronic banger with a clear modern and genre bending style”"
+  },
+  {
+    source: "College Music",
+    href: "https://collegemusic.co.uk/",
+    quote: "“Cool track with impressive singing and strong energy”"
+  },
+  {
+    source: "Synergy FM",
+    href: "https://synergyfm.net/",
+    quote: "“It’s well produced and has a strong vibe”"
+  },
+  {
+    source: "Boulimique de Musique, Les Saveurs du Jour",
+    href: "https://boulimiquedemusique.blogspot.com/2026/02/la-steppe-awake-dreaming-wamsmash-les.html",
+    quote: "“L'artiste britannique lance un morceau bass music à la sauce de Dub FX pour l'approche doucement bouncy. L'interprétation vocale féminine bourrée d'attitude véhicule un récit poétique, telle une fable des temps modernes, débordante de métaphores empreintes d'une touche de spiritualité.”"
+  }
+];
+  
   function laneLabel(lane) {
     const v = String(lane || "").toLowerCase();
     if (v === "red") return "🔴 RED LANE";
