@@ -31,7 +31,7 @@ const sfx = {
   coin: makeSfx("/game/ESMcoin.mp3", 0.1125),
   pop: makeSfx("/game/pop.mp3", 0.55),
   bad: makeSfx("/game/bad.mp3", 0.60),
-  gameover: makeSfx("/game/gameover.mp3", 0.60)
+  gameover: makeSfx("/game/gameover.mp3", 0.1125)
 }
 
   function playSfx(audio, overlap) {
@@ -1523,108 +1523,223 @@ function drawPickups() {
   // ============================================================
   // DRAW PLAYER
   // ============================================================
-  function drawScooterGhost() {
-    const x = player.x
-    const y = player.y - player.h
+function drawScooterGhost() {
+  const x = player.x
+  const y = player.y - player.h
 
-    const blink = player.invuln > 0 ? (Math.floor(state.totalT * 12) % 2 === 0) : true
-    if (!blink) return
+  const blink = player.invuln > 0 ? (Math.floor(state.totalT * 12) % 2 === 0) : true
+  if (!blink) return
 
-    player.capePhase += state.dt * 7.5
+  player.capePhase += state.dt * 7.5
 
-    const c = currentChar()
-    const colA = c.colA
-    const colB = c.colB
+  const c = currentChar()
+  const colA = c.colA
+  const colB = c.colB
 
-    g.save()
-    g.globalCompositeOperation = "lighter"
-    g.shadowBlur = 12
-    g.shadowColor = `rgba(${colB[0]},${colB[1]},${colB[2]},0.22)`
+  const ride =
+    c.id === "wam" ? "bike" :
+    c.id === "laser" ? "board" :
+    "scooter"
 
-    g.fillStyle = "rgba(255,255,255,0.10)"
-    g.fillRect(x + 6, y + 48, 66, 8)
+  const bob = Math.sin(state.totalT * 9) * 1.5
+  const lean = player.onGround ? 0 : -3
+  const bodyX = x + 36
+  const bodyY = y + 22 + bob
 
-    g.fillStyle = "rgba(255,255,255,0.55)"
-    g.beginPath(); g.arc(x + 20, y + 60, 7, 0, Math.PI * 2); g.fill()
-    g.beginPath(); g.arc(x + 60, y + 60, 7, 0, Math.PI * 2); g.fill()
+  let headR = 13
+  if (state.mode === "death" && state.deathPhase === 0) {
+    const p = clamp(state.deathT / 0.9, 0, 1)
+    const ease = p * p * (3 - 2 * p)
+    headR = 13 + ease * 34
+  }
 
-    g.fillStyle = "rgba(255,255,255,0.20)"
-    g.fillRect(x + 60, y + 22, 4, 28)
-    g.fillRect(x + 52, y + 22, 20, 4)
+  g.save()
+  g.globalCompositeOperation = "lighter"
+  g.shadowBlur = 14
+  g.shadowColor = `rgba(${colB[0]},${colB[1]},${colB[2]},0.24)`
 
-    const core = g.createRadialGradient(x + 36, y + 28, 6, x + 36, y + 28, 70)
-    core.addColorStop(0, "rgba(0,229,255,0.34)")
-    core.addColorStop(1, "rgba(0,229,255,0)")
-    g.fillStyle = core
+  // Ground shadow
+  g.fillStyle = "rgba(255,255,255,0.08)"
+  g.beginPath()
+  g.ellipse(x + 40, y + 60, 36, 7, 0, 0, Math.PI * 2)
+  g.fill()
+
+  // Vehicle glow
+  const rideGlow = g.createRadialGradient(x + 42, y + 46, 8, x + 42, y + 46, 60)
+  rideGlow.addColorStop(0, `rgba(${colB[0]},${colB[1]},${colB[2]},0.20)`)
+  rideGlow.addColorStop(1, "rgba(0,0,0,0)")
+  g.fillStyle = rideGlow
+  g.beginPath()
+  g.arc(x + 42, y + 46, 60, 0, Math.PI * 2)
+  g.fill()
+
+  // Wheels
+  function wheel(wx, wy, r) {
+    g.fillStyle = "rgba(255,255,255,0.80)"
     g.beginPath()
-    g.arc(x + 36, y + 30, 60, 0, Math.PI * 2)
+    g.arc(wx, wy, r, 0, Math.PI * 2)
     g.fill()
 
-    const wave = Math.sin(player.capePhase) * 6
-    g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.18)`
+    g.fillStyle = "rgba(0,0,0,0.78)"
     g.beginPath()
-    g.moveTo(x + 18, y + 24)
-    g.quadraticCurveTo(x - 8, y + 34 + wave, x + 10, y + 52)
-    g.quadraticCurveTo(x + 20, y + 58 + wave, x + 26, y + 46)
-    g.quadraticCurveTo(x + 30, y + 38, x + 32, y + 30)
+    g.arc(wx, wy, r * 0.52, 0, Math.PI * 2)
+    g.fill()
+  }
+
+  // Vehicle
+  if (ride === "scooter") {
+    wheel(x + 22, y + 60, 7)
+    wheel(x + 61, y + 60, 7)
+
+    g.strokeStyle = "rgba(255,255,255,0.72)"
+    g.lineWidth = 3
+    g.beginPath()
+    g.moveTo(x + 20, y + 60)
+    g.lineTo(x + 61, y + 60)
+    g.lineTo(x + 57, y + 31)
+    g.lineTo(x + 64, y + 24)
+    g.stroke()
+
+    g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.28)`
+    g.fillRect(x + 17, y + 54, 46, 4)
+  }
+
+  if (ride === "board") {
+    wheel(x + 24, y + 60, 6)
+    wheel(x + 58, y + 60, 6)
+
+    g.strokeStyle = "rgba(255,255,255,0.70)"
+    g.lineWidth = 3
+    g.beginPath()
+    g.moveTo(x + 16, y + 56)
+    g.quadraticCurveTo(x + 40, y + 51, x + 64, y + 56)
+    g.stroke()
+
+    g.fillStyle = `rgba(${colB[0]},${colB[1]},${colB[2]},0.30)`
+    g.beginPath()
+    g.moveTo(x + 16, y + 54)
+    g.quadraticCurveTo(x + 40, y + 49, x + 64, y + 54)
+    g.lineTo(x + 64, y + 57)
+    g.quadraticCurveTo(x + 40, y + 52, x + 16, y + 57)
     g.closePath()
     g.fill()
+  }
 
-    g.fillStyle = "rgba(8,10,12,0.62)"
-    g.fillRect(x + 22, y + 22, 28, 26)
+  if (ride === "bike") {
+    wheel(x + 18, y + 60, 10)
+    wheel(x + 62, y + 60, 10)
 
-    g.strokeStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.32)`
-    g.lineWidth = 2
-    g.strokeRect(x + 22, y + 22, 28, 26)
-
-    if (!(state.mode === "death" && state.deathPhase >= 1)) {
-      let headR = 13
-
-      if (state.mode === "death" && state.deathPhase === 0) {
-        const p = clamp(state.deathT / 0.9, 0, 1)
-        const ease = p * p * (3 - 2 * p)
-        headR = 13 + ease * 34
-      }
-
-      g.fillStyle = "rgba(0,229,255,0.92)"
-      g.beginPath()
-      g.arc(x + 36, y + 12, headR, 0, Math.PI * 2)
-      g.fill()
-
-      g.strokeStyle = "rgba(0,255,140,0.40)"
-      g.lineWidth = 2
-      g.beginPath()
-      g.arc(x + 36, y + 12, headR, 0, Math.PI * 2)
-      g.stroke()
-
-      if (!(state.mode === "death" && state.deathPhase === 0)) {
-        g.fillStyle = "rgba(0,0,0,0.55)"
-        g.fillRect(x + 31, y + 10, 4, 3)
-        g.fillRect(x + 39, y + 10, 4, 3)
-      }
-    }
-
-    g.fillStyle = "rgba(0,0,0,0.55)"
-    g.fillRect(x + 31, y + 10, 4, 3)
-    g.fillRect(x + 39, y + 10, 4, 3)
-
-    g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.70)`
+    g.strokeStyle = "rgba(255,255,255,0.72)"
+    g.lineWidth = 3
     g.beginPath()
-    g.arc(x + 36, y + 28, 3, 0, Math.PI * 2)
+    g.moveTo(x + 18, y + 60)
+    g.lineTo(x + 37, y + 43)
+    g.lineTo(x + 48, y + 60)
+    g.lineTo(x + 18, y + 60)
+    g.moveTo(x + 37, y + 43)
+    g.lineTo(x + 56, y + 37)
+    g.lineTo(x + 62, y + 60)
+    g.moveTo(x + 52, y + 31)
+    g.lineTo(x + 59, y + 31)
+    g.moveTo(x + 34, y + 41)
+    g.lineTo(x + 30, y + 34)
+    g.stroke()
+  }
+
+  // Ghost tail
+  const tailWave = Math.sin(player.capePhase) * 4
+  g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.22)`
+  g.beginPath()
+  g.moveTo(bodyX - 10, bodyY + 2)
+  g.quadraticCurveTo(bodyX - 28, bodyY + 10 + tailWave, bodyX - 14, bodyY + 28)
+  g.quadraticCurveTo(bodyX - 2, bodyY + 24, bodyX + 2, bodyY + 12)
+  g.closePath()
+  g.fill()
+
+  // Body
+  g.fillStyle = `rgba(${colB[0]},${colB[1]},${colB[2]},0.88)`
+  g.beginPath()
+  g.moveTo(bodyX - 13, bodyY + 2)
+  g.quadraticCurveTo(bodyX, bodyY - 8 + lean, bodyX + 13, bodyY + 2)
+  g.lineTo(bodyX + 13, bodyY + 21)
+  g.quadraticCurveTo(bodyX + 6, bodyY + 26, bodyX + 2, bodyY + 21)
+  g.quadraticCurveTo(bodyX, bodyY + 27, bodyX - 2, bodyY + 21)
+  g.quadraticCurveTo(bodyX - 7, bodyY + 26, bodyX - 13, bodyY + 21)
+  g.closePath()
+  g.fill()
+
+  g.strokeStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.48)`
+  g.lineWidth = 2
+  g.stroke()
+
+  // Arm / control hint
+  g.strokeStyle = "rgba(255,255,255,0.38)"
+  g.lineWidth = 2
+  g.beginPath()
+  if (ride === "board") {
+    g.moveTo(bodyX + 2, bodyY + 10)
+    g.lineTo(bodyX + 13, bodyY + 16)
+  } else {
+    g.moveTo(bodyX + 2, bodyY + 10)
+    g.lineTo(x + 54, y + 36)
+  }
+  g.stroke()
+
+  // Head
+  if (!(state.mode === "death" && state.deathPhase >= 1)) {
+    g.fillStyle = "rgba(240,250,255,0.96)"
+    g.beginPath()
+    g.arc(bodyX, y + 12 + bob, headR, 0, Math.PI * 2)
     g.fill()
 
-    if (player.shield) {
-      const grad = g.createRadialGradient(x + 36, y + 30, 10, x + 36, y + 30, 60)
-      grad.addColorStop(0, "rgba(80,180,255,0.16)")
-      grad.addColorStop(1, "rgba(80,180,255,0)")
-      g.fillStyle = grad
-      g.beginPath()
-      g.arc(x + 36, y + 30, 52, 0, Math.PI * 2)
-      g.fill()
-    }
+    g.strokeStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.42)`
+    g.lineWidth = 2
+    g.beginPath()
+    g.arc(bodyX, y + 12 + bob, headR, 0, Math.PI * 2)
+    g.stroke()
 
-    g.restore()
+    if (!(state.mode === "death" && state.deathPhase === 0)) {
+      g.fillStyle = "rgba(0,0,0,0.68)"
+      g.fillRect(bodyX - 6, y + 9 + bob, 3, 3)
+      g.fillRect(bodyX + 3, y + 9 + bob, 3, 3)
+    }
   }
+
+  // Cap
+  g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.92)`
+  g.beginPath()
+  g.arc(bodyX, y + 8 + bob, 10, Math.PI, Math.PI * 2)
+  g.fill()
+
+  g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.92)`
+  g.fillRect(bodyX - 10, y + 7 + bob, 20, 3)
+
+  g.beginPath()
+  g.moveTo(bodyX + 6, y + 9 + bob)
+  g.lineTo(bodyX + 14, y + 11 + bob)
+  g.lineTo(bodyX + 6, y + 13 + bob)
+  g.closePath()
+  g.fill()
+
+  // Shield
+  if (player.shield) {
+    const shield = g.createRadialGradient(bodyX, bodyY + 2, 8, bodyX, bodyY + 2, 56)
+    shield.addColorStop(0, "rgba(80,180,255,0.14)")
+    shield.addColorStop(1, "rgba(80,180,255,0)")
+    g.fillStyle = shield
+    g.beginPath()
+    g.arc(bodyX, bodyY + 2, 54, 0, Math.PI * 2)
+    g.fill()
+
+    g.strokeStyle = "rgba(180,230,255,0.34)"
+    g.lineWidth = 2
+    g.beginPath()
+    g.arc(bodyX, bodyY + 2, 30, 0, Math.PI * 2)
+    g.stroke()
+  }
+
+  g.restore()
+}
 
   // ============================================================
   // OBSTACLE RENDERERS
@@ -2779,124 +2894,145 @@ function drawPickups() {
     g.restore()
   }
 
-  function drawGameOver() {
-  g.fillStyle = "rgba(0,0,0,0.65)"
+function drawGameOver() {
+  const cx = W * 0.5
+  const cy = H * 0.5
+
+  function drawScoreBurst(x, y, score) {
+    const pulse = 1 + 0.03 * Math.sin(ui.thankYouBreath * 3.0)
+    const outer = 60 * pulse
+    const inner = 34 * pulse
+    const spikes = 8
+
+    g.save()
+    g.translate(x, y)
+    g.rotate(-0.14)
+
+    g.beginPath()
+    for (let i = 0; i < spikes * 2; i++) {
+      const r = i % 2 === 0 ? outer : inner
+      const a = (i / (spikes * 2)) * Math.PI * 2 - Math.PI / 2
+      const px = Math.cos(a) * r
+      const py = Math.sin(a) * r
+      if (i === 0) g.moveTo(px, py)
+      else g.lineTo(px, py)
+    }
+    g.closePath()
+
+    g.fillStyle = "rgba(0,0,0,0.96)"
+    g.fill()
+    g.lineWidth = 6
+    g.strokeStyle = "rgba(0,0,0,1)"
+    g.stroke()
+
+    g.fillStyle = "rgba(255,220,40,1)"
+    g.fill()
+
+    g.fillStyle = "rgba(255,120,120,0.18)"
+    for (let i = 0; i < 14; i++) {
+      const dx = -24 + (i % 5) * 12
+      const dy = -18 + Math.floor(i / 5) * 12
+      g.beginPath()
+      g.arc(dx, dy, 2.2, 0, Math.PI * 2)
+      g.fill()
+    }
+
+    g.fillStyle = "rgba(0,0,0,0.82)"
+    g.font = "900 11px system-ui, Segoe UI, Arial"
+    g.textAlign = "center"
+    g.fillText("SCORE", 0, -14)
+
+    g.lineWidth = 4
+    g.strokeStyle = "rgba(0,0,0,1)"
+    g.font = "900 30px system-ui, Segoe UI, Arial"
+    g.strokeText(String(score), 0, 18)
+
+    g.fillStyle = "rgba(255,40,40,1)"
+    g.fillText(String(score), 0, 18)
+
+    g.restore()
+  }
+
+  g.fillStyle = "rgba(0,0,0,0.68)"
   g.fillRect(0, 0, W, H)
 
-  g.fillStyle = "rgba(255,255,255,0.92)"
+  g.fillStyle = "rgba(255,255,255,0.94)"
   g.font = "900 64px system-ui, Segoe UI, Arial"
   g.textAlign = "center"
-  g.fillText("GAME OVER", W / 2, H / 2 - 86)
+  g.fillText("GAME OVER", cx, cy - 108)
 
-  const burstCx = W / 2 + 235
-  const burstCy = H / 2 - 34
-  const pulse = 1 + 0.025 * Math.sin(ui.thankYouBreath * 3.2)
+  g.fillStyle = "rgba(255,255,255,0.58)"
+  g.font = "700 15px system-ui, Segoe UI, Arial"
+  g.fillText("Run summary", cx, cy - 78)
+
+  const panelX = cx + 72
+  const panelY = cy - 8
+  const panelW = 330
+  const panelH = 174
 
   g.save()
-  g.translate(burstCx, burstCy)
-  g.rotate(-0.10)
-  g.scale(pulse, pulse)
-  g.translate(-burstCx, -burstCy)
 
-  g.fillStyle = "rgba(0,0,0,0.95)"
+  g.fillStyle = "rgba(0,0,0,0.40)"
   g.beginPath()
-  g.moveTo(burstCx - 62, burstCy - 18)
-  g.lineTo(burstCx - 34, burstCy - 30)
-  g.lineTo(burstCx - 22, burstCy - 58)
-  g.lineTo(burstCx + 2, burstCy - 34)
-  g.lineTo(burstCx + 34, burstCy - 42)
-  g.lineTo(burstCx + 24, burstCy - 10)
-  g.lineTo(burstCx + 60, burstCy + 6)
-  g.lineTo(burstCx + 24, burstCy + 18)
-  g.lineTo(burstCx + 8, burstCy + 54)
-  g.lineTo(burstCx - 14, burstCy + 24)
-  g.lineTo(burstCx - 52, burstCy + 34)
-  g.lineTo(burstCx - 34, burstCy + 2)
-  g.closePath()
+  roundRect(panelX - panelW / 2, panelY - panelH / 2, panelW, panelH, 22)
   g.fill()
 
-  g.fillStyle = "rgba(255,220,40,1)"
-  g.beginPath()
-  g.moveTo(burstCx - 54, burstCy - 14)
-  g.lineTo(burstCx - 28, burstCy - 24)
-  g.lineTo(burstCx - 18, burstCy - 48)
-  g.lineTo(burstCx + 2, burstCy - 28)
-  g.lineTo(burstCx + 28, burstCy - 34)
-  g.lineTo(burstCx + 20, burstCy - 8)
-  g.lineTo(burstCx + 52, burstCy + 6)
-  g.lineTo(burstCx + 20, burstCy + 16)
-  g.lineTo(burstCx + 8, burstCy + 44)
-  g.lineTo(burstCx - 10, burstCy + 20)
-  g.lineTo(burstCx - 44, burstCy + 28)
-  g.lineTo(burstCx - 28, burstCy + 2)
-  g.closePath()
-  g.fill()
-
-  g.strokeStyle = "rgba(0,0,0,1)"
-  g.lineWidth = 4
+  const rim = g.createLinearGradient(panelX - panelW / 2, panelY - panelH / 2, panelX + panelW / 2, panelY + panelH / 2)
+  rim.addColorStop(0, "rgba(255,255,255,0.14)")
+  rim.addColorStop(1, "rgba(0,229,255,0.10)")
+  g.strokeStyle = rim
+  g.lineWidth = 2
   g.stroke()
 
-  g.fillStyle = "rgba(255,80,80,0.28)"
-  for (let i = 0; i < 18; i++) {
-    const dx = -26 + (i % 6) * 10
-    const dy = -14 + Math.floor(i / 6) * 10
-    g.beginPath()
-    g.arc(burstCx + dx, burstCy + dy, 2.2, 0, Math.PI * 2)
-    g.fill()
-  }
+  g.globalAlpha = 0.28
+  g.strokeStyle = "rgba(255,255,255,0.20)"
+  g.beginPath()
+  roundRect(panelX - panelW / 2 + 4, panelY - panelH / 2 + 4, panelW - 8, panelH - 8, 18)
+  g.stroke()
+  g.globalAlpha = 1
 
-  g.fillStyle = "rgba(0,0,0,0.85)"
-  g.font = "900 11px system-ui, Segoe UI, Arial"
-  g.textAlign = "center"
-  g.fillText("SCORE", burstCx + 2, burstCy - 16)
-
-  g.fillStyle = "rgba(0,0,0,0.75)"
-  g.font = "900 28px system-ui, Segoe UI, Arial"
-  g.fillText(String(state.score), burstCx + 4, burstCy + 14)
-
-  g.fillStyle = "rgba(255,40,40,1)"
-  g.fillText(String(state.score), burstCx, burstCy + 10)
-
-  g.lineWidth = 2.5
-  g.strokeStyle = "rgba(0,0,0,1)"
-  g.strokeText(String(state.score), burstCx, burstCy + 10)
-
-  g.restore()
+  drawScoreBurst(panelX + 96, panelY - 28, state.score)
 
   g.textAlign = "left"
-  g.fillStyle = "rgba(0,255,140,0.88)"
-  g.font = "800 14px system-ui, Segoe UI, Arial"
-  g.fillText(`Gems ${state.gems} / 6`, W / 2 + 6, H / 2 - 26)
-  g.fillText(`Mult x${state.gemMult}`, W / 2 + 6, H / 2 - 4)
-  g.fillText(`Final ${state.score}`, W / 2 + 6, H / 2 + 18)
+  g.font = "800 16px system-ui, Segoe UI, Arial"
+  g.fillStyle = "rgba(0,255,140,0.92)"
+  g.fillText(`Gems ${state.gems} / 6`, panelX - 134, panelY - 10)
+  g.fillText(`Mult x${state.gemMult}`, panelX - 134, panelY + 18)
+  g.fillText(`Final ${state.score}`, panelX - 134, panelY + 46)
 
-  g.fillStyle = "rgba(255,255,255,0.55)"
-  g.font = "600 12px system-ui, Segoe UI, Arial"
-  g.fillText("Multiplier rule", W / 2 + 6, H / 2 + 48)
-  g.fillText("1 gem = x2", W / 2 + 6, H / 2 + 66)
-  g.fillText("2 gems = x3", W / 2 + 6, H / 2 + 82)
-  g.fillText("3 gems = x4", W / 2 + 6, H / 2 + 98)
-  g.fillText("6 gems = x7", W / 2 + 6, H / 2 + 114)
-  g.textAlign = "center"
+  g.fillStyle = "rgba(255,255,255,0.54)"
+  g.font = "700 12px system-ui, Segoe UI, Arial"
+  g.fillText("Multiplier rule", panelX - 134, panelY + 80)
+  g.fillText("1 gem = x2", panelX - 134, panelY + 100)
+  g.fillText("2 gems = x3", panelX - 134, panelY + 118)
+  g.fillText("3 gems = x4", panelX - 134, panelY + 136)
+  g.fillText("6 gems = x7", panelX - 134, panelY + 154)
 
-  const gx = W / 2 - 140
-  const gy = H / 2 + 92
+  const gemRowX = panelX + 8
+  const gemRowY = panelY + 108
   for (let i = 0; i < state.gems; i++) {
-    g.fillStyle = "rgba(0,255,140,0.72)"
+    g.fillStyle = "rgba(0,255,140,0.76)"
     g.beginPath()
-    g.arc(gx + i * 26, gy, 9, 0, Math.PI * 2)
+    g.moveTo(gemRowX + i * 24, gemRowY - 10)
+    g.lineTo(gemRowX + 8 + i * 24, gemRowY)
+    g.lineTo(gemRowX + i * 24, gemRowY + 10)
+    g.lineTo(gemRowX - 8 + i * 24, gemRowY)
+    g.closePath()
     g.fill()
-    g.fillStyle = "rgba(255,255,255,0.6)"
+
+    g.fillStyle = "rgba(255,255,255,0.42)"
     g.beginPath()
-    g.arc(gx + i * 26 - 3, gy - 3, 3, 0, Math.PI * 2)
+    g.arc(gemRowX - 2 + i * 24, gemRowY - 4, 2.2, 0, Math.PI * 2)
     g.fill()
   }
+
+  g.restore()
 
   g.textAlign = "left"
   drawLeaderboard(64, 64)
 
   ui.thankYouBreath += state.dt
-  const swell = 1.0 + 0.02 * Math.sin(ui.thankYouBreath * 2.2)
+  const swell = 1 + 0.02 * Math.sin(ui.thankYouBreath * 2.2)
 
   g.save()
   g.translate(W - 240, H - 46)
