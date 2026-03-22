@@ -26,12 +26,12 @@ const SUPABASE_KEY = "sb_publishable_5N68Cgko4Dbt5QKqwDbIEw_-4tU_kea"
     return a
   }
 
-  const sfx = {
+const sfx = {
   level: makeSfx("/game/ESMlvl.mp3", 0.55),
-  coin: makeSfx("/game/ESMcoin.mp3", 0.225),
+  coin: makeSfx("/game/ESMcoin.mp3", 0.1125),
   pop: makeSfx("/game/pop.mp3", 0.55),
   bad: makeSfx("/game/bad.mp3", 0.60),
-  gameover: makeSfx("/game/gameover.mp3", 0.70)
+  gameover: makeSfx("/game/gameover.mp3", 0.60)
 }
 
   function playSfx(audio, overlap) {
