@@ -1170,38 +1170,249 @@ function playGameOverSfx() {
     g.restore()
   }
 
-  function drawPickups() {
-    for (const p of pickups) {
-      const pulse = 0.75 + 0.25 * Math.sin(state.totalT * 6 + p.x * 0.02)
+function drawPickups() {
+  function drawCoinPickup(p, pulse) {
+    const x = p.x
+    const y = p.y
+    const r = p.r
 
-      if (p.type === "pwr" && p.kind === "springs") {
-        drawSpikyPickup(p.x, p.y, 8, 20, 9)
-        circleGlow(p.x, p.y, p.r, pulse, pickupTint(p))
-        continue
-      }
+    g.save()
+    g.globalCompositeOperation = "lighter"
 
-      circleGlow(p.x, p.y, p.r, pulse, pickupTint(p))
+    const glow = g.createRadialGradient(x, y, 2, x, y, r * 3.1)
+    glow.addColorStop(0, "rgba(255,220,80,0.24)")
+    glow.addColorStop(1, "rgba(0,0,0,0)")
+    g.fillStyle = glow
+    g.beginPath()
+    g.arc(x, y, r * 3.1, 0, Math.PI * 2)
+    g.fill()
 
-      if (p.type === "pwr") {
-        g.strokeStyle = "rgba(255,255,255,0.14)"
-        g.lineWidth = 2
-        g.beginPath()
-        g.arc(p.x, p.y, p.r + 6, 0, Math.PI * 2)
-        g.stroke()
-      }
+    g.restore()
 
-      if (p.type === "gem") {
-        g.fillStyle = "rgba(0,0,0,0.22)"
-        g.beginPath()
-        g.moveTo(p.x, p.y - 12)
-        g.lineTo(p.x + 10, p.y)
-        g.lineTo(p.x, p.y + 12)
-        g.lineTo(p.x - 10, p.y)
-        g.closePath()
-        g.fill()
-      }
-    }
+    g.fillStyle = "rgba(255,220,80,0.96)"
+    g.beginPath()
+    g.arc(x, y, r, 0, Math.PI * 2)
+    g.fill()
+
+    g.strokeStyle = "rgba(0,0,0,0.42)"
+    g.lineWidth = 2
+    g.beginPath()
+    g.arc(x, y, r, 0, Math.PI * 2)
+    g.stroke()
+
+    g.strokeStyle = "rgba(255,245,180,0.90)"
+    g.lineWidth = 3
+    g.beginPath()
+    g.arc(x, y, r * 0.56, 0, Math.PI * 2)
+    g.stroke()
+
+    g.fillStyle = "rgba(255,255,255,0.34)"
+    g.fillRect(x - 2, y - r * 0.62, 4, r * 1.24)
+
+    g.globalAlpha = 0.22 + pulse * 0.18
+    g.strokeStyle = "rgba(255,255,255,1)"
+    g.lineWidth = 2
+    g.beginPath()
+    g.arc(x - r * 0.18, y - r * 0.18, r * 0.72, -2.4, -0.2)
+    g.stroke()
+    g.globalAlpha = 1
   }
+
+  function drawGemPickup(p, pulse) {
+    const x = p.x
+    const y = p.y
+
+    g.save()
+    g.globalCompositeOperation = "lighter"
+
+    const glow = g.createRadialGradient(x, y, 2, x, y, 42)
+    glow.addColorStop(0, "rgba(0,255,140,0.24)")
+    glow.addColorStop(1, "rgba(0,0,0,0)")
+    g.fillStyle = glow
+    g.beginPath()
+    g.arc(x, y, 42, 0, Math.PI * 2)
+    g.fill()
+
+    g.restore()
+
+    g.fillStyle = "rgba(0,255,140,0.96)"
+    g.beginPath()
+    g.moveTo(x, y - 16)
+    g.lineTo(x + 12, y - 2)
+    g.lineTo(x, y + 16)
+    g.lineTo(x - 12, y - 2)
+    g.closePath()
+    g.fill()
+
+    g.strokeStyle = "rgba(0,0,0,0.40)"
+    g.lineWidth = 2
+    g.stroke()
+
+    g.strokeStyle = "rgba(255,255,255,0.34)"
+    g.lineWidth = 1.5
+    g.beginPath()
+    g.moveTo(x, y - 16)
+    g.lineTo(x, y + 16)
+    g.moveTo(x - 12, y - 2)
+    g.lineTo(x + 12, y - 2)
+    g.moveTo(x - 12, y - 2)
+    g.lineTo(x, y)
+    g.lineTo(x + 12, y - 2)
+    g.stroke()
+
+    g.globalAlpha = 0.20 + pulse * 0.18
+    g.fillStyle = "rgba(255,255,255,1)"
+    g.beginPath()
+    g.arc(x - 3, y - 6, 2.4, 0, Math.PI * 2)
+    g.fill()
+    g.globalAlpha = 1
+  }
+
+  function drawBubblePickup(p, pulse) {
+    const x = p.x
+    const y = p.y
+    const r = p.r
+
+    circleGlow(x, y, r + 1, pulse, [80, 180, 255])
+
+    g.fillStyle = "rgba(80,180,255,0.20)"
+    g.beginPath()
+    g.arc(x, y, r + 4, 0, Math.PI * 2)
+    g.fill()
+
+    g.strokeStyle = "rgba(255,255,255,0.26)"
+    g.lineWidth = 2
+    g.beginPath()
+    g.arc(x, y, r + 2, 0, Math.PI * 2)
+    g.stroke()
+
+    g.fillStyle = "rgba(255,255,255,0.92)"
+    g.beginPath()
+    g.moveTo(x, y - 9)
+    g.lineTo(x + 8, y - 4)
+    g.lineTo(x + 6, y + 7)
+    g.lineTo(x, y + 11)
+    g.lineTo(x - 6, y + 7)
+    g.lineTo(x - 8, y - 4)
+    g.closePath()
+    g.fill()
+
+    g.fillStyle = "rgba(80,180,255,0.65)"
+    g.beginPath()
+    g.moveTo(x, y - 4)
+    g.lineTo(x + 4, y - 1)
+    g.lineTo(x + 3, y + 5)
+    g.lineTo(x, y + 7)
+    g.lineTo(x - 3, y + 5)
+    g.lineTo(x - 4, y - 1)
+    g.closePath()
+    g.fill()
+  }
+
+  function drawSpeedPickup(p, pulse) {
+    const x = p.x
+    const y = p.y
+
+    circleGlow(x, y, p.r + 1, pulse, [255, 180, 0])
+
+    g.fillStyle = "rgba(255,180,0,0.94)"
+    g.beginPath()
+    g.moveTo(x, y - 14)
+    g.lineTo(x + 12, y - 7)
+    g.lineTo(x + 12, y + 7)
+    g.lineTo(x, y + 14)
+    g.lineTo(x - 12, y + 7)
+    g.lineTo(x - 12, y - 7)
+    g.closePath()
+    g.fill()
+
+    g.strokeStyle = "rgba(0,0,0,0.42)"
+    g.lineWidth = 2
+    g.stroke()
+
+    g.strokeStyle = "rgba(255,255,255,0.34)"
+    g.lineWidth = 2
+    g.beginPath()
+    g.arc(x, y, 6, 0, Math.PI * 2)
+    g.stroke()
+
+    g.fillStyle = "rgba(255,255,255,0.92)"
+    g.beginPath()
+    g.moveTo(x, y)
+    g.lineTo(x + 4, y - 3)
+    g.lineTo(x + 1, y - 7)
+    g.closePath()
+    g.fill()
+  }
+
+  function drawSpringsPickup(p, pulse) {
+    const x = p.x
+    const y = p.y
+
+    drawSpikyPickup(x, y, 8, 20, 9)
+
+    g.save()
+    g.globalCompositeOperation = "lighter"
+
+    const glow = g.createRadialGradient(x, y, 2, x, y, 34)
+    glow.addColorStop(0, "rgba(255,60,90,0.16)")
+    glow.addColorStop(1, "rgba(0,0,0,0)")
+    g.fillStyle = glow
+    g.beginPath()
+    g.arc(x, y, 34, 0, Math.PI * 2)
+    g.fill()
+
+    g.restore()
+
+    g.fillStyle = "rgba(255,60,90,0.92)"
+    g.beginPath()
+    g.arc(x, y, 7, 0, Math.PI * 2)
+    g.fill()
+
+    g.strokeStyle = "rgba(255,255,255,0.20)"
+    g.lineWidth = 2
+    g.beginPath()
+    g.moveTo(x, y - 11)
+    g.lineTo(x, y + 3)
+    g.stroke()
+
+    g.fillStyle = "rgba(255,255,255,0.92)"
+    g.beginPath()
+    g.arc(x, y + 8, 2, 0, Math.PI * 2)
+    g.fill()
+  }
+
+  for (const p of pickups) {
+    const pulse = 0.75 + 0.25 * Math.sin(state.totalT * 6 + p.x * 0.02)
+
+    if (p.type === "coin") {
+      drawCoinPickup(p, pulse)
+      continue
+    }
+
+    if (p.type === "gem") {
+      drawGemPickup(p, pulse)
+      continue
+    }
+
+    if (p.type === "pwr" && p.kind === "bubble") {
+      drawBubblePickup(p, pulse)
+      continue
+    }
+
+    if (p.type === "pwr" && p.kind === "speed") {
+      drawSpeedPickup(p, pulse)
+      continue
+    }
+
+    if (p.type === "pwr" && p.kind === "springs") {
+      drawSpringsPickup(p, pulse)
+      continue
+    }
+
+    circleGlow(p.x, p.y, p.r, pulse, pickupTint(p))
+  }
+}
 
   function drawSmoke() {
     for (const s of ui.smoke) {
