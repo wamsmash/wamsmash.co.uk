@@ -1,6 +1,6 @@
 (() => {
-  const SUPABASE_URL = "https://lwirabcurbhczmiylqar.supabase.co"
-  const SUPABASE_KEY = "sb_publishable_RUn44tQ5zldb5SP5DB85NQ_5oTdrQPd"
+  const SUPABASE_URL = "https://fkqachwvdsewol1xgobd.supabase.co"
+  const SUPABASE_KEY = "sb_publishable_5N68Cgko4Dbt5QKqwDbIEw_4tU_kea"
 
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
