@@ -2548,11 +2548,26 @@ function getSelectTargets() {
   const centerX = W * 0.5
   const centerY = H * 0.42
 
-    return {
-  left: { x: centerX - 260, y: centerY - 8, r: 60 },
-  mid: { x: centerX, y: centerY - 30, r: 80 },
-  right: { x: centerX + 260, y: centerY - 8, r: 60 }
+  const sideScale = 0.72
+  const midScale = 0.84
+
+  return {
+    left: {
+      x: centerX - 260,
+      y: centerY + 38 - 20 * sideScale,
+      r: 54 * sideScale + 10
+    },
+    mid: {
+      x: centerX,
+      y: centerY + 22 - 20 * midScale,
+      r: 54 * midScale + 12
+    },
+    right: {
+      x: centerX + 260,
+      y: centerY + 38 - 20 * sideScale,
+      r: 54 * sideScale + 10
     }
+  }
 }
 
 function selectRideLabel(c) {
