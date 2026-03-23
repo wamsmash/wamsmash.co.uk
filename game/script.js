@@ -358,7 +358,9 @@ const sfx = {
     queuedChargeAt: 0,
     queuedCharging: false,
     queuedChargeMs: 0,
-
+    mouseX: -9999,
+    mouseY: -9999,
+    mouseDown: false,
     startPending: false,
     startDelayT: 0,
 
@@ -2344,189 +2346,463 @@ const sfx = {
   // ============================================================
   // SCREEN DRAWERS
   // ============================================================
-  function drawSelectScreen() {
-    drawSky()
-    drawParallax()
-    drawPlanet()
-    drawLanes()
+  
+  function drawSelectGhostPortrait(x, y, c, scale) {
+  const colA = c.colA
+  const colB = c.colB
+  const ride =
+    c.id === "wam" ? "bike" :
+    c.id === "laser" ? "board" :
+    "scooter"
 
-    const centerX = W * 0.5
-    const centerY = H * 0.42
+  const r = 58 * scale
+  const cx = x
+  const cy = y - 16 * scale
+  const bob = Math.sin(state.totalT * 3.2) * 1.5 * scale
 
-    g.fillStyle = "rgba(0,0,0,0.40)"
-    g.fillRect(0, 0, W, H)
+  g.save()
 
-    g.fillStyle = "rgba(255,255,255,0.92)"
-    g.font = "900 34px system-ui, Segoe UI, Arial"
-    g.textAlign = "center"
-    g.fillText("Pick a ghost", centerX, 66)
+  const outerGlow = g.createRadialGradient(cx, cy, 8, cx, cy, r * 2.2)
+  outerGlow.addColorStop(0, `rgba(${colB[0]},${colB[1]},${colB[2]},0.24)`)
+  outerGlow.addColorStop(1, "rgba(0,0,0,0)")
+  g.fillStyle = outerGlow
+  g.beginPath()
+  g.arc(cx, cy, r * 2.2, 0, Math.PI * 2)
+  g.fill()
 
-    const idx = state.selectedCharIdx % characters.length
-    const leftIdx = (idx + characters.length - 1) % characters.length
-    const rightIdx = (idx + 1) % characters.length
+  const disc = g.createRadialGradient(cx - r * 0.25, cy - r * 0.35, 6, cx, cy, r)
+  disc.addColorStop(0, `rgba(${colB[0]},${colB[1]},${colB[2]},0.34)`)
+  disc.addColorStop(0.62, `rgba(${colA[0]},${colA[1]},${colA[2]},0.18)`)
+  disc.addColorStop(1, "rgba(0,0,0,0.50)")
+  g.fillStyle = disc
+  g.beginPath()
+  g.arc(cx, cy, r, 0, Math.PI * 2)
+  g.fill()
 
-    const mid = characters[idx]
-    const left = characters[leftIdx]
-    const right = characters[rightIdx]
+  g.strokeStyle = "rgba(255,255,255,0.14)"
+  g.lineWidth = 2
+  g.beginPath()
+  g.arc(cx, cy, r, 0, Math.PI * 2)
+  g.stroke()
 
-    const spotlight = g.createRadialGradient(centerX, 0, 20, centerX, 0, H)
-    spotlight.addColorStop(0, "rgba(255,255,255,0.16)")
-    spotlight.addColorStop(1, "rgba(0,0,0,0.75)")
-    g.fillStyle = spotlight
-    g.fillRect(0, 0, W, H)
+  g.save()
+  g.beginPath()
+  g.arc(cx, cy, r - 2, 0, Math.PI * 2)
+  g.clip()
 
-    function card(x, y, c, scale, alpha) {
-      g.save()
-      g.globalAlpha = alpha
+  g.translate(cx, cy + 10 * scale)
+  g.scale(scale, scale)
 
-      const w = 220 * scale
-      const h = 220 * scale
+  function wheel(wx, wy, wr) {
+    g.fillStyle = "rgba(255,255,255,0.82)"
+    g.beginPath()
+    g.arc(wx, wy, wr, 0, Math.PI * 2)
+    g.fill()
 
-      g.fillStyle = "rgba(0,0,0,0.35)"
-      g.beginPath()
-      roundRect(x - w / 2, y - h / 2, w, h, 18)
-      g.fill()
+    g.fillStyle = "rgba(0,0,0,0.78)"
+    g.beginPath()
+    g.arc(wx, wy, wr * 0.52, 0, Math.PI * 2)
+    g.fill()
+  }
 
-      if (scale > 1.0 && state.cardGlistenT > 0) {
-        const p = clamp(1 - (state.cardGlistenT / 1.0), 0, 1)
-        const sweep = -0.6 + p * 2.2
+  g.fillStyle = "rgba(255,255,255,0.08)"
+  g.beginPath()
+  g.ellipse(0, 30, 42, 8, 0, 0, Math.PI * 2)
+  g.fill()
 
-        g.save()
-        g.globalCompositeOperation = "lighter"
-        g.beginPath()
-        roundRect(x - w / 2, y - h / 2, w, h, 18)
-        g.clip()
+  if (ride === "scooter") {
+    wheel(-22, 28, 7)
+    wheel(18, 28, 7)
 
-        g.translate(x, y)
-        g.rotate(-0.35)
-        g.translate(-x, -y)
+    g.strokeStyle = "rgba(255,255,255,0.72)"
+    g.lineWidth = 3
+    g.beginPath()
+    g.moveTo(-24, 28)
+    g.lineTo(18, 28)
+    g.lineTo(14, -2)
+    g.lineTo(21, -10)
+    g.stroke()
 
-        const gx0 = x - w * 1.1 + sweep * w * 1.4
-        const grad = g.createLinearGradient(gx0, y - h, gx0 + w * 0.9, y + h)
-        grad.addColorStop(0.00, "rgba(255,255,255,0)")
-        grad.addColorStop(0.45, "rgba(255,255,255,0.06)")
-        grad.addColorStop(0.52, "rgba(255,255,255,0.22)")
-        grad.addColorStop(0.60, "rgba(255,255,255,0.08)")
-        grad.addColorStop(1.00, "rgba(255,255,255,0)")
+    g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.28)`
+    g.fillRect(-26, 22, 46, 4)
+  }
 
-        g.fillStyle = grad
-        g.fillRect(x - w, y - h, w * 2, h * 2)
-        g.restore()
-      }
+  if (ride === "board") {
+    wheel(-20, 28, 6)
+    wheel(16, 28, 6)
 
-      const glow = g.createRadialGradient(x, y, 10, x, y, 140 * scale)
-      glow.addColorStop(0, `rgba(${c.colB[0]},${c.colB[1]},${c.colB[2]},0.20)`)
+    g.strokeStyle = "rgba(255,255,255,0.70)"
+    g.lineWidth = 3
+    g.beginPath()
+    g.moveTo(-28, 24)
+    g.quadraticCurveTo(-2, 19, 22, 24)
+    g.stroke()
+
+    g.fillStyle = `rgba(${colB[0]},${colB[1]},${colB[2]},0.30)`
+    g.beginPath()
+    g.moveTo(-28, 22)
+    g.quadraticCurveTo(-2, 17, 22, 22)
+    g.lineTo(22, 25)
+    g.quadraticCurveTo(-2, 20, -28, 25)
+    g.closePath()
+    g.fill()
+  }
+
+  if (ride === "bike") {
+    wheel(-24, 28, 10)
+    wheel(20, 28, 10)
+
+    g.strokeStyle = "rgba(255,255,255,0.72)"
+    g.lineWidth = 3
+    g.beginPath()
+    g.moveTo(-24, 28)
+    g.lineTo(-6, 10)
+    g.lineTo(6, 28)
+    g.lineTo(-24, 28)
+    g.moveTo(-6, 10)
+    g.lineTo(14, 4)
+    g.lineTo(20, 28)
+    g.moveTo(10, -2)
+    g.lineTo(18, -2)
+    g.moveTo(-10, 9)
+    g.lineTo(-14, 2)
+    g.stroke()
+  }
+
+  const tailWave = Math.sin(state.totalT * 4.2) * 3
+
+  g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.24)`
+  g.beginPath()
+  g.moveTo(-10, 0 + bob)
+  g.quadraticCurveTo(-28, 8 + tailWave + bob, -14, 28 + bob)
+  g.quadraticCurveTo(-2, 24 + bob, 2, 12 + bob)
+  g.closePath()
+  g.fill()
+
+  g.fillStyle = `rgba(${colB[0]},${colB[1]},${colB[2]},0.90)`
+  g.beginPath()
+  g.moveTo(-13, 0 + bob)
+  g.quadraticCurveTo(0, -10 + bob, 13, 0 + bob)
+  g.lineTo(13, 20 + bob)
+  g.quadraticCurveTo(7, 25 + bob, 2, 20 + bob)
+  g.quadraticCurveTo(0, 26 + bob, -2, 20 + bob)
+  g.quadraticCurveTo(-7, 25 + bob, -13, 20 + bob)
+  g.closePath()
+  g.fill()
+
+  g.strokeStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.48)`
+  g.lineWidth = 2
+  g.stroke()
+
+  g.strokeStyle = "rgba(255,255,255,0.38)"
+  g.lineWidth = 2
+  g.beginPath()
+  if (ride === "board") {
+    g.moveTo(2, 9 + bob)
+    g.lineTo(13, 16 + bob)
+  } else {
+    g.moveTo(2, 9 + bob)
+    g.lineTo(15, 2)
+  }
+  g.stroke()
+
+  g.fillStyle = "rgba(240,250,255,0.97)"
+  g.beginPath()
+  g.arc(0, -14 + bob, 13, 0, Math.PI * 2)
+  g.fill()
+
+  g.strokeStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.42)`
+  g.lineWidth = 2
+  g.beginPath()
+  g.arc(0, -14 + bob, 13, 0, Math.PI * 2)
+  g.stroke()
+
+  g.fillStyle = "rgba(0,0,0,0.68)"
+  g.fillRect(-6, -17 + bob, 3, 3)
+  g.fillRect(3, -17 + bob, 3, 3)
+
+  g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.94)`
+  g.beginPath()
+  g.arc(0, -18 + bob, 10, Math.PI, Math.PI * 2)
+  g.fill()
+
+  g.fillRect(-10, -19 + bob, 20, 3)
+
+  g.beginPath()
+  g.moveTo(6, -17 + bob)
+  g.lineTo(14, -15 + bob)
+  g.lineTo(6, -13 + bob)
+  g.closePath()
+  g.fill()
+
+  g.restore()
+  g.restore()
+}
+  function pointInCircle(px, py, cx, cy, r) {
+  const dx = px - cx
+  const dy = py - cy
+  return dx * dx + dy * dy <= r * r
+}
+
+function getSelectTargets() {
+  const centerX = W * 0.5
+  const centerY = H * 0.42
+
+  return {
+    left: { x: centerX - 260, y: centerY + 10, r: 52 },
+    mid: { x: centerX, y: centerY - 14, r: 68 },
+    right: { x: centerX + 260, y: centerY + 10, r: 52 }
+  }
+}
+
+function selectRideLabel(c) {
+  if (c.id === "wam") return "BMX"
+  if (c.id === "laser") return "Skateboard"
+  return "Scooter"
+}
+  
+function drawSelectScreen() {
+  drawSky()
+  drawParallax()
+  drawPlanet()
+  drawLanes()
+
+  const centerX = W * 0.5
+  const centerY = H * 0.42
+  const targets = getSelectTargets()
+
+  const idx = state.selectedCharIdx % characters.length
+  const leftIdx = (idx + characters.length - 1) % characters.length
+  const rightIdx = (idx + 1) % characters.length
+
+  const mid = characters[idx]
+  const left = characters[leftIdx]
+  const right = characters[rightIdx]
+
+  const hoverLeft = pointInCircle(state.mouseX, state.mouseY, targets.left.x, targets.left.y, targets.left.r)
+  const hoverMid = pointInCircle(state.mouseX, state.mouseY, targets.mid.x, targets.mid.y, targets.mid.r)
+  const hoverRight = pointInCircle(state.mouseX, state.mouseY, targets.right.x, targets.right.y, targets.right.r)
+
+  g.fillStyle = "rgba(0,0,0,0.42)"
+  g.fillRect(0, 0, W, H)
+
+  const spotlight = g.createRadialGradient(centerX, 38, 20, centerX, 96, H * 0.82)
+  spotlight.addColorStop(0, "rgba(255,255,255,0.16)")
+  spotlight.addColorStop(0.42, "rgba(255,255,255,0.06)")
+  spotlight.addColorStop(1, "rgba(0,0,0,0.80)")
+  g.fillStyle = spotlight
+  g.fillRect(0, 0, W, H)
+
+  g.fillStyle = "rgba(255,255,255,0.94)"
+  g.font = "900 36px system-ui, Segoe UI, Arial"
+  g.textAlign = "center"
+  g.fillText("Pick a ghost", centerX, 64)
+
+  g.fillStyle = "rgba(255,255,255,0.62)"
+  g.font = "700 14px system-ui, Segoe UI, Arial"
+  g.fillText("Choose your rider", centerX, 90)
+
+  function drawHoverSparkles(cx, cy, radius) {
+    const t = state.totalT * 2.6
+
+    g.save()
+    g.globalCompositeOperation = "lighter"
+
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2 + t
+      const rr = radius + 12 + Math.sin(t * 1.6 + i) * 6
+      const sx = cx + Math.cos(a) * rr
+      const sy = cy + Math.sin(a) * rr * 0.82
+
+      const glow = g.createRadialGradient(sx, sy, 1, sx, sy, 10)
+      glow.addColorStop(0, "rgba(255,220,80,0.34)")
       glow.addColorStop(1, "rgba(0,0,0,0)")
       g.fillStyle = glow
       g.beginPath()
-      g.arc(x, y, 140 * scale, 0, Math.PI * 2)
+      g.arc(sx, sy, 10, 0, Math.PI * 2)
       g.fill()
 
-      g.fillStyle = `rgba(${c.colB[0]},${c.colB[1]},${c.colB[2]},0.78)`
+      g.fillStyle = i % 2 === 0 ? "rgba(255,220,80,0.96)" : "rgba(255,255,255,0.92)"
       g.beginPath()
-      g.arc(x, y - 16 * scale, 34 * scale, 0, Math.PI * 2)
+      g.arc(sx, sy, 1.8 + (i % 3) * 0.35, 0, Math.PI * 2)
       g.fill()
-
-      g.fillStyle = `rgba(${c.colA[0]},${c.colA[1]},${c.colA[2]},0.22)`
-      g.beginPath()
-      g.arc(x, y - 16 * scale, 88 * scale, 0, Math.PI * 2)
-      g.fill()
-
-      g.fillStyle = "rgba(255,255,255,0.10)"
-      g.fillRect(x - 52 * scale, y + 42 * scale, 104 * scale, 10 * scale)
-
-      g.fillStyle = "rgba(255,255,255,0.65)"
-      g.font = `800 ${20 * scale}px system-ui, Segoe UI, Arial`
-      g.textAlign = "center"
-      g.fillText(c.name, x, y + 84 * scale)
-      g.textAlign = "left"
-
-      g.restore()
     }
 
-    card(centerX - 260, centerY + 38, left, 0.72, 0.55)
-    card(centerX + 260, centerY + 38, right, 0.72, 0.55)
-    card(centerX, centerY + 22, mid, 0.84, 1.0)
+    g.restore()
+  }
 
-    const panelX = centerX
-    const panelY = H - 98
+  function drawSelector(cx, cy, c, scale, alpha, isCenter, isHover) {
+    g.save()
+    g.globalAlpha = alpha
 
-    g.fillStyle = "rgba(0,0,0,0.38)"
+    const press = isHover && state.mouseDown ? 0.985 : 1
+    const hoverScale = isHover ? 1.04 : 1
+    const liveScale = scale * hoverScale * press
+    const ride = selectRideLabel(c)
+
+    let ringCol = c.colB
+    if (isCenter && isHover) ringCol = [255, 220, 80]
+
+    const ringX = cx
+    const ringY = cy - 20 * liveScale
+    const ringR = 54 * liveScale
+
+    if (isCenter && isHover) {
+const halo = g.createRadialGradient(ringX, ringY, 10, ringX, ringY, ringR * 2.1)
+halo.addColorStop(0, "rgba(255,220,80,0.18)")
+halo.addColorStop(0.55, "rgba(255,220,80,0.05)")
+halo.addColorStop(1, "rgba(0,0,0,0)")
+      g.fillStyle = halo
+      g.beginPath()
+      g.arc(ringX, ringY, ringR * 2.5, 0, Math.PI * 2)
+      g.fill()
+
+      drawHoverSparkles(ringX, ringY, ringR)
+    }
+
+    g.strokeStyle = `rgba(${ringCol[0]},${ringCol[1]},${ringCol[2]},${isHover ? 0.95 : 0.42})`
+    g.lineWidth = isCenter ? 4 : 3
     g.beginPath()
-    roundRect(panelX - 270, panelY - 42, 540, 78, 18)
+    g.arc(ringX, ringY, ringR, 0, Math.PI * 2)
+    g.stroke()
+
+    g.globalAlpha = alpha * (isHover ? 0.30 : 0.16)
+    g.strokeStyle = "rgba(255,255,255,0.22)"
+    g.lineWidth = 2
+    g.beginPath()
+    g.arc(ringX, ringY, ringR + 8, 0, Math.PI * 2)
+    g.stroke()
+    g.globalAlpha = alpha
+
+    drawSelectGhostPortrait(cx, cy, c, liveScale)
+
+g.fillStyle = isCenter && isHover ? "rgba(255,220,80,0.96)" : "rgba(255,255,255,0.86)"
+g.font = `900 ${18 * liveScale}px system-ui, Segoe UI, Arial`
+g.textAlign = "center"
+g.fillText(c.name, cx, cy + 56 * liveScale)
+
+if (isCenter) {
+  const pillW = 92
+  const pillH = 20
+  const pillY = cy + 82 * liveScale
+
+      g.fillStyle = isHover ? "rgba(255,220,80,0.18)" : "rgba(255,255,255,0.08)"
+      g.beginPath()
+      roundRect(cx - pillW / 2, pillY - pillH / 2, pillW, pillH, 999)
+      g.fill()
+
+      g.strokeStyle = isHover ? "rgba(255,220,80,0.42)" : "rgba(255,255,255,0.12)"
+      g.lineWidth = 1.5
+      g.beginPath()
+      roundRect(cx - pillW / 2, pillY - pillH / 2, pillW, pillH, 999)
+      g.stroke()
+
+      g.fillStyle = isHover ? "rgba(255,220,80,0.98)" : "rgba(255,255,255,0.70)"
+      g.font = "800 11px system-ui, Segoe UI, Arial"
+      g.fillText(ride, cx, pillY + 4)
+    }
+
+    g.restore()
+  }
+
+  drawSelector(targets.left.x, centerY + 38, left, 0.72, 0.62, false, hoverLeft)
+  drawSelector(targets.right.x, centerY + 38, right, 0.72, 0.62, false, hoverRight)
+  drawSelector(targets.mid.x, centerY + 22, mid, 0.84, 1.0, true, hoverMid)
+
+  const panelX = centerX
+  const panelY = H - 96
+  const panelW = 560
+  const panelH = 92
+
+  g.fillStyle = "rgba(0,0,0,0.42)"
+  g.beginPath()
+  roundRect(panelX - panelW / 2, panelY - panelH / 2, panelW, panelH, 20)
+  g.fill()
+
+  const panelRim = g.createLinearGradient(panelX - panelW / 2, panelY - panelH / 2, panelX + panelW / 2, panelY + panelH / 2)
+  panelRim.addColorStop(0, "rgba(255,255,255,0.14)")
+  panelRim.addColorStop(1, `rgba(${mid.colB[0]},${mid.colB[1]},${mid.colB[2]},0.10)`)
+  g.strokeStyle = panelRim
+  g.lineWidth = 2
+  g.stroke()
+
+  g.globalAlpha = 0.28
+  g.strokeStyle = "rgba(255,255,255,0.18)"
+  g.beginPath()
+  roundRect(panelX - panelW / 2 + 4, panelY - panelH / 2 + 4, panelW - 8, panelH - 8, 16)
+  g.stroke()
+  g.globalAlpha = 1
+
+  function statBar(label, value, row) {
+    const panelLeft = panelX - panelW / 2
+    const panelTop = panelY - panelH / 2
+
+    const labelX = panelLeft + 34
+    const barX = labelX + 86
+    const barW = 300
+    const pctX = panelLeft + panelW - 34
+    const y = panelTop + 30 + row * 22
+
+    g.fillStyle = "rgba(255,255,255,0.78)"
+    g.font = "700 12px system-ui, Segoe UI, Arial"
+    g.textAlign = "left"
+    g.fillText(label, labelX, y)
+
+    const barY = y - 10
+    const barH = 10
+
+    g.fillStyle = "rgba(255,255,255,0.08)"
+    g.beginPath()
+    roundRect(barX, barY, barW, barH, 999)
     g.fill()
 
-    function statBar(label, value, row) {
-      const panelLeft = panelX - 270
-      const panelTop = panelY - 42
+    const fillW = Math.floor(barW * clamp(value, 0, 1))
+    const grad = g.createLinearGradient(barX, 0, barX + barW, 0)
+    grad.addColorStop(0, `rgba(${mid.colB[0]},${mid.colB[1]},${mid.colB[2]},0.60)`)
+    grad.addColorStop(1, `rgba(${mid.colA[0]},${mid.colA[1]},${mid.colA[2]},0.48)`)
 
-      const labelX = panelLeft + 34
-      const barX = labelX + 86
-      const barW = 300
-      const pctX = panelLeft + 540 - 34
-      const y = panelTop + 26 + row * 22
+    g.fillStyle = grad
+    g.beginPath()
+    roundRect(barX, barY, fillW, barH, 999)
+    g.fill()
 
-      g.fillStyle = "rgba(255,255,255,0.75)"
-      g.font = "700 12px system-ui, Segoe UI, Arial"
-      g.textAlign = "left"
-      g.fillText(label, labelX, y)
+    g.globalAlpha = 0.42
+    g.fillStyle = "rgba(255,255,255,1)"
+    g.fillRect(barX + 8, barY + 2, Math.max(0, fillW - 16), 1)
+    g.globalAlpha = 1
 
-      const barY = y - 10
-      const barH = 10
-
-      g.fillStyle = "rgba(255,255,255,0.08)"
-      g.beginPath()
-      roundRect(barX, barY, barW, barH, 999)
-      g.fill()
-
-      const fillW = Math.floor(barW * clamp(value, 0, 1))
-
-      const grad = g.createLinearGradient(barX, 0, barX + barW, 0)
-      grad.addColorStop(0, `rgba(${mid.colB[0]},${mid.colB[1]},${mid.colB[2]},0.55)`)
-      grad.addColorStop(1, `rgba(${mid.colA[0]},${mid.colA[1]},${mid.colA[2]},0.45)`)
-
-      g.fillStyle = grad
-      g.beginPath()
-      roundRect(barX, barY, fillW, barH, 999)
-      g.fill()
-
-      g.globalAlpha = 0.4
-      g.fillStyle = "rgba(255,255,255,1)"
-      g.fillRect(barX + 8, barY + 2, Math.max(0, fillW - 16), 1)
-      g.globalAlpha = 1
-
-      g.fillStyle = "rgba(255,255,255,0.75)"
-      g.textAlign = "right"
-      g.fillText(`${Math.round(value * 100)}%`, pctX, y)
-      g.textAlign = "left"
-    }
-
-    statBar("Speed", clamp(mid.speed / 1.20, 0, 1), 0)
-    statBar("Jump", clamp(mid.jump / 1.20, 0, 1), 1)
-    statBar("Drop", clamp(mid.drop / 1.20, 0, 1), 2)
-
-    g.fillStyle = "rgba(255,255,255,0.70)"
-    g.font = "700 13px system-ui, Segoe UI, Arial"
-    g.textAlign = "center"
-    g.fillText("Click a side ghost to rotate, click your chosen ghost in the centre to start", centerX, H - 18)
+    g.fillStyle = "rgba(255,255,255,0.76)"
+    g.textAlign = "right"
+    g.fillText(`${Math.round(value * 100)}%`, pctX, y)
     g.textAlign = "left"
-
-    if (state.selectFlash > 0) {
-      const a = clamp(state.selectFlash / 0.25, 0, 1)
-      g.globalAlpha = a
-
-      const col = state.selectFlashCol
-      const burst = g.createRadialGradient(centerX, centerY - 20, 10, centerX, centerY - 20, 240)
-      burst.addColorStop(0, `rgba(${col[0]},${col[1]},${col[2]},0.24)`)
-      burst.addColorStop(1, "rgba(0,0,0,0)")
-      g.fillStyle = burst
-      g.beginPath()
-      g.arc(centerX, centerY - 20, 240, 0, Math.PI * 2)
-      g.fill()
-
-      g.globalAlpha = 1
-    }
   }
+
+  statBar("Speed", clamp(mid.speed / 1.20, 0, 1), 0)
+  statBar("Jump", clamp(mid.jump / 1.20, 0, 1), 1)
+  statBar("Drop", clamp(mid.drop / 1.20, 0, 1), 2)
+
+  g.fillStyle = hoverMid ? "rgba(255,220,80,0.92)" : "rgba(255,255,255,0.70)"
+  g.font = "700 13px system-ui, Segoe UI, Arial"
+  g.textAlign = "center"
+  g.fillText("Rotate on the sides, choose in the centre", centerX, H - 18)
+  g.textAlign = "left"
+
+  if (state.selectFlash > 0) {
+    const a = clamp(state.selectFlash / 0.25, 0, 1)
+    g.globalAlpha = a
+
+    const col = state.selectFlashCol
+    const burst = g.createRadialGradient(centerX, centerY - 20, 10, centerX, centerY - 20, 240)
+    burst.addColorStop(0, `rgba(${col[0]},${col[1]},${col[2]},0.24)`)
+    burst.addColorStop(1, "rgba(0,0,0,0)")
+    g.fillStyle = burst
+    g.beginPath()
+    g.arc(centerX, centerY - 20, 240, 0, Math.PI * 2)
+    g.fill()
+
+    g.globalAlpha = 1
+  }
+}
 
   function updateModeBriefing(dt) {
     state.totalT += dt
@@ -3404,19 +3680,44 @@ const sfx = {
     ui.thankYouBreath += state.dt
     const swell = 1 + 0.02 * Math.sin(ui.thankYouBreath * 2.2)
 
-    g.save()
-    g.translate(W - 240, H - 46)
-    g.scale(swell, swell)
+  const btnW = 170
+  const btnH = 42
+  const btnX = W - 230
+  const btnY = H - 72
 
-    g.fillStyle = "rgba(255,255,255,0.92)"
-    g.font = "800 14px system-ui, Segoe UI, Arial"
-    g.fillText("Good effort", 0, 0)
+  state.restartBtn = {
+    x: btnX,
+    y: btnY,
+    w: btnW,
+    h: btnH
+  }
 
-    g.fillStyle = "rgba(255,255,255,0.68)"
-    g.font = "700 14px system-ui, Segoe UI, Arial"
-    g.fillText("click to reincarnate", 0, 22)
+  g.save()
+  g.translate(btnX + btnW * 0.5, btnY + btnH * 0.5)
+  g.scale(swell, swell)
 
-    g.restore()
+  g.fillStyle = "rgba(0,0,0,0.42)"
+  g.beginPath()
+  roundRect(-btnW / 2, -btnH / 2, btnW, btnH, 14)
+  g.fill()
+
+  g.strokeStyle = "rgba(255,255,255,0.16)"
+  g.lineWidth = 2
+  g.beginPath()
+  roundRect(-btnW / 2, -btnH / 2, btnW, btnH, 14)
+  g.stroke()
+
+  g.fillStyle = "rgba(255,255,255,0.92)"
+  g.font = "800 15px system-ui, Segoe UI, Arial"
+  g.textAlign = "center"
+  g.fillText("Play again", 0, 6)
+
+  g.restore()
+
+  g.fillStyle = "rgba(255,255,255,0.92)"
+  g.font = "800 14px system-ui, Segoe UI, Arial"
+  g.textAlign = "left"
+  g.fillText("Good effort", W - 240, H - 88)
   }
 
   // ============================================================
@@ -4213,7 +4514,17 @@ function drawEarlyHint() {
   // INPUT
   // ============================================================
   canvas.addEventListener("contextmenu", (e) => e.preventDefault())
+canvas.addEventListener("mousemove", (e) => {
+  const rect = canvas.getBoundingClientRect()
+  state.mouseX = ((e.clientX - rect.left) / rect.width) * W
+  state.mouseY = ((e.clientY - rect.top) / rect.height) * H
+})
 
+canvas.addEventListener("mouseleave", () => {
+  state.mouseX = -9999
+  state.mouseY = -9999
+  state.mouseDown = false
+})
   canvas.addEventListener("mousedown", (e) => {
     const rect = canvas.getBoundingClientRect()
     const mx = ((e.clientX - rect.left) / rect.width) * W
@@ -4221,7 +4532,7 @@ function drawEarlyHint() {
 
     if (e.button === 2) state.rightHeld = true
     if (state.startPending) return
-
+    if (e.button === 0) state.mouseDown = true
     if (state.mode === "select") {
       if (e.button === 0) clickSelect(mx, my)
       return
@@ -4275,7 +4586,7 @@ function drawEarlyHint() {
   canvas.addEventListener("mouseup", (e) => {
     if (state.mode !== "play") return
     if (e.button === 2) state.rightHeld = false
-
+    if (e.button === 0) state.mouseDown = false
     if (e.button === 0) {
       if (state.charging && player.onGround) {
         state.charging = false
@@ -4480,12 +4791,25 @@ function drawEarlyHint() {
     resetTransientInputState()
   }, { passive: false })
 
-  canvas.addEventListener("click", () => {
-    if (state.touchJustEnded) return
-    if (state.mode === "gameover" && nameModal.classList.contains("hidden")) {
-      restartToSelect()
-    }
-  })
+canvas.addEventListener("click", (e) => {
+  if (state.touchJustEnded) return
+  if (state.mode !== "gameover") return
+  if (!nameModal.classList.contains("hidden")) return
+  if (!state.restartBtn) return
+
+  const rect = canvas.getBoundingClientRect()
+  const mx = ((e.clientX - rect.left) / rect.width) * W
+  const my = ((e.clientY - rect.top) / rect.height) * H
+
+  const b = state.restartBtn
+  const hit =
+    mx >= b.x &&
+    mx <= b.x + b.w &&
+    my >= b.y &&
+    my <= b.y + b.h
+
+  if (hit) restartToSelect()
+})
 
   saveBtn.addEventListener("click", submitLeaderboardEntry)
 
