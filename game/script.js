@@ -16,6 +16,7 @@ const SUPABASE_KEY = "sb_publishable_5N68Cgko4Dbt5QKqwDbIEw_-4tU_kea"
 
   const W = canvas.width
   const H = canvas.height
+
   // ============================================================
   // AUDIO
   // ============================================================
@@ -49,23 +50,25 @@ const sfx = {
   }
 
   function playLevelSfx() {
-  playSfx(sfx.level, true)
-}
+    playSfx(sfx.level, true)
+  }
 
   function playCoinSfx() {
     playSfx(sfx.coin, true)
   }
+
   function playPopSfx() {
-  playSfx(sfx.pop, true)
-}
+    playSfx(sfx.pop, true)
+  }
 
-function playBadSfx() {
-  playSfx(sfx.bad, false)
-}
+  function playBadSfx() {
+    playSfx(sfx.bad, false)
+  }
 
-function playGameOverSfx() {
-  playSfx(sfx.gameover, false)
-}
+  function playGameOverSfx() {
+    playSfx(sfx.gameover, false)
+  }
+
   const LB_KEY = "wamsmash_runner_lb_v3"
 
   const SPEED_MUL = 1.20
@@ -355,7 +358,7 @@ function playGameOverSfx() {
     queuedChargeAt: 0,
     queuedCharging: false,
     queuedChargeMs: 0,
-    
+
     startPending: false,
     startDelayT: 0,
 
@@ -413,7 +416,9 @@ function playGameOverSfx() {
     cardGlistenT: 0,
 
     thanksT: 0,
-
+    hintT: 0,
+    briefingReady: false,
+    briefingLockT: 0,
     deathT: 0,
     deathHold: 5.0,
     dead: false,
@@ -1170,249 +1175,249 @@ function playGameOverSfx() {
     g.restore()
   }
 
-function drawPickups() {
-  function drawCoinPickup(p, pulse) {
-    const x = p.x
-    const y = p.y
-    const r = p.r
+  function drawPickups() {
+    function drawCoinPickup(p, pulse) {
+      const x = p.x
+      const y = p.y
+      const r = p.r
 
-    g.save()
-    g.globalCompositeOperation = "lighter"
+      g.save()
+      g.globalCompositeOperation = "lighter"
 
-    const glow = g.createRadialGradient(x, y, 2, x, y, r * 3.1)
-    glow.addColorStop(0, "rgba(255,220,80,0.24)")
-    glow.addColorStop(1, "rgba(0,0,0,0)")
-    g.fillStyle = glow
-    g.beginPath()
-    g.arc(x, y, r * 3.1, 0, Math.PI * 2)
-    g.fill()
+      const glow = g.createRadialGradient(x, y, 2, x, y, r * 3.1)
+      glow.addColorStop(0, "rgba(255,220,80,0.24)")
+      glow.addColorStop(1, "rgba(0,0,0,0)")
+      g.fillStyle = glow
+      g.beginPath()
+      g.arc(x, y, r * 3.1, 0, Math.PI * 2)
+      g.fill()
 
-    g.restore()
+      g.restore()
 
-    g.fillStyle = "rgba(255,220,80,0.96)"
-    g.beginPath()
-    g.arc(x, y, r, 0, Math.PI * 2)
-    g.fill()
+      g.fillStyle = "rgba(255,220,80,0.96)"
+      g.beginPath()
+      g.arc(x, y, r, 0, Math.PI * 2)
+      g.fill()
 
-    g.strokeStyle = "rgba(0,0,0,0.42)"
-    g.lineWidth = 2
-    g.beginPath()
-    g.arc(x, y, r, 0, Math.PI * 2)
-    g.stroke()
+      g.strokeStyle = "rgba(0,0,0,0.42)"
+      g.lineWidth = 2
+      g.beginPath()
+      g.arc(x, y, r, 0, Math.PI * 2)
+      g.stroke()
 
-    g.strokeStyle = "rgba(255,245,180,0.90)"
-    g.lineWidth = 3
-    g.beginPath()
-    g.arc(x, y, r * 0.56, 0, Math.PI * 2)
-    g.stroke()
+      g.strokeStyle = "rgba(255,245,180,0.90)"
+      g.lineWidth = 3
+      g.beginPath()
+      g.arc(x, y, r * 0.56, 0, Math.PI * 2)
+      g.stroke()
 
-    g.fillStyle = "rgba(255,255,255,0.34)"
-    g.fillRect(x - 2, y - r * 0.62, 4, r * 1.24)
+      g.fillStyle = "rgba(255,255,255,0.34)"
+      g.fillRect(x - 2, y - r * 0.62, 4, r * 1.24)
 
-    g.globalAlpha = 0.22 + pulse * 0.18
-    g.strokeStyle = "rgba(255,255,255,1)"
-    g.lineWidth = 2
-    g.beginPath()
-    g.arc(x - r * 0.18, y - r * 0.18, r * 0.72, -2.4, -0.2)
-    g.stroke()
-    g.globalAlpha = 1
-  }
-
-  function drawGemPickup(p, pulse) {
-    const x = p.x
-    const y = p.y
-
-    g.save()
-    g.globalCompositeOperation = "lighter"
-
-    const glow = g.createRadialGradient(x, y, 2, x, y, 42)
-    glow.addColorStop(0, "rgba(0,255,140,0.24)")
-    glow.addColorStop(1, "rgba(0,0,0,0)")
-    g.fillStyle = glow
-    g.beginPath()
-    g.arc(x, y, 42, 0, Math.PI * 2)
-    g.fill()
-
-    g.restore()
-
-    g.fillStyle = "rgba(0,255,140,0.96)"
-    g.beginPath()
-    g.moveTo(x, y - 16)
-    g.lineTo(x + 12, y - 2)
-    g.lineTo(x, y + 16)
-    g.lineTo(x - 12, y - 2)
-    g.closePath()
-    g.fill()
-
-    g.strokeStyle = "rgba(0,0,0,0.40)"
-    g.lineWidth = 2
-    g.stroke()
-
-    g.strokeStyle = "rgba(255,255,255,0.34)"
-    g.lineWidth = 1.5
-    g.beginPath()
-    g.moveTo(x, y - 16)
-    g.lineTo(x, y + 16)
-    g.moveTo(x - 12, y - 2)
-    g.lineTo(x + 12, y - 2)
-    g.moveTo(x - 12, y - 2)
-    g.lineTo(x, y)
-    g.lineTo(x + 12, y - 2)
-    g.stroke()
-
-    g.globalAlpha = 0.20 + pulse * 0.18
-    g.fillStyle = "rgba(255,255,255,1)"
-    g.beginPath()
-    g.arc(x - 3, y - 6, 2.4, 0, Math.PI * 2)
-    g.fill()
-    g.globalAlpha = 1
-  }
-
-  function drawBubblePickup(p, pulse) {
-    const x = p.x
-    const y = p.y
-    const r = p.r
-
-    circleGlow(x, y, r + 1, pulse, [80, 180, 255])
-
-    g.fillStyle = "rgba(80,180,255,0.20)"
-    g.beginPath()
-    g.arc(x, y, r + 4, 0, Math.PI * 2)
-    g.fill()
-
-    g.strokeStyle = "rgba(255,255,255,0.26)"
-    g.lineWidth = 2
-    g.beginPath()
-    g.arc(x, y, r + 2, 0, Math.PI * 2)
-    g.stroke()
-
-    g.fillStyle = "rgba(255,255,255,0.92)"
-    g.beginPath()
-    g.moveTo(x, y - 9)
-    g.lineTo(x + 8, y - 4)
-    g.lineTo(x + 6, y + 7)
-    g.lineTo(x, y + 11)
-    g.lineTo(x - 6, y + 7)
-    g.lineTo(x - 8, y - 4)
-    g.closePath()
-    g.fill()
-
-    g.fillStyle = "rgba(80,180,255,0.65)"
-    g.beginPath()
-    g.moveTo(x, y - 4)
-    g.lineTo(x + 4, y - 1)
-    g.lineTo(x + 3, y + 5)
-    g.lineTo(x, y + 7)
-    g.lineTo(x - 3, y + 5)
-    g.lineTo(x - 4, y - 1)
-    g.closePath()
-    g.fill()
-  }
-
-  function drawSpeedPickup(p, pulse) {
-    const x = p.x
-    const y = p.y
-
-    circleGlow(x, y, p.r + 1, pulse, [255, 180, 0])
-
-    g.fillStyle = "rgba(255,180,0,0.94)"
-    g.beginPath()
-    g.moveTo(x, y - 14)
-    g.lineTo(x + 12, y - 7)
-    g.lineTo(x + 12, y + 7)
-    g.lineTo(x, y + 14)
-    g.lineTo(x - 12, y + 7)
-    g.lineTo(x - 12, y - 7)
-    g.closePath()
-    g.fill()
-
-    g.strokeStyle = "rgba(0,0,0,0.42)"
-    g.lineWidth = 2
-    g.stroke()
-
-    g.strokeStyle = "rgba(255,255,255,0.34)"
-    g.lineWidth = 2
-    g.beginPath()
-    g.arc(x, y, 6, 0, Math.PI * 2)
-    g.stroke()
-
-    g.fillStyle = "rgba(255,255,255,0.92)"
-    g.beginPath()
-    g.moveTo(x, y)
-    g.lineTo(x + 4, y - 3)
-    g.lineTo(x + 1, y - 7)
-    g.closePath()
-    g.fill()
-  }
-
-  function drawSpringsPickup(p, pulse) {
-    const x = p.x
-    const y = p.y
-
-    drawSpikyPickup(x, y, 8, 20, 9)
-
-    g.save()
-    g.globalCompositeOperation = "lighter"
-
-    const glow = g.createRadialGradient(x, y, 2, x, y, 34)
-    glow.addColorStop(0, "rgba(255,60,90,0.16)")
-    glow.addColorStop(1, "rgba(0,0,0,0)")
-    g.fillStyle = glow
-    g.beginPath()
-    g.arc(x, y, 34, 0, Math.PI * 2)
-    g.fill()
-
-    g.restore()
-
-    g.fillStyle = "rgba(255,60,90,0.92)"
-    g.beginPath()
-    g.arc(x, y, 7, 0, Math.PI * 2)
-    g.fill()
-
-    g.strokeStyle = "rgba(255,255,255,0.20)"
-    g.lineWidth = 2
-    g.beginPath()
-    g.moveTo(x, y - 11)
-    g.lineTo(x, y + 3)
-    g.stroke()
-
-    g.fillStyle = "rgba(255,255,255,0.92)"
-    g.beginPath()
-    g.arc(x, y + 8, 2, 0, Math.PI * 2)
-    g.fill()
-  }
-
-  for (const p of pickups) {
-    const pulse = 0.75 + 0.25 * Math.sin(state.totalT * 6 + p.x * 0.02)
-
-    if (p.type === "coin") {
-      drawCoinPickup(p, pulse)
-      continue
+      g.globalAlpha = 0.22 + pulse * 0.18
+      g.strokeStyle = "rgba(255,255,255,1)"
+      g.lineWidth = 2
+      g.beginPath()
+      g.arc(x - r * 0.18, y - r * 0.18, r * 0.72, -2.4, -0.2)
+      g.stroke()
+      g.globalAlpha = 1
     }
 
-    if (p.type === "gem") {
-      drawGemPickup(p, pulse)
-      continue
+    function drawGemPickup(p, pulse) {
+      const x = p.x
+      const y = p.y
+
+      g.save()
+      g.globalCompositeOperation = "lighter"
+
+      const glow = g.createRadialGradient(x, y, 2, x, y, 42)
+      glow.addColorStop(0, "rgba(0,255,140,0.24)")
+      glow.addColorStop(1, "rgba(0,0,0,0)")
+      g.fillStyle = glow
+      g.beginPath()
+      g.arc(x, y, 42, 0, Math.PI * 2)
+      g.fill()
+
+      g.restore()
+
+      g.fillStyle = "rgba(0,255,140,0.96)"
+      g.beginPath()
+      g.moveTo(x, y - 16)
+      g.lineTo(x + 12, y - 2)
+      g.lineTo(x, y + 16)
+      g.lineTo(x - 12, y - 2)
+      g.closePath()
+      g.fill()
+
+      g.strokeStyle = "rgba(0,0,0,0.40)"
+      g.lineWidth = 2
+      g.stroke()
+
+      g.strokeStyle = "rgba(255,255,255,0.34)"
+      g.lineWidth = 1.5
+      g.beginPath()
+      g.moveTo(x, y - 16)
+      g.lineTo(x, y + 16)
+      g.moveTo(x - 12, y - 2)
+      g.lineTo(x + 12, y - 2)
+      g.moveTo(x - 12, y - 2)
+      g.lineTo(x, y)
+      g.lineTo(x + 12, y - 2)
+      g.stroke()
+
+      g.globalAlpha = 0.20 + pulse * 0.18
+      g.fillStyle = "rgba(255,255,255,1)"
+      g.beginPath()
+      g.arc(x - 3, y - 6, 2.4, 0, Math.PI * 2)
+      g.fill()
+      g.globalAlpha = 1
     }
 
-    if (p.type === "pwr" && p.kind === "bubble") {
-      drawBubblePickup(p, pulse)
-      continue
+    function drawBubblePickup(p, pulse) {
+      const x = p.x
+      const y = p.y
+      const r = p.r
+
+      circleGlow(x, y, r + 1, pulse, [80, 180, 255])
+
+      g.fillStyle = "rgba(80,180,255,0.20)"
+      g.beginPath()
+      g.arc(x, y, r + 4, 0, Math.PI * 2)
+      g.fill()
+
+      g.strokeStyle = "rgba(255,255,255,0.26)"
+      g.lineWidth = 2
+      g.beginPath()
+      g.arc(x, y, r + 2, 0, Math.PI * 2)
+      g.stroke()
+
+      g.fillStyle = "rgba(255,255,255,0.92)"
+      g.beginPath()
+      g.moveTo(x, y - 9)
+      g.lineTo(x + 8, y - 4)
+      g.lineTo(x + 6, y + 7)
+      g.lineTo(x, y + 11)
+      g.lineTo(x - 6, y + 7)
+      g.lineTo(x - 8, y - 4)
+      g.closePath()
+      g.fill()
+
+      g.fillStyle = "rgba(80,180,255,0.65)"
+      g.beginPath()
+      g.moveTo(x, y - 4)
+      g.lineTo(x + 4, y - 1)
+      g.lineTo(x + 3, y + 5)
+      g.lineTo(x, y + 7)
+      g.lineTo(x - 3, y + 5)
+      g.lineTo(x - 4, y - 1)
+      g.closePath()
+      g.fill()
     }
 
-    if (p.type === "pwr" && p.kind === "speed") {
-      drawSpeedPickup(p, pulse)
-      continue
+    function drawSpeedPickup(p, pulse) {
+      const x = p.x
+      const y = p.y
+
+      circleGlow(x, y, p.r + 1, pulse, [255, 180, 0])
+
+      g.fillStyle = "rgba(255,180,0,0.94)"
+      g.beginPath()
+      g.moveTo(x, y - 14)
+      g.lineTo(x + 12, y - 7)
+      g.lineTo(x + 12, y + 7)
+      g.lineTo(x, y + 14)
+      g.lineTo(x - 12, y + 7)
+      g.lineTo(x - 12, y - 7)
+      g.closePath()
+      g.fill()
+
+      g.strokeStyle = "rgba(0,0,0,0.42)"
+      g.lineWidth = 2
+      g.stroke()
+
+      g.strokeStyle = "rgba(255,255,255,0.34)"
+      g.lineWidth = 2
+      g.beginPath()
+      g.arc(x, y, 6, 0, Math.PI * 2)
+      g.stroke()
+
+      g.fillStyle = "rgba(255,255,255,0.92)"
+      g.beginPath()
+      g.moveTo(x, y)
+      g.lineTo(x + 4, y - 3)
+      g.lineTo(x + 1, y - 7)
+      g.closePath()
+      g.fill()
     }
 
-    if (p.type === "pwr" && p.kind === "springs") {
-      drawSpringsPickup(p, pulse)
-      continue
+    function drawSpringsPickup(p, pulse) {
+      const x = p.x
+      const y = p.y
+
+      drawSpikyPickup(x, y, 8, 20, 9)
+
+      g.save()
+      g.globalCompositeOperation = "lighter"
+
+      const glow = g.createRadialGradient(x, y, 2, x, y, 34)
+      glow.addColorStop(0, "rgba(255,60,90,0.16)")
+      glow.addColorStop(1, "rgba(0,0,0,0)")
+      g.fillStyle = glow
+      g.beginPath()
+      g.arc(x, y, 34, 0, Math.PI * 2)
+      g.fill()
+
+      g.restore()
+
+      g.fillStyle = "rgba(255,60,90,0.92)"
+      g.beginPath()
+      g.arc(x, y, 7, 0, Math.PI * 2)
+      g.fill()
+
+      g.strokeStyle = "rgba(255,255,255,0.20)"
+      g.lineWidth = 2
+      g.beginPath()
+      g.moveTo(x, y - 11)
+      g.lineTo(x, y + 3)
+      g.stroke()
+
+      g.fillStyle = "rgba(255,255,255,0.92)"
+      g.beginPath()
+      g.arc(x, y + 8, 2, 0, Math.PI * 2)
+      g.fill()
     }
 
-    circleGlow(p.x, p.y, p.r, pulse, pickupTint(p))
+    for (const p of pickups) {
+      const pulse = 0.75 + 0.25 * Math.sin(state.totalT * 6 + p.x * 0.02)
+
+      if (p.type === "coin") {
+        drawCoinPickup(p, pulse)
+        continue
+      }
+
+      if (p.type === "gem") {
+        drawGemPickup(p, pulse)
+        continue
+      }
+
+      if (p.type === "pwr" && p.kind === "bubble") {
+        drawBubblePickup(p, pulse)
+        continue
+      }
+
+      if (p.type === "pwr" && p.kind === "speed") {
+        drawSpeedPickup(p, pulse)
+        continue
+      }
+
+      if (p.type === "pwr" && p.kind === "springs") {
+        drawSpringsPickup(p, pulse)
+        continue
+      }
+
+      circleGlow(p.x, p.y, p.r, pulse, pickupTint(p))
+    }
   }
-}
 
   function drawSmoke() {
     for (const s of ui.smoke) {
@@ -1523,223 +1528,213 @@ function drawPickups() {
   // ============================================================
   // DRAW PLAYER
   // ============================================================
-function drawScooterGhost() {
-  const x = player.x
-  const y = player.y - player.h
+  function drawScooterGhost() {
+    const x = player.x
+    const y = player.y - player.h
 
-  const blink = player.invuln > 0 ? (Math.floor(state.totalT * 12) % 2 === 0) : true
-  if (!blink) return
+    const blink = player.invuln > 0 ? (Math.floor(state.totalT * 12) % 2 === 0) : true
+    if (!blink) return
 
-  player.capePhase += state.dt * 7.5
+    player.capePhase += state.dt * 7.5
 
-  const c = currentChar()
-  const colA = c.colA
-  const colB = c.colB
+    const c = currentChar()
+    const colA = c.colA
+    const colB = c.colB
 
-  const ride =
-    c.id === "wam" ? "bike" :
-    c.id === "laser" ? "board" :
-    "scooter"
+    const ride =
+      c.id === "wam" ? "bike" :
+      c.id === "laser" ? "board" :
+      "scooter"
 
-  const bob = Math.sin(state.totalT * 9) * 1.5
-  const lean = player.onGround ? 0 : -3
-  const bodyX = x + 36
-  const bodyY = y + 22 + bob
+    const bob = Math.sin(state.totalT * 9) * 1.5
+    const lean = player.onGround ? 0 : -3
+    const bodyX = x + 36
+    const bodyY = y + 22 + bob
 
-  let headR = 13
-  if (state.mode === "death" && state.deathPhase === 0) {
-    const p = clamp(state.deathT / 0.9, 0, 1)
-    const ease = p * p * (3 - 2 * p)
-    headR = 13 + ease * 34
-  }
+    let headR = 13
+    if (state.mode === "death" && state.deathPhase === 0) {
+      const p = clamp(state.deathT / 0.9, 0, 1)
+      const ease = p * p * (3 - 2 * p)
+      headR = 13 + ease * 34
+    }
 
-  g.save()
-  g.globalCompositeOperation = "lighter"
-  g.shadowBlur = 14
-  g.shadowColor = `rgba(${colB[0]},${colB[1]},${colB[2]},0.24)`
+    g.save()
+    g.globalCompositeOperation = "lighter"
+    g.shadowBlur = 14
+    g.shadowColor = `rgba(${colB[0]},${colB[1]},${colB[2]},0.24)`
 
-  // Ground shadow
-  g.fillStyle = "rgba(255,255,255,0.08)"
-  g.beginPath()
-  g.ellipse(x + 40, y + 60, 36, 7, 0, 0, Math.PI * 2)
-  g.fill()
-
-  // Vehicle glow
-  const rideGlow = g.createRadialGradient(x + 42, y + 46, 8, x + 42, y + 46, 60)
-  rideGlow.addColorStop(0, `rgba(${colB[0]},${colB[1]},${colB[2]},0.20)`)
-  rideGlow.addColorStop(1, "rgba(0,0,0,0)")
-  g.fillStyle = rideGlow
-  g.beginPath()
-  g.arc(x + 42, y + 46, 60, 0, Math.PI * 2)
-  g.fill()
-
-  // Wheels
-  function wheel(wx, wy, r) {
-    g.fillStyle = "rgba(255,255,255,0.80)"
+    g.fillStyle = "rgba(255,255,255,0.08)"
     g.beginPath()
-    g.arc(wx, wy, r, 0, Math.PI * 2)
+    g.ellipse(x + 40, y + 60, 36, 7, 0, 0, Math.PI * 2)
     g.fill()
 
-    g.fillStyle = "rgba(0,0,0,0.78)"
+    const rideGlow = g.createRadialGradient(x + 42, y + 46, 8, x + 42, y + 46, 60)
+    rideGlow.addColorStop(0, `rgba(${colB[0]},${colB[1]},${colB[2]},0.20)`)
+    rideGlow.addColorStop(1, "rgba(0,0,0,0)")
+    g.fillStyle = rideGlow
     g.beginPath()
-    g.arc(wx, wy, r * 0.52, 0, Math.PI * 2)
+    g.arc(x + 42, y + 46, 60, 0, Math.PI * 2)
     g.fill()
-  }
 
-  // Vehicle
-  if (ride === "scooter") {
-    wheel(x + 22, y + 60, 7)
-    wheel(x + 61, y + 60, 7)
+    function wheel(wx, wy, r) {
+      g.fillStyle = "rgba(255,255,255,0.80)"
+      g.beginPath()
+      g.arc(wx, wy, r, 0, Math.PI * 2)
+      g.fill()
 
-    g.strokeStyle = "rgba(255,255,255,0.72)"
-    g.lineWidth = 3
+      g.fillStyle = "rgba(0,0,0,0.78)"
+      g.beginPath()
+      g.arc(wx, wy, r * 0.52, 0, Math.PI * 2)
+      g.fill()
+    }
+
+    if (ride === "scooter") {
+      wheel(x + 22, y + 60, 7)
+      wheel(x + 61, y + 60, 7)
+
+      g.strokeStyle = "rgba(255,255,255,0.72)"
+      g.lineWidth = 3
+      g.beginPath()
+      g.moveTo(x + 20, y + 60)
+      g.lineTo(x + 61, y + 60)
+      g.lineTo(x + 57, y + 31)
+      g.lineTo(x + 64, y + 24)
+      g.stroke()
+
+      g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.28)`
+      g.fillRect(x + 17, y + 54, 46, 4)
+    }
+
+    if (ride === "board") {
+      wheel(x + 24, y + 60, 6)
+      wheel(x + 58, y + 60, 6)
+
+      g.strokeStyle = "rgba(255,255,255,0.70)"
+      g.lineWidth = 3
+      g.beginPath()
+      g.moveTo(x + 16, y + 56)
+      g.quadraticCurveTo(x + 40, y + 51, x + 64, y + 56)
+      g.stroke()
+
+      g.fillStyle = `rgba(${colB[0]},${colB[1]},${colB[2]},0.30)`
+      g.beginPath()
+      g.moveTo(x + 16, y + 54)
+      g.quadraticCurveTo(x + 40, y + 49, x + 64, y + 54)
+      g.lineTo(x + 64, y + 57)
+      g.quadraticCurveTo(x + 40, y + 52, x + 16, y + 57)
+      g.closePath()
+      g.fill()
+    }
+
+    if (ride === "bike") {
+      wheel(x + 18, y + 60, 10)
+      wheel(x + 62, y + 60, 10)
+
+      g.strokeStyle = "rgba(255,255,255,0.72)"
+      g.lineWidth = 3
+      g.beginPath()
+      g.moveTo(x + 18, y + 60)
+      g.lineTo(x + 37, y + 43)
+      g.lineTo(x + 48, y + 60)
+      g.lineTo(x + 18, y + 60)
+      g.moveTo(x + 37, y + 43)
+      g.lineTo(x + 56, y + 37)
+      g.lineTo(x + 62, y + 60)
+      g.moveTo(x + 52, y + 31)
+      g.lineTo(x + 59, y + 31)
+      g.moveTo(x + 34, y + 41)
+      g.lineTo(x + 30, y + 34)
+      g.stroke()
+    }
+
+    const tailWave = Math.sin(player.capePhase) * 4
+    g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.22)`
     g.beginPath()
-    g.moveTo(x + 20, y + 60)
-    g.lineTo(x + 61, y + 60)
-    g.lineTo(x + 57, y + 31)
-    g.lineTo(x + 64, y + 24)
-    g.stroke()
-
-    g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.28)`
-    g.fillRect(x + 17, y + 54, 46, 4)
-  }
-
-  if (ride === "board") {
-    wheel(x + 24, y + 60, 6)
-    wheel(x + 58, y + 60, 6)
-
-    g.strokeStyle = "rgba(255,255,255,0.70)"
-    g.lineWidth = 3
-    g.beginPath()
-    g.moveTo(x + 16, y + 56)
-    g.quadraticCurveTo(x + 40, y + 51, x + 64, y + 56)
-    g.stroke()
-
-    g.fillStyle = `rgba(${colB[0]},${colB[1]},${colB[2]},0.30)`
-    g.beginPath()
-    g.moveTo(x + 16, y + 54)
-    g.quadraticCurveTo(x + 40, y + 49, x + 64, y + 54)
-    g.lineTo(x + 64, y + 57)
-    g.quadraticCurveTo(x + 40, y + 52, x + 16, y + 57)
+    g.moveTo(bodyX - 10, bodyY + 2)
+    g.quadraticCurveTo(bodyX - 28, bodyY + 10 + tailWave, bodyX - 14, bodyY + 28)
+    g.quadraticCurveTo(bodyX - 2, bodyY + 24, bodyX + 2, bodyY + 12)
     g.closePath()
     g.fill()
-  }
 
-  if (ride === "bike") {
-    wheel(x + 18, y + 60, 10)
-    wheel(x + 62, y + 60, 10)
-
-    g.strokeStyle = "rgba(255,255,255,0.72)"
-    g.lineWidth = 3
+    g.fillStyle = `rgba(${colB[0]},${colB[1]},${colB[2]},0.88)`
     g.beginPath()
-    g.moveTo(x + 18, y + 60)
-    g.lineTo(x + 37, y + 43)
-    g.lineTo(x + 48, y + 60)
-    g.lineTo(x + 18, y + 60)
-    g.moveTo(x + 37, y + 43)
-    g.lineTo(x + 56, y + 37)
-    g.lineTo(x + 62, y + 60)
-    g.moveTo(x + 52, y + 31)
-    g.lineTo(x + 59, y + 31)
-    g.moveTo(x + 34, y + 41)
-    g.lineTo(x + 30, y + 34)
-    g.stroke()
-  }
-
-  // Ghost tail
-  const tailWave = Math.sin(player.capePhase) * 4
-  g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.22)`
-  g.beginPath()
-  g.moveTo(bodyX - 10, bodyY + 2)
-  g.quadraticCurveTo(bodyX - 28, bodyY + 10 + tailWave, bodyX - 14, bodyY + 28)
-  g.quadraticCurveTo(bodyX - 2, bodyY + 24, bodyX + 2, bodyY + 12)
-  g.closePath()
-  g.fill()
-
-  // Body
-  g.fillStyle = `rgba(${colB[0]},${colB[1]},${colB[2]},0.88)`
-  g.beginPath()
-  g.moveTo(bodyX - 13, bodyY + 2)
-  g.quadraticCurveTo(bodyX, bodyY - 8 + lean, bodyX + 13, bodyY + 2)
-  g.lineTo(bodyX + 13, bodyY + 21)
-  g.quadraticCurveTo(bodyX + 6, bodyY + 26, bodyX + 2, bodyY + 21)
-  g.quadraticCurveTo(bodyX, bodyY + 27, bodyX - 2, bodyY + 21)
-  g.quadraticCurveTo(bodyX - 7, bodyY + 26, bodyX - 13, bodyY + 21)
-  g.closePath()
-  g.fill()
-
-  g.strokeStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.48)`
-  g.lineWidth = 2
-  g.stroke()
-
-  // Arm / control hint
-  g.strokeStyle = "rgba(255,255,255,0.38)"
-  g.lineWidth = 2
-  g.beginPath()
-  if (ride === "board") {
-    g.moveTo(bodyX + 2, bodyY + 10)
-    g.lineTo(bodyX + 13, bodyY + 16)
-  } else {
-    g.moveTo(bodyX + 2, bodyY + 10)
-    g.lineTo(x + 54, y + 36)
-  }
-  g.stroke()
-
-  // Head
-  if (!(state.mode === "death" && state.deathPhase >= 1)) {
-    g.fillStyle = "rgba(240,250,255,0.96)"
-    g.beginPath()
-    g.arc(bodyX, y + 12 + bob, headR, 0, Math.PI * 2)
+    g.moveTo(bodyX - 13, bodyY + 2)
+    g.quadraticCurveTo(bodyX, bodyY - 8 + lean, bodyX + 13, bodyY + 2)
+    g.lineTo(bodyX + 13, bodyY + 21)
+    g.quadraticCurveTo(bodyX + 6, bodyY + 26, bodyX + 2, bodyY + 21)
+    g.quadraticCurveTo(bodyX, bodyY + 27, bodyX - 2, bodyY + 21)
+    g.quadraticCurveTo(bodyX - 7, bodyY + 26, bodyX - 13, bodyY + 21)
+    g.closePath()
     g.fill()
 
-    g.strokeStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.42)`
+    g.strokeStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.48)`
     g.lineWidth = 2
-    g.beginPath()
-    g.arc(bodyX, y + 12 + bob, headR, 0, Math.PI * 2)
     g.stroke()
 
-    if (!(state.mode === "death" && state.deathPhase === 0)) {
-      g.fillStyle = "rgba(0,0,0,0.68)"
-      g.fillRect(bodyX - 6, y + 9 + bob, 3, 3)
-      g.fillRect(bodyX + 3, y + 9 + bob, 3, 3)
+    g.strokeStyle = "rgba(255,255,255,0.38)"
+    g.lineWidth = 2
+    g.beginPath()
+    if (ride === "board") {
+      g.moveTo(bodyX + 2, bodyY + 10)
+      g.lineTo(bodyX + 13, bodyY + 16)
+    } else {
+      g.moveTo(bodyX + 2, bodyY + 10)
+      g.lineTo(x + 54, y + 36)
     }
-  }
+    g.stroke()
 
-  // Cap
-  g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.92)`
-  g.beginPath()
-  g.arc(bodyX, y + 8 + bob, 10, Math.PI, Math.PI * 2)
-  g.fill()
+    if (!(state.mode === "death" && state.deathPhase >= 1)) {
+      g.fillStyle = "rgba(240,250,255,0.96)"
+      g.beginPath()
+      g.arc(bodyX, y + 12 + bob, headR, 0, Math.PI * 2)
+      g.fill()
 
-  g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.92)`
-  g.fillRect(bodyX - 10, y + 7 + bob, 20, 3)
+      g.strokeStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.42)`
+      g.lineWidth = 2
+      g.beginPath()
+      g.arc(bodyX, y + 12 + bob, headR, 0, Math.PI * 2)
+      g.stroke()
 
-  g.beginPath()
-  g.moveTo(bodyX + 6, y + 9 + bob)
-  g.lineTo(bodyX + 14, y + 11 + bob)
-  g.lineTo(bodyX + 6, y + 13 + bob)
-  g.closePath()
-  g.fill()
+      if (!(state.mode === "death" && state.deathPhase === 0)) {
+        g.fillStyle = "rgba(0,0,0,0.68)"
+        g.fillRect(bodyX - 6, y + 9 + bob, 3, 3)
+        g.fillRect(bodyX + 3, y + 9 + bob, 3, 3)
+      }
+    }
 
-  // Shield
-  if (player.shield) {
-    const shield = g.createRadialGradient(bodyX, bodyY + 2, 8, bodyX, bodyY + 2, 56)
-    shield.addColorStop(0, "rgba(80,180,255,0.14)")
-    shield.addColorStop(1, "rgba(80,180,255,0)")
-    g.fillStyle = shield
+    g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.92)`
     g.beginPath()
-    g.arc(bodyX, bodyY + 2, 54, 0, Math.PI * 2)
+    g.arc(bodyX, y + 8 + bob, 10, Math.PI, Math.PI * 2)
     g.fill()
 
-    g.strokeStyle = "rgba(180,230,255,0.34)"
-    g.lineWidth = 2
-    g.beginPath()
-    g.arc(bodyX, bodyY + 2, 30, 0, Math.PI * 2)
-    g.stroke()
-  }
+    g.fillStyle = `rgba(${colA[0]},${colA[1]},${colA[2]},0.92)`
+    g.fillRect(bodyX - 10, y + 7 + bob, 20, 3)
 
-  g.restore()
-}
+    g.beginPath()
+    g.moveTo(bodyX + 6, y + 9 + bob)
+    g.lineTo(bodyX + 14, y + 11 + bob)
+    g.lineTo(bodyX + 6, y + 13 + bob)
+    g.closePath()
+    g.fill()
+
+    if (player.shield) {
+      const shield = g.createRadialGradient(bodyX, bodyY + 2, 8, bodyX, bodyY + 2, 56)
+      shield.addColorStop(0, "rgba(80,180,255,0.14)")
+      shield.addColorStop(1, "rgba(80,180,255,0)")
+      g.fillStyle = shield
+      g.beginPath()
+      g.arc(bodyX, bodyY + 2, 54, 0, Math.PI * 2)
+      g.fill()
+
+      g.strokeStyle = "rgba(180,230,255,0.34)"
+      g.lineWidth = 2
+      g.beginPath()
+      g.arc(bodyX, bodyY + 2, 30, 0, Math.PI * 2)
+      g.stroke()
+    }
+
+    g.restore()
+  }
 
   // ============================================================
   // OBSTACLE RENDERERS
@@ -2338,8 +2333,8 @@ function drawScooterGhost() {
 
     g.fillStyle = "rgba(255,255,255,0.85)"
     g.font = "12px system-ui, Segoe UI, Arial"
-    g.textAlign = "right"
-    g.fillText("© 2026 wamsmash", W - 10, H - 10)
+    g.textAlign = "center"
+    g.fillText("© 2026 wamsmash", W * 0.5, H - 10)
     g.textAlign = "left"
 
     drawLives()
@@ -2533,32 +2528,407 @@ function drawScooterGhost() {
     }
   }
 
-  function drawIntro() {
+  function updateModeBriefing(dt) {
+    state.totalT += dt
+    computeDifficulty()
+    parallax(dt, 220)
+
+    if (state.briefingLockT > 0) {
+      state.briefingLockT = Math.max(0, state.briefingLockT - dt)
+    }
+
+    if (state.briefingLockT <= 0) {
+      state.briefingReady = true
+    }
+  }
+
+  function drawBriefingScreen() {
     drawSky()
     drawParallax()
     drawPlanet()
     drawLanes()
 
+    const pulse = 0.82 + 0.18 * Math.sin(state.totalT * 4.2)
+
+    function panel(x, y, w, h) {
+      g.fillStyle = "rgba(0,0,0,0.42)"
+      g.beginPath()
+      roundRect(x, y, w, h, 22)
+      g.fill()
+
+      const rim = g.createLinearGradient(x, y, x + w, y + h)
+      rim.addColorStop(0, "rgba(255,255,255,0.14)")
+      rim.addColorStop(1, "rgba(0,229,255,0.10)")
+      g.strokeStyle = rim
+      g.lineWidth = 2
+      g.stroke()
+
+      g.globalAlpha = 0.25
+      g.strokeStyle = "rgba(255,255,255,0.16)"
+      g.beginPath()
+      roundRect(x + 4, y + 4, w - 8, h - 8, 18)
+      g.stroke()
+      g.globalAlpha = 1
+    }
+
+    function drawCoinIcon(x, y) {
+      circleGlow(x, y, 11, pulse, [255, 220, 80])
+
+      g.fillStyle = "rgba(255,220,80,0.96)"
+      g.beginPath()
+      g.arc(x, y, 11, 0, Math.PI * 2)
+      g.fill()
+
+      g.strokeStyle = "rgba(0,0,0,0.42)"
+      g.lineWidth = 2
+      g.beginPath()
+      g.arc(x, y, 11, 0, Math.PI * 2)
+      g.stroke()
+
+      g.strokeStyle = "rgba(255,245,180,0.90)"
+      g.lineWidth = 2.5
+      g.beginPath()
+      g.arc(x, y, 6.2, 0, Math.PI * 2)
+      g.stroke()
+    }
+
+    function drawGemIcon(x, y) {
+      g.save()
+      g.globalCompositeOperation = "lighter"
+
+      const glow = g.createRadialGradient(x, y, 2, x, y, 34)
+      glow.addColorStop(0, "rgba(0,255,140,0.24)")
+      glow.addColorStop(1, "rgba(0,0,0,0)")
+      g.fillStyle = glow
+      g.beginPath()
+      g.arc(x, y, 34, 0, Math.PI * 2)
+      g.fill()
+
+      g.restore()
+
+      g.fillStyle = "rgba(0,255,140,0.96)"
+      g.beginPath()
+      g.moveTo(x, y - 14)
+      g.lineTo(x + 10, y - 2)
+      g.lineTo(x, y + 14)
+      g.lineTo(x - 10, y - 2)
+      g.closePath()
+      g.fill()
+
+      g.strokeStyle = "rgba(0,0,0,0.40)"
+      g.lineWidth = 2
+      g.stroke()
+    }
+
+    function drawBubbleIcon(x, y) {
+      circleGlow(x, y, 12, pulse, [80, 180, 255])
+
+      g.fillStyle = "rgba(80,180,255,0.18)"
+      g.beginPath()
+      g.arc(x, y, 15, 0, Math.PI * 2)
+      g.fill()
+
+      g.strokeStyle = "rgba(255,255,255,0.26)"
+      g.lineWidth = 2
+      g.beginPath()
+      g.arc(x, y, 13, 0, Math.PI * 2)
+      g.stroke()
+
+      g.fillStyle = "rgba(255,255,255,0.92)"
+      g.beginPath()
+      g.moveTo(x, y - 8)
+      g.lineTo(x + 7, y - 3)
+      g.lineTo(x + 5, y + 6)
+      g.lineTo(x, y + 9)
+      g.lineTo(x - 5, y + 6)
+      g.lineTo(x - 7, y - 3)
+      g.closePath()
+      g.fill()
+    }
+
+    function drawSpeedIcon(x, y) {
+      circleGlow(x, y, 12, pulse, [255, 180, 0])
+
+      g.fillStyle = "rgba(255,180,0,0.94)"
+      g.beginPath()
+      g.moveTo(x, y - 13)
+      g.lineTo(x + 11, y - 6)
+      g.lineTo(x + 11, y + 6)
+      g.lineTo(x, y + 13)
+      g.lineTo(x - 11, y + 6)
+      g.lineTo(x - 11, y - 6)
+      g.closePath()
+      g.fill()
+
+      g.strokeStyle = "rgba(0,0,0,0.42)"
+      g.lineWidth = 2
+      g.stroke()
+    }
+
+    function drawSpringsIcon(x, y) {
+      drawSpikyPickup(x, y, 8, 18, 9)
+
+      g.save()
+      g.globalCompositeOperation = "lighter"
+      const glow = g.createRadialGradient(x, y, 2, x, y, 30)
+      glow.addColorStop(0, "rgba(255,60,90,0.16)")
+      glow.addColorStop(1, "rgba(0,0,0,0)")
+      g.fillStyle = glow
+      g.beginPath()
+      g.arc(x, y, 30, 0, Math.PI * 2)
+      g.fill()
+      g.restore()
+
+      g.fillStyle = "rgba(255,60,90,0.92)"
+      g.beginPath()
+      g.arc(x, y, 6, 0, Math.PI * 2)
+      g.fill()
+    }
+
+    g.fillStyle = "rgba(0,0,0,0.44)"
+    g.fillRect(0, 0, W, H)
+
+    g.fillStyle = "rgba(255,255,255,0.94)"
+    g.font = "900 38px system-ui, Segoe UI, Arial"
+    g.textAlign = "center"
+    g.fillText("How to survive", W * 0.5, 64)
+
+    g.fillStyle = "rgba(255,255,255,0.62)"
+    g.font = "700 14px system-ui, Segoe UI, Arial"
+    g.fillText("Read this once, then click or tap to begin", W * 0.5, 88)
+
+    const panelW = Math.min(420, W * 0.36)
+    const panelH = 282
+    const gap = 30
+    const leftX = W * 0.5 - panelW - gap * 0.5
+    const rightX = W * 0.5 + gap * 0.5
+    const panelY = 106
+
+    panel(leftX, panelY, panelW, panelH)
+    panel(rightX, panelY, panelW, panelH)
+
+    g.textAlign = "left"
+    g.fillStyle = "rgba(255,255,255,0.92)"
+    g.font = "800 18px system-ui, Segoe UI, Arial"
+    g.fillText("Pickups and warnings", leftX + 22, panelY + 30)
+
+    let rowY = panelY + 66
+
+    drawCoinIcon(leftX + 30, rowY)
+    g.fillStyle = "rgba(255,255,255,0.88)"
+    g.font = "800 14px system-ui, Segoe UI, Arial"
+    g.fillText("Coin", leftX + 58, rowY + 5)
+    g.fillStyle = "rgba(255,255,255,0.56)"
+    g.font = "700 12px system-ui, Segoe UI, Arial"
+    g.fillText("Adds score", leftX + 168, rowY + 5)
+
+    rowY += 40
+    drawGemIcon(leftX + 30, rowY)
+    g.fillStyle = "rgba(255,255,255,0.88)"
+    g.font = "800 14px system-ui, Segoe UI, Arial"
+    g.fillText("Gem", leftX + 58, rowY + 5)
+    g.fillStyle = "rgba(255,255,255,0.56)"
+    g.font = "700 12px system-ui, Segoe UI, Arial"
+    g.fillText("Raises your multiplier", leftX + 168, rowY + 5)
+
+    rowY += 40
+    drawBubbleIcon(leftX + 30, rowY)
+    g.fillStyle = "rgba(255,255,255,0.88)"
+    g.font = "800 14px system-ui, Segoe UI, Arial"
+    g.fillText("Bubble", leftX + 58, rowY + 5)
+    g.fillStyle = "rgba(255,255,255,0.56)"
+    g.font = "700 12px system-ui, Segoe UI, Arial"
+    g.fillText("Shield, saves one hit", leftX + 168, rowY + 5)
+
+    rowY += 40
+    drawSpeedIcon(leftX + 30, rowY)
+    g.fillStyle = "rgba(255,255,255,0.88)"
+    g.font = "800 14px system-ui, Segoe UI, Arial"
+    g.fillText("Pocket watch", leftX + 58, rowY + 5)
+    g.fillStyle = "rgba(255,255,255,0.56)"
+    g.font = "700 12px system-ui, Segoe UI, Arial"
+    g.fillText("Temporary speed boost", leftX + 168, rowY + 5)
+
+    rowY += 48
+    drawSpringsIcon(leftX + 30, rowY)
+    g.fillStyle = "rgba(255,255,255,0.88)"
+    g.font = "900 14px system-ui, Segoe UI, Arial"
+    g.fillText("Springs", leftX + 58, rowY + 5)
+    g.fillStyle = "rgba(255,80,90,0.92)"
+    g.font = "900 13px system-ui, Segoe UI, Arial"
+    g.fillText("= You're gonna have a bad time", leftX + 168, rowY + 5)
+
+    g.fillStyle = "rgba(255,255,255,0.92)"
+    g.font = "800 18px system-ui, Segoe UI, Arial"
+    g.fillText("Controls", rightX + 22, panelY + 30)
+
+    g.fillStyle = "rgba(255,255,255,0.72)"
+    g.font = "800 13px system-ui, Segoe UI, Arial"
+    g.fillText("Mouse", rightX + 22, panelY + 62)
+
+    g.fillStyle = "rgba(255,255,255,0.88)"
+    g.font = "800 14px system-ui, Segoe UI, Arial"
+    g.fillText("Left click, hold then release", rightX + 22, panelY + 88)
+    g.fillStyle = "rgba(255,255,255,0.56)"
+    g.font = "700 12px system-ui, Segoe UI, Arial"
+    g.fillText("Jump, short or long depending on hold time", rightX + 22, panelY + 106)
+
+    g.fillStyle = "rgba(255,255,255,0.88)"
+    g.font = "800 14px system-ui, Segoe UI, Arial"
+    g.fillText("Right click", rightX + 22, panelY + 138)
+    g.fillStyle = "rgba(255,255,255,0.56)"
+    g.font = "700 12px system-ui, Segoe UI, Arial"
+    g.fillText("Fast drop to the lower lane", rightX + 22, panelY + 156)
+
+    g.fillStyle = "rgba(255,255,255,0.72)"
+    g.font = "800 13px system-ui, Segoe UI, Arial"
+    g.fillText("Keyboard", rightX + 22, panelY + 182)
+    g.fillStyle = "rgba(255,255,255,0.88)"
+    g.font = "800 14px system-ui, Segoe UI, Arial"
+    g.fillText("Z = jump", rightX + 22, panelY + 208)
+    g.fillText("X = fast drop", rightX + 22, panelY + 232)
+
+    g.fillStyle = "rgba(255,255,255,0.56)"
+    g.font = "700 12px system-ui, Segoe UI, Arial"
+    g.fillText("Z and X mirror the mouse controls", rightX + 22, panelY + 254)
+    g.fillText("Springs are a trap, not a power up", rightX + 22, panelY + 272)
+
+    g.textAlign = "center"
+    g.fillStyle = "rgba(255,255,255,0.92)"
+    g.font = "800 15px system-ui, Segoe UI, Arial"
+    g.fillText(
+      state.briefingReady ? "Click, tap, Z or Enter to begin" : "Get ready...",
+      W * 0.5,
+      H - 28
+    )
+  }
+
+  function drawIntro() {
+    drawSky()
+    drawParallax()
+    drawPlanet()
+    drawLanes()
+    drawScooterGhost()
+    drawTopFocus()
+
     ui.introT += state.dt
 
     const t = ui.introT
-    const aIn = clamp(t / 0.35, 0, 1)
-    const aOut = clamp((1.10 - t) / 0.35, 0, 1)
+    const total = 3
+    const remaining = Math.max(0, total - t)
+    const count = Math.max(1, Math.ceil(remaining))
+    const secT = t % 1
+    const pulse = 1 + 0.10 * Math.sin(secT * Math.PI)
+    const aIn = clamp(t / 0.18, 0, 1)
+    const aOut = clamp((3.05 - t) / 0.20, 0, 1)
     const a = Math.min(aIn, aOut)
 
-    g.fillStyle = "rgba(0,0,0,0.28)"
+    const st = currentStage()
+    const c = currentChar()
+
+    const cx = W * 0.5
+    const cloudY = H * 0.24
+
+    function puff(x, y, r, alpha) {
+      const grad = g.createRadialGradient(x, y, 2, x, y, r)
+      grad.addColorStop(0, `rgba(255,255,255,${alpha})`)
+      grad.addColorStop(0.55, `rgba(210,240,255,${alpha * 0.55})`)
+      grad.addColorStop(1, "rgba(0,0,0,0)")
+      g.fillStyle = grad
+      g.beginPath()
+      g.arc(x, y, r, 0, Math.PI * 2)
+      g.fill()
+    }
+
+    g.fillStyle = "rgba(0,0,0,0.34)"
     g.fillRect(0, 0, W, H)
 
+    g.save()
+    g.globalAlpha = a
+
+    puff(cx - 72, cloudY + 10, 68 * pulse, 0.18)
+    puff(cx - 18, cloudY - 8, 76 * pulse, 0.20)
+    puff(cx + 48, cloudY + 6, 64 * pulse, 0.18)
+    puff(cx + 104, cloudY + 18, 48 * pulse, 0.14)
+
+    g.fillStyle = "rgba(0,0,0,0.26)"
+    g.beginPath()
+    roundRect(cx - 280, H * 0.42, 560, 148, 24)
+    g.fill()
+
+    const rim = g.createLinearGradient(cx - 280, H * 0.42, cx + 280, H * 0.42 + 148)
+    rim.addColorStop(0, "rgba(255,255,255,0.14)")
+    rim.addColorStop(1, `rgba(${c.colB[0]},${c.colB[1]},${c.colB[2]},0.12)`)
+    g.strokeStyle = rim
+    g.lineWidth = 2
+    g.stroke()
+
+    g.globalAlpha = a * 0.26
+    g.strokeStyle = "rgba(255,255,255,0.18)"
+    g.beginPath()
+    roundRect(cx - 276, H * 0.42 + 4, 552, 140, 20)
+    g.stroke()
     g.globalAlpha = a
 
     g.fillStyle = "rgba(255,255,255,0.92)"
-    g.font = "900 44px system-ui, Segoe UI, Arial"
+    g.font = "900 24px system-ui, Segoe UI, Arial"
     g.textAlign = "center"
-    g.fillText("WAMSMASH", W * 0.5, H * 0.42)
+    g.fillText("GET READY", cx, H * 0.39)
 
-    g.fillStyle = "rgba(255,255,255,0.65)"
-    g.font = "700 14px system-ui, Segoe UI, Arial"
-    g.fillText("Combo your mouse buttons to survive", W * 0.5, H * 0.42 + 30)
+    g.save()
+    g.translate(cx, cloudY)
+    g.scale(pulse, pulse)
+
+    g.lineWidth = 7
+    g.strokeStyle = "rgba(0,0,0,0.72)"
+    g.fillStyle = "rgba(255,255,255,0.97)"
+    g.shadowBlur = 26
+    g.shadowColor = `rgba(${c.colB[0]},${c.colB[1]},${c.colB[2]},0.28)`
+    g.font = "900 92px system-ui, Segoe UI, Arial"
+    g.textAlign = "center"
+    g.strokeText(String(count), 0, 42)
+    g.fillText(String(count), 0, 42)
+
+    g.restore()
+
+    function pill(x, y, w, label, tint) {
+      g.fillStyle = "rgba(255,255,255,0.08)"
+      g.beginPath()
+      roundRect(x, y, w, 28, 999)
+      g.fill()
+
+      g.fillStyle = `rgba(${tint[0]},${tint[1]},${tint[2]},0.92)`
+      g.beginPath()
+      g.arc(x + 14, y + 14, 5, 0, Math.PI * 2)
+      g.fill()
+
+      g.fillStyle = "rgba(255,255,255,0.88)"
+      g.font = "800 12px system-ui, Segoe UI, Arial"
+      g.textAlign = "left"
+      g.fillText(label, x + 28, y + 18)
+    }
+
+    const panelX = cx - 280
+    const panelY = H * 0.42
+
+    pill(panelX + 22, panelY + 18, 108, c.name, c.colB)
+    pill(panelX + 142, panelY + 18, 110, `LEVEL ${state.stageIdx + 1}`, [0, 255, 140])
+    pill(panelX + 264, panelY + 18, 214, String(st.name).toUpperCase(), [255, 220, 80])
+
+    g.fillStyle = "rgba(255,255,255,0.90)"
+    g.font = "900 18px system-ui, Segoe UI, Arial"
+    g.textAlign = "center"
+    g.fillText("Left click or Z to jump", cx, panelY + 76)
+
+    g.fillStyle = "rgba(255,255,255,0.64)"
+    g.font = "800 15px system-ui, Segoe UI, Arial"
+    g.fillText("Right click or X to fast drop", cx, panelY + 102)
+
+    g.fillStyle = "rgba(255,80,90,0.92)"
+    g.font = "900 14px system-ui, Segoe UI, Arial"
+    g.fillText("Springs are bad", cx, panelY + 128)
+
+    g.restore()
 
     g.textAlign = "left"
     g.globalAlpha = 1
@@ -2894,160 +3264,160 @@ function drawScooterGhost() {
     g.restore()
   }
 
-function drawGameOver() {
-  const cx = W * 0.5
-  const cy = H * 0.5
+  function drawGameOver() {
+    const cx = W * 0.5
+    const cy = H * 0.5
 
-  function drawScoreBurst(x, y, score) {
-    const pulse = 1 + 0.03 * Math.sin(ui.thankYouBreath * 3.0)
-    const outer = 60 * pulse
-    const inner = 34 * pulse
-    const spikes = 8
+    function drawScoreBurst(x, y, score) {
+      const pulse = 1 + 0.03 * Math.sin(ui.thankYouBreath * 3.0)
+      const outer = 60 * pulse
+      const inner = 34 * pulse
+      const spikes = 8
+
+      g.save()
+      g.translate(x, y)
+      g.rotate(-0.14)
+
+      g.beginPath()
+      for (let i = 0; i < spikes * 2; i++) {
+        const r = i % 2 === 0 ? outer : inner
+        const a = (i / (spikes * 2)) * Math.PI * 2 - Math.PI / 2
+        const px = Math.cos(a) * r
+        const py = Math.sin(a) * r
+        if (i === 0) g.moveTo(px, py)
+        else g.lineTo(px, py)
+      }
+      g.closePath()
+
+      g.fillStyle = "rgba(0,0,0,0.96)"
+      g.fill()
+      g.lineWidth = 6
+      g.strokeStyle = "rgba(0,0,0,1)"
+      g.stroke()
+
+      g.fillStyle = "rgba(255,220,40,1)"
+      g.fill()
+
+      g.fillStyle = "rgba(255,120,120,0.18)"
+      for (let i = 0; i < 14; i++) {
+        const dx = -24 + (i % 5) * 12
+        const dy = -18 + Math.floor(i / 5) * 12
+        g.beginPath()
+        g.arc(dx, dy, 2.2, 0, Math.PI * 2)
+        g.fill()
+      }
+
+      g.fillStyle = "rgba(0,0,0,0.82)"
+      g.font = "900 11px system-ui, Segoe UI, Arial"
+      g.textAlign = "center"
+      g.fillText("SCORE", 0, -14)
+
+      g.lineWidth = 4
+      g.strokeStyle = "rgba(0,0,0,1)"
+      g.font = "900 30px system-ui, Segoe UI, Arial"
+      g.strokeText(String(score), 0, 18)
+
+      g.fillStyle = "rgba(255,40,40,1)"
+      g.fillText(String(score), 0, 18)
+
+      g.restore()
+    }
+
+    g.fillStyle = "rgba(0,0,0,0.68)"
+    g.fillRect(0, 0, W, H)
+
+    g.fillStyle = "rgba(255,255,255,0.94)"
+    g.font = "900 64px system-ui, Segoe UI, Arial"
+    g.textAlign = "center"
+    g.fillText("GAME OVER", cx, cy - 108)
+
+    g.fillStyle = "rgba(255,255,255,0.58)"
+    g.font = "700 15px system-ui, Segoe UI, Arial"
+    g.fillText("Run summary", cx, cy - 78)
+
+    const panelX = cx + 72
+    const panelY = cy - 8
+    const panelW = 330
+    const panelH = 174
 
     g.save()
-    g.translate(x, y)
-    g.rotate(-0.14)
 
+    g.fillStyle = "rgba(0,0,0,0.40)"
     g.beginPath()
-    for (let i = 0; i < spikes * 2; i++) {
-      const r = i % 2 === 0 ? outer : inner
-      const a = (i / (spikes * 2)) * Math.PI * 2 - Math.PI / 2
-      const px = Math.cos(a) * r
-      const py = Math.sin(a) * r
-      if (i === 0) g.moveTo(px, py)
-      else g.lineTo(px, py)
-    }
-    g.closePath()
-
-    g.fillStyle = "rgba(0,0,0,0.96)"
+    roundRect(panelX - panelW / 2, panelY - panelH / 2, panelW, panelH, 22)
     g.fill()
-    g.lineWidth = 6
-    g.strokeStyle = "rgba(0,0,0,1)"
+
+    const rim = g.createLinearGradient(panelX - panelW / 2, panelY - panelH / 2, panelX + panelW / 2, panelY + panelH / 2)
+    rim.addColorStop(0, "rgba(255,255,255,0.14)")
+    rim.addColorStop(1, "rgba(0,229,255,0.10)")
+    g.strokeStyle = rim
+    g.lineWidth = 2
     g.stroke()
 
-    g.fillStyle = "rgba(255,220,40,1)"
-    g.fill()
+    g.globalAlpha = 0.28
+    g.strokeStyle = "rgba(255,255,255,0.20)"
+    g.beginPath()
+    roundRect(panelX - panelW / 2 + 4, panelY - panelH / 2 + 4, panelW - 8, panelH - 8, 18)
+    g.stroke()
+    g.globalAlpha = 1
 
-    g.fillStyle = "rgba(255,120,120,0.18)"
-    for (let i = 0; i < 14; i++) {
-      const dx = -24 + (i % 5) * 12
-      const dy = -18 + Math.floor(i / 5) * 12
+    drawScoreBurst(panelX + 96, panelY - 28, state.score)
+
+    g.textAlign = "left"
+    g.font = "800 16px system-ui, Segoe UI, Arial"
+    g.fillStyle = "rgba(0,255,140,0.92)"
+    g.fillText(`Gems ${state.gems} / 6`, panelX - 134, panelY - 10)
+    g.fillText(`Mult x${state.gemMult}`, panelX - 134, panelY + 18)
+    g.fillText(`Final ${state.score}`, panelX - 134, panelY + 46)
+
+    g.fillStyle = "rgba(255,255,255,0.54)"
+    g.font = "700 12px system-ui, Segoe UI, Arial"
+    g.fillText("Multiplier rule", panelX - 134, panelY + 80)
+    g.fillText("1 gem = x2", panelX - 134, panelY + 100)
+    g.fillText("2 gems = x3", panelX - 134, panelY + 118)
+    g.fillText("3 gems = x4", panelX - 134, panelY + 136)
+    g.fillText("6 gems = x7", panelX - 134, panelY + 154)
+
+    const gemRowX = panelX + 8
+    const gemRowY = panelY + 108
+    for (let i = 0; i < state.gems; i++) {
+      g.fillStyle = "rgba(0,255,140,0.76)"
       g.beginPath()
-      g.arc(dx, dy, 2.2, 0, Math.PI * 2)
+      g.moveTo(gemRowX + i * 24, gemRowY - 10)
+      g.lineTo(gemRowX + 8 + i * 24, gemRowY)
+      g.lineTo(gemRowX + i * 24, gemRowY + 10)
+      g.lineTo(gemRowX - 8 + i * 24, gemRowY)
+      g.closePath()
+      g.fill()
+
+      g.fillStyle = "rgba(255,255,255,0.42)"
+      g.beginPath()
+      g.arc(gemRowX - 2 + i * 24, gemRowY - 4, 2.2, 0, Math.PI * 2)
       g.fill()
     }
 
-    g.fillStyle = "rgba(0,0,0,0.82)"
-    g.font = "900 11px system-ui, Segoe UI, Arial"
-    g.textAlign = "center"
-    g.fillText("SCORE", 0, -14)
+    g.restore()
 
-    g.lineWidth = 4
-    g.strokeStyle = "rgba(0,0,0,1)"
-    g.font = "900 30px system-ui, Segoe UI, Arial"
-    g.strokeText(String(score), 0, 18)
+    g.textAlign = "left"
+    drawLeaderboard(64, 64)
 
-    g.fillStyle = "rgba(255,40,40,1)"
-    g.fillText(String(score), 0, 18)
+    ui.thankYouBreath += state.dt
+    const swell = 1 + 0.02 * Math.sin(ui.thankYouBreath * 2.2)
+
+    g.save()
+    g.translate(W - 240, H - 46)
+    g.scale(swell, swell)
+
+    g.fillStyle = "rgba(255,255,255,0.92)"
+    g.font = "800 14px system-ui, Segoe UI, Arial"
+    g.fillText("Good effort", 0, 0)
+
+    g.fillStyle = "rgba(255,255,255,0.68)"
+    g.font = "700 14px system-ui, Segoe UI, Arial"
+    g.fillText("click to reincarnate", 0, 22)
 
     g.restore()
   }
-
-  g.fillStyle = "rgba(0,0,0,0.68)"
-  g.fillRect(0, 0, W, H)
-
-  g.fillStyle = "rgba(255,255,255,0.94)"
-  g.font = "900 64px system-ui, Segoe UI, Arial"
-  g.textAlign = "center"
-  g.fillText("GAME OVER", cx, cy - 108)
-
-  g.fillStyle = "rgba(255,255,255,0.58)"
-  g.font = "700 15px system-ui, Segoe UI, Arial"
-  g.fillText("Run summary", cx, cy - 78)
-
-  const panelX = cx + 72
-  const panelY = cy - 8
-  const panelW = 330
-  const panelH = 174
-
-  g.save()
-
-  g.fillStyle = "rgba(0,0,0,0.40)"
-  g.beginPath()
-  roundRect(panelX - panelW / 2, panelY - panelH / 2, panelW, panelH, 22)
-  g.fill()
-
-  const rim = g.createLinearGradient(panelX - panelW / 2, panelY - panelH / 2, panelX + panelW / 2, panelY + panelH / 2)
-  rim.addColorStop(0, "rgba(255,255,255,0.14)")
-  rim.addColorStop(1, "rgba(0,229,255,0.10)")
-  g.strokeStyle = rim
-  g.lineWidth = 2
-  g.stroke()
-
-  g.globalAlpha = 0.28
-  g.strokeStyle = "rgba(255,255,255,0.20)"
-  g.beginPath()
-  roundRect(panelX - panelW / 2 + 4, panelY - panelH / 2 + 4, panelW - 8, panelH - 8, 18)
-  g.stroke()
-  g.globalAlpha = 1
-
-  drawScoreBurst(panelX + 96, panelY - 28, state.score)
-
-  g.textAlign = "left"
-  g.font = "800 16px system-ui, Segoe UI, Arial"
-  g.fillStyle = "rgba(0,255,140,0.92)"
-  g.fillText(`Gems ${state.gems} / 6`, panelX - 134, panelY - 10)
-  g.fillText(`Mult x${state.gemMult}`, panelX - 134, panelY + 18)
-  g.fillText(`Final ${state.score}`, panelX - 134, panelY + 46)
-
-  g.fillStyle = "rgba(255,255,255,0.54)"
-  g.font = "700 12px system-ui, Segoe UI, Arial"
-  g.fillText("Multiplier rule", panelX - 134, panelY + 80)
-  g.fillText("1 gem = x2", panelX - 134, panelY + 100)
-  g.fillText("2 gems = x3", panelX - 134, panelY + 118)
-  g.fillText("3 gems = x4", panelX - 134, panelY + 136)
-  g.fillText("6 gems = x7", panelX - 134, panelY + 154)
-
-  const gemRowX = panelX + 8
-  const gemRowY = panelY + 108
-  for (let i = 0; i < state.gems; i++) {
-    g.fillStyle = "rgba(0,255,140,0.76)"
-    g.beginPath()
-    g.moveTo(gemRowX + i * 24, gemRowY - 10)
-    g.lineTo(gemRowX + 8 + i * 24, gemRowY)
-    g.lineTo(gemRowX + i * 24, gemRowY + 10)
-    g.lineTo(gemRowX - 8 + i * 24, gemRowY)
-    g.closePath()
-    g.fill()
-
-    g.fillStyle = "rgba(255,255,255,0.42)"
-    g.beginPath()
-    g.arc(gemRowX - 2 + i * 24, gemRowY - 4, 2.2, 0, Math.PI * 2)
-    g.fill()
-  }
-
-  g.restore()
-
-  g.textAlign = "left"
-  drawLeaderboard(64, 64)
-
-  ui.thankYouBreath += state.dt
-  const swell = 1 + 0.02 * Math.sin(ui.thankYouBreath * 2.2)
-
-  g.save()
-  g.translate(W - 240, H - 46)
-  g.scale(swell, swell)
-
-  g.fillStyle = "rgba(255,255,255,0.92)"
-  g.font = "800 14px system-ui, Segoe UI, Arial"
-  g.fillText("Good effort", 0, 0)
-
-  g.fillStyle = "rgba(255,255,255,0.68)"
-  g.font = "700 14px system-ui, Segoe UI, Arial"
-  g.fillText("click to reincarnate", 0, 22)
-
-  g.restore()
-}
 
   // ============================================================
   // GAME STATE HELPERS
@@ -3064,7 +3434,6 @@ function drawGameOver() {
     state.touchId = null
     state.touchDropFired = false
     state.touchJustEnded = false
-    
   }
 
   function resetFxBuffers() {
@@ -3083,19 +3452,19 @@ function drawGameOver() {
     spawnSparks(hitX, hitY, [255, 255, 255], 24)
     spawnSparks(hitX, hitY, [0, 229, 255], 18)
 
-if (state.lives <= 0) {
-  playGameOverSfx()
-  player.explodeT = 1.2
-  state.mode = "death"
-  state.running = false
-  state.deathPhase = 0
-  state.deathT = 0
-  state.dead = true
-  state.deathHold = 5.0
-  state.deathX = hitX
-  state.deathY = hitY
-  return
-}
+    if (state.lives <= 0) {
+      playGameOverSfx()
+      player.explodeT = 1.2
+      state.mode = "death"
+      state.running = false
+      state.deathPhase = 0
+      state.deathT = 0
+      state.dead = true
+      state.deathHold = 5.0
+      state.deathX = hitX
+      state.deathY = hitY
+      return
+    }
 
     player.invuln = 1.0
     player.shield = false
@@ -3110,9 +3479,11 @@ if (state.lives <= 0) {
 
     applyCharacterStats()
 
-    state.mode = "intro"
+    state.mode = "briefing"
     ui.introT = 0
     state.running = true
+    state.briefingReady = false
+    state.briefingLockT = 0.9
 
     state.totalT = 0
     state.stageT = 0
@@ -3141,6 +3512,7 @@ if (state.lives <= 0) {
     state.completionBonusGranted = false
 
     state.thanksT = 0
+    state.hintT = 0
     state.dead = false
     state.deathT = 0
     state.deathX = 0
@@ -3164,7 +3536,7 @@ if (state.lives <= 0) {
     state.planCursor = { coin: 0, obs: 0, pwr: 0, extra: 0 }
   }
 
-    function moveToStage(idx) {
+  function moveToStage(idx) {
     state.stageIdx = idx
     state.stageT = 0
 
@@ -3220,6 +3592,9 @@ if (state.lives <= 0) {
     state.lives = 3
     state.completedRun = false
     state.completionBonusGranted = false
+    state.hintT = 0
+    state.briefingReady = false
+    state.briefingLockT = 0
 
     state.dead = false
     state.deathT = 0
@@ -3314,26 +3689,27 @@ if (state.lives <= 0) {
   }
 
   function updateModeIntro(dt) {
-  state.totalT += dt
-  computeDifficulty()
-  parallax(dt, 240)
+    state.totalT += dt
+    computeDifficulty()
+    parallax(dt, 240)
 
-  if (ui.introT >= 1.10) {
-    playLevelSfx()
-    state.mode = "play"
+    if (ui.introT >= 3.20) {
+      playLevelSfx()
+      state.mode = "play"
+      state.hintT = 8
+    }
   }
-}
 
-function updateModeLegend(dt) {
-  state.thanksT += dt
-  state.totalT += dt
+  function updateModeLegend(dt) {
+    state.thanksT += dt
+    state.totalT += dt
 
-  if (state.thanksT > 2.0) {
-    state.mode = "gameover"
-    state.running = false
-    maybePromptForLeaderboard(state.score)
+    if (state.thanksT > 2.0) {
+      state.mode = "gameover"
+      state.running = false
+      maybePromptForLeaderboard(state.score)
+    }
   }
-}
 
   function updateModeGameover(dt) {
     state.lbT += dt
@@ -3423,54 +3799,55 @@ function updateModeLegend(dt) {
     updateWorldObstacles(dt, spd)
     updateWorldPickups(dt, spd)
   }
-function updatePlayer(dt) {
-  player.vy += 1800 * dt
-  player.y += player.vy * dt
 
-  if (!player.onGround && state.rightHeld) {
-    player.landLane = "bot"
-    const dropAcc = 3800 * (player.dropSpeedMul || 1)
-    if (player.vy < 2200) player.vy += dropAcc * dt
-  }
+  function updatePlayer(dt) {
+    player.vy += 1800 * dt
+    player.y += player.vy * dt
 
-  if (player.vy >= 0) {
-    const ground = laneY(player.landLane)
+    if (!player.onGround && state.rightHeld) {
+      player.landLane = "bot"
+      const dropAcc = 3800 * (player.dropSpeedMul || 1)
+      if (player.vy < 2200) player.vy += dropAcc * dt
+    }
 
-    if (player.y >= ground) {
-      player.y = ground
-      player.vy = 0
-      player.onGround = true
-      player.lane = player.landLane
+    if (player.vy >= 0) {
+      const ground = laneY(player.landLane)
 
-      if (performance.now() < state.springsUntil) {
-        springBounce()
-      } else if (state.jumpQueued) {
-        if (state.queuedCharging) {
-          state.charging = true
-          state.chargeAt = state.queuedChargeAt || performance.now()
-        } else {
-          const held = state.queuedChargeMs || 0
-          state.charging = false
-          resolveJump(held, false)
+      if (player.y >= ground) {
+        player.y = ground
+        player.vy = 0
+        player.onGround = true
+        player.lane = player.landLane
+
+        if (performance.now() < state.springsUntil) {
+          springBounce()
+        } else if (state.jumpQueued) {
+          if (state.queuedCharging) {
+            state.charging = true
+            state.chargeAt = state.queuedChargeAt || performance.now()
+          } else {
+            const held = state.queuedChargeMs || 0
+            state.charging = false
+            resolveJump(held, false)
+          }
+
+          state.jumpQueued = false
+          state.queuedCharging = false
+          state.queuedChargeAt = 0
+          state.queuedChargeMs = 0
+          state.dropArmed = false
         }
-
-        state.jumpQueued = false
-        state.queuedCharging = false
-        state.queuedChargeAt = 0
-        state.queuedChargeMs = 0
-        state.dropArmed = false
       }
     }
-  }
 
-  if (player.y > lanes.botY) {
-    player.y = lanes.botY
-    player.vy = 0
-    player.onGround = true
-    player.lane = "bot"
-    player.landLane = "bot"
+    if (player.y > lanes.botY) {
+      player.y = lanes.botY
+      player.vy = 0
+      player.onGround = true
+      player.lane = "bot"
+      player.landLane = "bot"
+    }
   }
-}
 
   function updateScoring(dt) {
     state.baseScore += Math.floor(18 * dt * (1 + state.difficulty))
@@ -3554,52 +3931,56 @@ function updatePlayer(dt) {
 
       pickups.splice(i, 1)
 
-          if (p.type === "coin") {
-      state.baseScore += Math.floor(60 * (1 + state.difficulty))
-      addFloatText("+COIN", p.x, p.y - 10, "green")
-      addBankCoin(p.x, p.y, [0, 229, 255])
-      playCoinSfx()
-      continue
-    }
+      if (p.type === "coin") {
+        state.baseScore += Math.floor(60 * (1 + state.difficulty))
+        addFloatText("+COIN", p.x, p.y - 10, "green")
+        addBankCoin(p.x, p.y, [0, 229, 255])
+        playCoinSfx()
+        continue
+      }
 
       if (p.type === "gem") {
-      state.gems += 1
-      state.gemMult = 1 + state.gems
-      addFloatText("GEM", p.x, p.y - 10, "green")
-      addBankCoin(p.x, p.y, [0, 255, 140])
-      playPopSfx()
-      continue
+        state.gems += 1
+        state.gemMult = 1 + state.gems
+        addFloatText("GEM", p.x, p.y - 10, "green")
+        addBankCoin(p.x, p.y, [0, 255, 140])
+        playPopSfx()
+        continue
       }
 
       if (p.type === "pwr") {
-  addBankCoin(p.x, p.y, powerupColor(p.kind))
+        addBankCoin(p.x, p.y, powerupColor(p.kind))
 
-  if (p.kind === "bubble") {
-    playPopSfx()
-    player.shield = true
-    addFloatText("BUBBLE SHIELD", p.x, p.y - 10, "blue")
-    continue
-  }
+        if (p.kind === "bubble") {
+          playPopSfx()
+          player.shield = true
+          addFloatText("BUBBLE SHIELD", p.x, p.y - 10, "blue")
+          continue
+        }
 
-  if (p.kind === "speed") {
-    playPopSfx()
-    state.speedBoostUntil = performance.now() + 10000
-    addFloatText("POCKET WATCH", p.x, p.y - 10, "gold")
-    continue
-  }
+        if (p.kind === "speed") {
+          playPopSfx()
+          state.speedBoostUntil = performance.now() + 10000
+          addFloatText("POCKET WATCH", p.x, p.y - 10, "gold")
+          continue
+        }
 
-  if (p.kind === "springs") {
-    playBadSfx()
-    state.springsUntil = performance.now() + 3000
-    addFloatText("SPRINGS", p.x, p.y - 10, "green")
-    continue
-  }
-}
+        if (p.kind === "springs") {
+          playBadSfx()
+          state.springsUntil = performance.now() + 3000
+          addFloatText("SPRINGS", p.x, p.y - 10, "green")
+          continue
+        }
+      }
     }
   }
 
   function updatePlay(dt) {
     computeDifficulty()
+
+    if (state.hintT > 0) {
+      state.hintT = Math.max(0, state.hintT - dt)
+    }
 
     if (player.invuln > 0) {
       player.invuln = Math.max(0, player.invuln - dt)
@@ -3623,6 +4004,11 @@ function updatePlayer(dt) {
 
     if (state.mode === "select") {
       updateModeSelect(dt)
+      return
+    }
+
+    if (state.mode === "briefing") {
+      updateModeBriefing(dt)
       return
     }
 
@@ -3654,6 +4040,61 @@ function updatePlayer(dt) {
   // ============================================================
   // RENDER
   // ============================================================
+function drawEarlyHint() {
+  if (state.hintT <= 0) return
+
+  const total = 8
+  const seg = total / 3
+  const elapsed = total - state.hintT
+  const band = Math.min(2, Math.floor(elapsed / seg))
+  const localT = elapsed % seg
+
+  const fadeIn = clamp(localT / 0.20, 0, 1)
+  const fadeOut = clamp((seg - localT) / 0.28, 0, 1)
+  const a = Math.min(fadeIn, fadeOut, clamp(state.hintT / 0.20, 0, 1))
+
+  const msgs = [
+    "Hold for higher jump",
+    "Right click or X to drop",
+    "Springs are bad"
+  ]
+
+  const x = W * 0.64
+  const y = H * 0.22
+  const w = 340
+  const h = 42
+
+  g.save()
+  g.globalAlpha = a
+
+  const glow = g.createRadialGradient(x, y, 6, x, y, 140)
+  glow.addColorStop(0, "rgba(0,229,255,0.12)")
+  glow.addColorStop(1, "rgba(0,0,0,0)")
+  g.fillStyle = glow
+  g.beginPath()
+  g.arc(x, y, 140, 0, Math.PI * 2)
+  g.fill()
+
+  g.fillStyle = "rgba(0,0,0,0.42)"
+  g.beginPath()
+  roundRect(x - w / 2, y - h / 2, w, h, 16)
+  g.fill()
+
+  g.strokeStyle = "rgba(255,255,255,0.14)"
+  g.lineWidth = 2
+  g.beginPath()
+  roundRect(x - w / 2, y - h / 2, w, h, 16)
+  g.stroke()
+
+  g.fillStyle = band === 2 ? "rgba(255,80,90,0.96)" : "rgba(255,255,255,0.92)"
+  g.font = "800 18px system-ui, Segoe UI, Arial"
+  g.textAlign = "center"
+  g.fillText(msgs[band], x, y + 6)
+
+  g.textAlign = "left"
+  g.restore()
+}
+
   function drawPlay() {
     drawSky()
     drawParallax()
@@ -3670,6 +4111,7 @@ function updatePlayer(dt) {
     drawTopFocus()
     drawBankCoins()
     drawUI()
+    drawEarlyHint()
     drawFloatTexts()
 
     if (state.mode === "legend") drawCompletionLegend()
@@ -3678,6 +4120,11 @@ function updatePlayer(dt) {
   function draw() {
     if (state.mode === "select") {
       drawSelectScreen()
+      return
+    }
+
+    if (state.mode === "briefing") {
+      drawBriefingScreen()
       return
     }
 
@@ -3717,7 +4164,7 @@ function updatePlayer(dt) {
       state.selectFlashCol = c.colB
       state.cardGlistenT = 1.0
       spawnSparks(centerX, centerY, c.colB, 28)
-      
+
       sfx.coin.load()
       sfx.pop.load()
       sfx.bad.load()
@@ -3780,32 +4227,40 @@ function updatePlayer(dt) {
       return
     }
 
+    if (state.mode === "briefing") {
+      if (e.button === 0 && state.briefingReady) {
+        ui.introT = 0
+        state.mode = "intro"
+      }
+      return
+    }
+
     if (state.mode === "gameover") return
     if (state.mode === "intro") return
     if (state.mode !== "play") return
 
     if (e.button === 0) {
-  state.dropArmed = false
+      state.dropArmed = false
 
-  if (player.onGround) {
-    state.charging = true
-    state.jumpQueued = false
-    state.queuedChargeAt = 0
-    state.queuedCharging = false
-    state.queuedChargeMs = 0
-    state.chargeAt = performance.now()
-    return
-  }
+      if (player.onGround) {
+        state.charging = true
+        state.jumpQueued = false
+        state.queuedChargeAt = 0
+        state.queuedCharging = false
+        state.queuedChargeMs = 0
+        state.chargeAt = performance.now()
+        return
+      }
 
-  if (!state.jumpQueued) {
-  state.jumpQueued = true
-  state.queuedCharging = true
-  state.queuedChargeAt = performance.now()
-  state.queuedChargeMs = 0
-}
+      if (!state.jumpQueued) {
+        state.jumpQueued = true
+        state.queuedCharging = true
+        state.queuedChargeAt = performance.now()
+        state.queuedChargeMs = 0
+      }
 
-  return
-}
+      return
+    }
 
     if (e.button === 2) {
       if (state.charging && player.onGround) {
@@ -3838,80 +4293,87 @@ function updatePlayer(dt) {
     }
   })
 
-document.addEventListener("keydown", (e) => {
-  if (e.repeat) return
+  document.addEventListener("keydown", (e) => {
+    if (e.repeat) return
 
-  const key = e.key.toLowerCase()
+    const key = e.key.toLowerCase()
 
-  if (key === "x") state.rightHeld = true
-  if (state.startPending) return
+    if (key === "x") state.rightHeld = true
+    if (state.startPending) return
 
-  if (state.mode === "gameover") return
-  if (state.mode === "intro") return
-  if (state.mode !== "play") return
-
-  if (key === "x") {
-    if (state.charging && player.onGround) {
-      state.dropArmed = true
-      state.charging = false
-      resolveJump(120, true)
-      state.dropArmed = false
-    }
-    return
-  }
-
-  if (key === "z") {
-    state.dropArmed = false
-
-    if (player.onGround) {
-      state.charging = true
-      state.jumpQueued = false
-      state.queuedChargeAt = 0
-      state.queuedCharging = false
-      state.queuedChargeMs = 0
-      state.chargeAt = performance.now()
+    if (state.mode === "briefing") {
+      if ((key === "z" || key === "enter") && state.briefingReady) {
+        ui.introT = 0
+        state.mode = "intro"
+      }
       return
     }
 
-    if (!state.jumpQueued) {
-      state.jumpQueued = true
-      state.queuedCharging = true
-      state.queuedChargeAt = performance.now()
-      state.queuedChargeMs = 0
-    }
-  }
-})
+    if (state.mode === "gameover") return
+    if (state.mode === "intro") return
+    if (state.mode !== "play") return
 
-document.addEventListener("keyup", (e) => {
-  const key = e.key.toLowerCase()
-
-  if (state.mode !== "play") {
-    if (key === "x") state.rightHeld = false
-    return
-  }
-
-  if (key === "x") {
-    state.rightHeld = false
-    return
-  }
-
-  if (key === "z") {
-    if (state.charging && player.onGround) {
-      state.charging = false
-      const held = performance.now() - state.chargeAt
-      resolveJump(held, false)
-      state.dropArmed = false
+    if (key === "x") {
+      if (state.charging && player.onGround) {
+        state.dropArmed = true
+        state.charging = false
+        resolveJump(120, true)
+        state.dropArmed = false
+      }
       return
     }
 
-    if (state.jumpQueued && state.queuedCharging) {
-      state.queuedCharging = false
-      state.queuedChargeMs = performance.now() - state.queuedChargeAt
-    }
-  }
-})
+    if (key === "z") {
+      state.dropArmed = false
 
-  
+      if (player.onGround) {
+        state.charging = true
+        state.jumpQueued = false
+        state.queuedChargeAt = 0
+        state.queuedCharging = false
+        state.queuedChargeMs = 0
+        state.chargeAt = performance.now()
+        return
+      }
+
+      if (!state.jumpQueued) {
+        state.jumpQueued = true
+        state.queuedCharging = true
+        state.queuedChargeAt = performance.now()
+        state.queuedChargeMs = 0
+      }
+    }
+  })
+
+  document.addEventListener("keyup", (e) => {
+    const key = e.key.toLowerCase()
+
+    if (state.mode !== "play") {
+      if (key === "x") state.rightHeld = false
+      return
+    }
+
+    if (key === "x") {
+      state.rightHeld = false
+      return
+    }
+
+    if (key === "z") {
+      if (state.charging && player.onGround) {
+        state.charging = false
+        const held = performance.now() - state.chargeAt
+        resolveJump(held, false)
+        state.dropArmed = false
+        return
+      }
+
+      if (state.jumpQueued && state.queuedCharging) {
+        state.queuedCharging = false
+        state.queuedChargeMs = performance.now() - state.queuedChargeAt
+      }
+    }
+  })
+
   canvas.style.touchAction = "none"
 
   canvas.addEventListener("touchstart", (e) => {
@@ -3932,6 +4394,14 @@ document.addEventListener("keyup", (e) => {
 
     if (state.mode === "select") {
       clickSelect(mx, my)
+      return
+    }
+
+    if (state.mode === "briefing") {
+      if (state.briefingReady) {
+        ui.introT = 0
+        state.mode = "intro"
+      }
       return
     }
 
@@ -4028,20 +4498,19 @@ document.addEventListener("keyup", (e) => {
   // ============================================================
   // INIT
   // ============================================================
-async function init() {
-  applyCharacterStats()
-  state.spawnPlan = buildSpawnPlan(0)
-  state.planCursor = { coin: 0, obs: 0, pwr: 0, extra: 0 }
+  async function init() {
+    applyCharacterStats()
+    state.spawnPlan = buildSpawnPlan(0)
+    state.planCursor = { coin: 0, obs: 0, pwr: 0, extra: 0 }
 
- 
-  sfx.coin.load()
-  sfx.pop.load()
-  sfx.bad.load()
-  sfx.gameover.load()
+    sfx.coin.load()
+    sfx.pop.load()
+    sfx.bad.load()
+    sfx.gameover.load()
 
-  await getLeaderboard()
-  requestAnimationFrame(tick)
-}
+    await getLeaderboard()
+    requestAnimationFrame(tick)
+  }
 
   init()
 })()
