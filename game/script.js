@@ -4453,53 +4453,45 @@ function drawEarlyHint() {
   // ============================================================
   // SELECT SCREEN INPUT
   // ============================================================
-  function clickSelect(mx, my) {
-    const centerX = W * 0.5
-    const centerY = H * 0.42
+function clickSelect(mx, my) {
+  const targets = getSelectTargets()
+  const idx = state.selectedCharIdx % characters.length
 
-    const idx = state.selectedCharIdx % characters.length
-    const leftX = centerX - 260
-    const rightX = centerX + 260
+  if (pointInCircle(mx, my, targets.mid.x, targets.mid.y, targets.mid.r)) {
+    const c = currentChar()
+    state.selectFlash = 0.25
+    state.selectFlashCol = c.colB
+    state.cardGlistenT = 1.0
+    spawnSparks(targets.mid.x, targets.mid.y, c.colB, 28)
 
-    function hitCard(cx, cy, w, h) {
-      return mx >= cx - w / 2 && mx <= cx + w / 2 && my >= cy - h / 2 && my <= cy + h / 2
-    }
-
-    if (hitCard(centerX, centerY, 240, 240)) {
-      const c = currentChar()
-      state.selectFlash = 0.25
-      state.selectFlashCol = c.colB
-      state.cardGlistenT = 1.0
-      spawnSparks(centerX, centerY, c.colB, 28)
-
-      sfx.coin.load()
-      sfx.pop.load()
-      sfx.bad.load()
-      sfx.gameover.load()
-      state.startPending = true
-      state.startDelayT = 2.0
-      return
-    }
-
-    if (hitCard(leftX, centerY + 20, 210, 210)) {
-      state.selectedCharIdx = (idx + characters.length - 1) % characters.length
-      const c = currentChar()
-      state.selectFlash = 0.20
-      state.selectFlashCol = c.colA
-      state.cardGlistenT = 1.0
-      spawnSparks(centerX, centerY, c.colA, 18)
-      return
-    }
-
-    if (hitCard(rightX, centerY + 20, 210, 210)) {
-      state.selectedCharIdx = (idx + 1) % characters.length
-      const c = currentChar()
-      state.selectFlash = 0.20
-      state.selectFlashCol = c.colA
-      state.cardGlistenT = 1.0
-      spawnSparks(centerX, centerY, c.colA, 18)
-    }
+    sfx.coin.load()
+    sfx.pop.load()
+    sfx.bad.load()
+    sfx.gameover.load()
+    state.startPending = true
+    state.startDelayT = 2.0
+    return
   }
+
+  if (pointInCircle(mx, my, targets.left.x, targets.left.y, targets.left.r)) {
+    state.selectedCharIdx = (idx + characters.length - 1) % characters.length
+    const c = currentChar()
+    state.selectFlash = 0.20
+    state.selectFlashCol = c.colA
+    state.cardGlistenT = 1.0
+    spawnSparks(targets.left.x, targets.left.y, c.colA, 18)
+    return
+  }
+
+  if (pointInCircle(mx, my, targets.right.x, targets.right.y, targets.right.r)) {
+    state.selectedCharIdx = (idx + 1) % characters.length
+    const c = currentChar()
+    state.selectFlash = 0.20
+    state.selectFlashCol = c.colA
+    state.cardGlistenT = 1.0
+    spawnSparks(targets.right.x, targets.right.y, c.colA, 18)
+  }
+}
 
   // ============================================================
   // MAIN LOOP
