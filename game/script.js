@@ -2548,24 +2548,21 @@ function getSelectTargets() {
   const centerX = W * 0.5
   const centerY = H * 0.42
 
-  const sideScale = 0.72
-  const midScale = 0.84
-
   return {
     left: {
       x: centerX - 260,
-      y: centerY + 38 - 20 * sideScale,
-      r: 54 * sideScale + 10
+      y: centerY + 18,
+      r: 72
     },
     mid: {
       x: centerX,
-      y: centerY + 22 - 20 * midScale,
-      r: 54 * midScale + 12
+      y: centerY - 2,
+      r: 92
     },
     right: {
       x: centerX + 260,
-      y: centerY + 38 - 20 * sideScale,
-      r: 54 * sideScale + 10
+      y: centerY + 18,
+      r: 72
     }
   }
 }
@@ -2720,9 +2717,9 @@ if (isCenter) {
     g.restore()
   }
 
-drawSelector(targets.left.x, centerY + 18, left, 0.84, 0.62, false, hoverLeft)
-drawSelector(targets.right.x, centerY + 18, right, 0.84, 0.62, false, hoverRight)
-drawSelector(targets.mid.x, centerY - 2, mid, 1.00, 1.0, true, hoverMid)
+drawSelector(targets.left.x, targets.left.y, left, 0.84, 0.62, false, hoverLeft)
+drawSelector(targets.right.x, targets.right.y, right, 0.84, 0.62, false, hoverRight)
+drawSelector(targets.mid.x, targets.mid.y, mid, 1.00, 1.0, true, hoverMid)
 
     const panelX = centerX
 const panelY = centerY + 132
@@ -4469,8 +4466,8 @@ function drawEarlyHint() {
   // SELECT SCREEN INPUT
   // ============================================================
 function clickSelect(mx, my) {
-  const targets = getSelectTargets()
   const idx = state.selectedCharIdx % characters.length
+  const targets = getSelectTargets()
 
   if (pointInCircle(mx, my, targets.mid.x, targets.mid.y, targets.mid.r)) {
     const c = currentChar()
