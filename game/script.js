@@ -2390,8 +2390,8 @@ const sfx = {
   g.arc(cx, cy, r - 2, 0, Math.PI * 2)
   g.clip()
 
-  g.translate(cx, cy + 10 * scale)
-  g.scale(scale, scale)
+g.translate(cx, cy + 2 * scale)
+g.scale(scale * 1.35, scale * 1.35)
 
   function wheel(wx, wy, wr) {
     g.fillStyle = "rgba(255,255,255,0.82)"
@@ -2548,11 +2548,11 @@ function getSelectTargets() {
   const centerX = W * 0.5
   const centerY = H * 0.42
 
-  return {
-    left: { x: centerX - 260, y: centerY + 10, r: 52 },
-    mid: { x: centerX, y: centerY - 14, r: 68 },
-    right: { x: centerX + 260, y: centerY + 10, r: 52 }
-  }
+    return {
+  left: { x: centerX - 260, y: centerY - 8, r: 60 },
+  mid: { x: centerX, y: centerY - 30, r: 80 },
+  right: { x: centerX + 260, y: centerY - 8, r: 60 }
+    }
 }
 
 function selectRideLabel(c) {
@@ -2705,81 +2705,87 @@ if (isCenter) {
     g.restore()
   }
 
-  drawSelector(targets.left.x, centerY + 38, left, 0.72, 0.62, false, hoverLeft)
-  drawSelector(targets.right.x, centerY + 38, right, 0.72, 0.62, false, hoverRight)
-  drawSelector(targets.mid.x, centerY + 22, mid, 0.84, 1.0, true, hoverMid)
+drawSelector(targets.left.x, centerY + 18, left, 0.84, 0.62, false, hoverLeft)
+drawSelector(targets.right.x, centerY + 18, right, 0.84, 0.62, false, hoverRight)
+drawSelector(targets.mid.x, centerY - 2, mid, 1.00, 1.0, true, hoverMid)
 
-  const panelX = centerX
-  const panelY = H - 96
-  const panelW = 560
-  const panelH = 92
+    const panelX = centerX
+const panelY = centerY + 132
+const panelW = 500
+const panelH = 72
 
-  g.fillStyle = "rgba(0,0,0,0.42)"
-  g.beginPath()
-  roundRect(panelX - panelW / 2, panelY - panelH / 2, panelW, panelH, 20)
-  g.fill()
-
-  const panelRim = g.createLinearGradient(panelX - panelW / 2, panelY - panelH / 2, panelX + panelW / 2, panelY + panelH / 2)
-  panelRim.addColorStop(0, "rgba(255,255,255,0.14)")
-  panelRim.addColorStop(1, `rgba(${mid.colB[0]},${mid.colB[1]},${mid.colB[2]},0.10)`)
-  g.strokeStyle = panelRim
-  g.lineWidth = 2
-  g.stroke()
-
-  g.globalAlpha = 0.28
-  g.strokeStyle = "rgba(255,255,255,0.18)"
-  g.beginPath()
-  roundRect(panelX - panelW / 2 + 4, panelY - panelH / 2 + 4, panelW - 8, panelH - 8, 16)
-  g.stroke()
-  g.globalAlpha = 1
-
-  function statBar(label, value, row) {
-    const panelLeft = panelX - panelW / 2
-    const panelTop = panelY - panelH / 2
-
-    const labelX = panelLeft + 34
-    const barX = labelX + 86
-    const barW = 300
-    const pctX = panelLeft + panelW - 34
-    const y = panelTop + 30 + row * 22
-
-    g.fillStyle = "rgba(255,255,255,0.78)"
-    g.font = "700 12px system-ui, Segoe UI, Arial"
-    g.textAlign = "left"
-    g.fillText(label, labelX, y)
-
-    const barY = y - 10
-    const barH = 10
-
-    g.fillStyle = "rgba(255,255,255,0.08)"
+    g.fillStyle = "rgba(0,0,0,0.34)"
     g.beginPath()
-    roundRect(barX, barY, barW, barH, 999)
+    roundRect(panelX - panelW / 2, panelY - panelH / 2, panelW, panelH, 18)
     g.fill()
 
-    const fillW = Math.floor(barW * clamp(value, 0, 1))
-    const grad = g.createLinearGradient(barX, 0, barX + barW, 0)
-    grad.addColorStop(0, `rgba(${mid.colB[0]},${mid.colB[1]},${mid.colB[2]},0.60)`)
-    grad.addColorStop(1, `rgba(${mid.colA[0]},${mid.colA[1]},${mid.colA[2]},0.48)`)
-
-    g.fillStyle = grad
+    const panelRim = g.createLinearGradient(
+      panelX - panelW / 2,
+      panelY - panelH / 2,
+      panelX + panelW / 2,
+      panelY + panelH / 2
+    )
+    panelRim.addColorStop(0, "rgba(255,255,255,0.12)")
+    panelRim.addColorStop(1, "rgba(0,229,255,0.08)")
+    g.strokeStyle = panelRim
+    g.lineWidth = 2
     g.beginPath()
-    roundRect(barX, barY, fillW, barH, 999)
-    g.fill()
+    roundRect(panelX - panelW / 2, panelY - panelH / 2, panelW, panelH, 18)
+    g.stroke()
 
-    g.globalAlpha = 0.42
-    g.fillStyle = "rgba(255,255,255,1)"
-    g.fillRect(barX + 8, barY + 2, Math.max(0, fillW - 16), 1)
+    g.globalAlpha = 0.22
+    g.strokeStyle = "rgba(255,255,255,0.14)"
+    g.beginPath()
+    roundRect(panelX - panelW / 2 + 4, panelY - panelH / 2 + 4, panelW - 8, panelH - 8, 15)
+    g.stroke()
     g.globalAlpha = 1
 
-    g.fillStyle = "rgba(255,255,255,0.76)"
-    g.textAlign = "right"
-    g.fillText(`${Math.round(value * 100)}%`, pctX, y)
-    g.textAlign = "left"
-  }
+    function statBar(label, value, row) {
+      const left = panelX - panelW / 2
+      const top = panelY - panelH / 2
+      const rowGap = 22
+      const rowY = top + 14 + row * rowGap
 
-  statBar("Speed", clamp(mid.speed / 1.20, 0, 1), 0)
-  statBar("Jump", clamp(mid.jump / 1.20, 0, 1), 1)
-  statBar("Drop", clamp(mid.drop / 1.20, 0, 1), 2)
+      const labelX = left + 24
+      const barX = left + 106
+      const barW = 300
+      const barH = 10
+      const pctX = left + panelW - 22
+
+      g.fillStyle = "rgba(255,255,255,0.74)"
+      g.font = "700 12px system-ui, Segoe UI, Arial"
+      g.textAlign = "left"
+      g.fillText(label, labelX, rowY + 11)
+
+      g.fillStyle = "rgba(255,255,255,0.08)"
+      g.beginPath()
+      roundRect(barX, rowY + 2, barW, barH, 999)
+      g.fill()
+
+      const fillW = Math.floor(barW * clamp(value, 0, 1))
+      const grad = g.createLinearGradient(barX, 0, barX + barW, 0)
+      grad.addColorStop(0, `rgba(${mid.colB[0]},${mid.colB[1]},${mid.colB[2]},0.55)`)
+      grad.addColorStop(1, `rgba(${mid.colA[0]},${mid.colA[1]},${mid.colA[2]},0.45)`)
+
+      g.fillStyle = grad
+      g.beginPath()
+      roundRect(barX, rowY + 2, fillW, barH, 999)
+      g.fill()
+
+      g.globalAlpha = 0.35
+      g.fillStyle = "rgba(255,255,255,1)"
+      g.fillRect(barX + 8, rowY + 4, Math.max(0, fillW - 16), 1)
+      g.globalAlpha = 1
+
+      g.fillStyle = "rgba(255,255,255,0.74)"
+      g.textAlign = "right"
+      g.fillText(`${Math.round(value * 100)}%`, pctX, rowY + 11)
+      g.textAlign = "left"
+    }
+
+    statBar("Speed", clamp(mid.speed / 1.20, 0, 1), 0)
+    statBar("Jump", clamp(mid.jump / 1.20, 0, 1), 1)
+    statBar("Drop", clamp(mid.drop / 1.20, 0, 1), 2)
 
   g.fillStyle = hoverMid ? "rgba(255,220,80,0.92)" : "rgba(255,255,255,0.70)"
   g.font = "700 13px system-ui, Segoe UI, Arial"
