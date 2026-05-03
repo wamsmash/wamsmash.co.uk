@@ -658,9 +658,6 @@ async function updateVaultOwnershipUI() {
             `)
           }
 
-
-
-          
           assetList.innerHTML = htmlParts.length
             ? htmlParts.join("")
             : `<div class="vaultOwnedItem">Assets not available yet</div>`
@@ -685,8 +682,6 @@ async function updateVaultOwnershipUI() {
     }
   }
 }
-
-
 
 async function getOwnedAssetsForTrack(trackId) {
   if (!window.wmSupabase) return [];
@@ -1246,8 +1241,6 @@ function renderFeaturedGrid() {
   }
 }
 
-
-
 function applyMusicViewState() {
   const musicList = document.getElementById("wmMusicList")
   if (!musicList) return
@@ -1269,8 +1262,6 @@ function applyMusicViewState() {
   musicList.classList.add("wm-music-guest")
 }
 
-
-  
 function renderMusicList() {
   const mount = document.getElementById("wmMusicList");
   if (!mount) return;
@@ -1414,9 +1405,6 @@ if (!res.ok || !json.url) {
   window.location.href = json.url
 }
 
-
-
-  
 function wireBuyButtons() {
   document.addEventListener("click", async function (e) {
     const btn = e.target.closest("[data-buy]")
@@ -1527,8 +1515,6 @@ if (modal) modal.style.display = "none"
 wmDownloadModalOpen = false
 })
 
-
-  
 async function openDownloadModal(trackId, assets) {
   let modal = document.getElementById("wmDownloadModal")
 
@@ -1600,9 +1586,6 @@ async function openDownloadModal(trackId, assets) {
   modal.style.display = "block"
 }
 
-  
-  
-
 function switchView(view) {
   const home = document.getElementById("homeView")
   const music = document.getElementById("musicView")
@@ -1610,9 +1593,10 @@ function switchView(view) {
   const vault = document.getElementById("vaultView")
   const inbox = document.getElementById("inboxView")
   const games = document.getElementById("gamesView")
+  const vocal = document.getElementById("vocalView")
   const hero = document.querySelector(".heroIntro")
 
-  if (!home || !music || !links || !vault || !inbox || !games) return
+  if (!home || !music || !links || !vault || !inbox || !games || !vocal) return
 
   home.style.display = view === "home" ? "block" : "none"
   music.style.display = view === "music" ? "block" : "none"
@@ -1620,12 +1604,13 @@ function switchView(view) {
   vault.style.display = view === "vault" ? "block" : "none"
   inbox.style.display = view === "inbox" ? "block" : "none"
   games.style.display = view === "games" ? "block" : "none"
+  vocal.style.display = view === "vocal" ? "block" : "none"
 
   if (hero) hero.style.display = view === "home" ? "block" : "none"
 
   setActiveNav(view === "vault" ? "links" : view)
 
-if ((view === "music" || view === "links" || view === "games") && wmAudio && !wmAudio.currentSrc) {
+if ((view === "music" || view === "links" || view === "games" || view === "vocal") && wmAudio && !wmAudio.currentSrc) {
   playNext()
 }
 
@@ -1666,6 +1651,7 @@ function parseHash() {
 
   if (raw === "music") return { view: "music", scrollId: "" };
   if (raw.startsWith("music#")) return { view: "music", scrollId: raw.split("#")[1] || "" };
+  if (raw === "vocal") return { view: "vocal", scrollId: "" };
   if (raw === "links") return { view: "links", scrollId: "" };
   if (raw === "vault") return { view: "vault", scrollId: "" };
   if (raw === "inbox") return { view: "inbox", scrollId: "" };
@@ -1765,6 +1751,11 @@ function wireNavigation() {
 
     if (view === "music") {
       location.hash = scrollId ? `music#${scrollId}` : "music"
+      return
+    }
+
+    if (view === "vocal") {
+      location.hash = "vocal"
       return
     }
 
@@ -2900,8 +2891,6 @@ function hasPremiumAccess() {
   return !!(wmProfile && wmProfile.premium_unlocked)
 }
 
-
-
 function isOwnerAccount() {
   if (!wmProfile || !wmProfile.email) return false
   return String(wmProfile.email).toLowerCase() === WM_OWNER_EMAIL
@@ -3066,6 +3055,98 @@ function wireSupportForm() {
     }
   })
 }
+
+function wireVocalSearchForm() {
+  const form = document.getElementById("wmVocalSearchForm")
+  const nameInput = document.getElementById("wmVocalName")
+  const emailInput = document.getElementById("wmVocalEmail")
+  const locationInput = document.getElementById("wmVocalLocation")
+  const linkInput = document.getElementById("wmVocalLink")
+  const noteInput = document.getElementById("wmVocalNote")
+  const ageInput = document.getElementById("wmVocalAge")
+  const availabilityInput = document.getElementById("wmVocalAvailability")
+  const ownWorkInput = document.getElementById("wmVocalOwnWork")
+  const contactInput = document.getElementById("wmVocalContact")
+  const messageBox = document.getElementById("wmVocalMessageBox")
+  const submitBtn = document.getElementById("wmVocalSubmitBtn")
+
+  if (!form) return
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault()
+
+    if (messageBox) messageBox.textContent = ""
+
+    if (!window.wmSupabase) {
+      if (messageBox) messageBox.textContent = "Submission system not available"
+      return
+    }
+
+    const name = nameInput ? nameInput.value.trim() : ""
+    const email = emailInput ? emailInput.value.trim() : ""
+    const location = locationInput ? locationInput.value.trim() : ""
+    const submissionLink = linkInput ? linkInput.value.trim() : ""
+    const shortNote = noteInput ? noteInput.value.trim() : ""
+
+    const ageConfirmed = !!(ageInput && ageInput.checked)
+    const futureAvailability = !!(availabilityInput && availabilityInput.checked)
+    const ownWorkConfirmed = !!(ownWorkInput && ownWorkInput.checked)
+    const contactPermission = !!(contactInput && contactInput.checked)
+
+    if (!name || !email || !submissionLink) {
+      if (messageBox) messageBox.textContent = "Complete the required fields"
+      return
+    }
+
+    if (!ageConfirmed || !ownWorkConfirmed || !contactPermission) {
+      if (messageBox) messageBox.textContent = "Confirm the required boxes before submitting"
+      return
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true
+      submitBtn.textContent = "Submitting..."
+    }
+
+    try {
+      const { error } = await window.wmSupabase
+        .from("wamsmash_vocal_submissions")
+        .insert({
+          track: "INCOMING",
+          vocal_role: "female vocalist",
+          name: name,
+          email: email,
+          location: location || null,
+          submission_link: submissionLink,
+          short_note: shortNote || null,
+          age_confirmed: ageConfirmed,
+          future_availability: futureAvailability,
+          own_work_confirmed: ownWorkConfirmed,
+          contact_permission: contactPermission,
+          status: "new"
+        })
+
+      if (error) throw error
+
+      form.reset()
+
+      if (messageBox) {
+        messageBox.textContent = "Submission received. Selected submissions may be contacted privately about future WAMSMASH live or filmed sessions"
+      }
+    } catch (err) {
+      console.error("vocal submission failed", err)
+
+      if (messageBox) {
+        messageBox.textContent = "Submission could not be sent. Check the link and required fields, then try again"
+      }
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false
+        submitBtn.textContent = "Submit INCOMING Vocal Audition"
+      }
+    }
+  })
+}
   
 function applyAccountStateUI() {
   document.body.classList.remove("wm-state-guest", "wm-state-member", "wm-state-premium")
@@ -3086,8 +3167,6 @@ function applyAccountStateUI() {
   document.body.classList.add("wm-state-guest")
 }
   
-
-  
   function init() {
     createPlayerBar();
 
@@ -3106,6 +3185,7 @@ wireGamesControls();
 wireVaultButtons();
 wireAuthButtons();
 wireSupportForm();
+wireVocalSearchForm();
     
 loadProducts().then(function () {
   renderFeaturedGrid()
