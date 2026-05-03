@@ -63,6 +63,7 @@
         <nav class="navUnderSub" aria-label="Primary navigation">
           <a class="navlink isActive" data-view="home" href="/">Home</a>
           <a class="navlink" data-view="music" href="/#music">Music</a>
+          <a class="navlink" data-view="vocal" href="/#vocal">Vocal Search</a>
           <a class="navlink" data-view="links" href="/#links">Links</a>
           <a class="navlink" data-view="games" href="/#games">Games</a>
 
@@ -90,6 +91,68 @@
 
     <section id="musicView" style="display:none;">
       <div id="wmMusicList" class="grid"></div>
+    </section>
+
+    <section id="vocalView" style="display:none;">
+      <section class="hero">
+        <h2>WAMSMASH Vocal Search</h2>
+        <p>INCOMING, female vocal audition</p>
+      </section>
+
+      <section class="hero">
+        <h3>Can you perform INCOMING live?</h3>
+
+        <p>
+          WAMSMASH is conducting a vocal search for INCOMING<br><br>
+          The first search is for a female vocalist who can carry the track live, or perform it for future filmed WAMSMASH sessions<br><br>
+          Listen to the original version, record your vocal take, then submit a private link using the form below<br><br>
+          You do not need to copy the original vocal exactly<br>
+          The aim is to hear voice, control, character, timing, and live potential<br><br>
+          Selected submissions may be contacted privately<br>
+          There is no guarantee of selection or performance work
+        </p>
+
+        <div class="cardActions">
+          <button class="btn btnPrimary" type="button" data-play="incoming">Play INCOMING</button>
+          <a class="btn" href="/assets/audio/INCOMING-wamsmash.mp3" target="_blank" rel="noopener">Open track</a>
+        </div>
+      </section>
+
+      <section class="hero">
+        <h3>Submit your vocal audition</h3>
+
+        <form id="wmVocalSearchForm" class="wmAuthForm">
+          <input id="wmVocalName" type="text" maxlength="120" placeholder="Your name" required>
+          <input id="wmVocalEmail" type="email" maxlength="160" placeholder="Your email" required>
+          <input id="wmVocalLocation" type="text" maxlength="120" placeholder="Location, optional">
+          <input id="wmVocalLink" type="url" maxlength="500" placeholder="Private SoundCloud, YouTube, Drive, Dropbox, or WeTransfer link" required>
+
+          <textarea id="wmVocalNote" maxlength="500" placeholder="Short note, optional" style="width:100%; min-height:120px; padding:14px; border:1px solid rgba(255,255,255,0.14); border-radius:14px; background:rgba(0,0,0,0.24); color:var(--text); font:inherit; resize:vertical;"></textarea>
+
+          <label class="wmTiny">
+            <input id="wmVocalAge" type="checkbox" required>
+            I confirm I am 16 or over
+          </label>
+
+          <label class="wmTiny">
+            <input id="wmVocalAvailability" type="checkbox">
+            I may be available for future live or filmed WAMSMASH sessions
+          </label>
+
+          <label class="wmTiny">
+            <input id="wmVocalOwnWork" type="checkbox" required>
+            I confirm this is my own vocal submission
+          </label>
+
+          <label class="wmTiny">
+            <input id="wmVocalContact" type="checkbox" required>
+            I agree to be contacted by WAMSMASH about this submission
+          </label>
+
+          <button class="btn btnPrimary" type="submit" id="wmVocalSubmitBtn">Submit INCOMING Vocal Audition</button>
+          <div class="wmAuthMessage" id="wmVocalMessageBox"></div>
+        </form>
+      </section>
     </section>
 
     <section id="vaultView" style="display:none;">
@@ -367,6 +430,7 @@
         <div class="footerLinks">
           <a class="navlink" href="/#links">Links</a>
           <a class="navlink" href="/#games">Games</a>
+          <a class="navlink" href="/#vocal">Vocal Search</a>
         </div>
         <div class="footerCopy">
           © 2026 WAMSMASH / All rights reserved / WAMSMASH™
@@ -407,6 +471,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/js/supabase-client.js"></script>
-  <script src="/assets/js/site.js?v=105"></script>
+  <script src="/assets/js/site.js?v=106"></script>
 </body>
 </html>
