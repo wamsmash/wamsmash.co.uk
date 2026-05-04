@@ -3147,6 +3147,57 @@ function wireVocalSearchForm() {
     }
   })
 }
+
+function ensureIncomingIsPlaying() {
+  if (!wmAudio) return
+
+  const alreadyIncoming =
+    currentTrackId === "incoming" &&
+    wmAudio.getAttribute("data-track-id") === "incoming" &&
+    !wmAudio.paused
+
+  if (alreadyIncoming) return
+
+  playTrackById("incoming")
+}
+
+async function downloadIncomingPack() {
+  if (!window.wmSupabase) {
+    alert("Supabase not available")
+    return
+  }
+
+  const { data, error } = await window.wmSupabase
+    .storage
+    .from("vault")
+    .createSignedUrl("incoming/INCOMING.zip", 120)
+
+  if (error || !data || !data.signedUrl) {
+    console.error("downloadIncomingPack failed", error)
+    alert("Download could not be created")
+    return
+  }
+
+  await forceDownloadFromSignedUrl(data.signedUrl, "INCOMING.zip")
+}
+
+function wireVocalSearchButtons() {
+  const playBtn = document.getElementById("playIncomingBtn")
+  const downloadBtn = document.getElementById("downloadIncomingPackBtn")
+
+  if (playBtn) {
+    playBtn.addEventListener("click", function () {
+      ensureIncomingIsPlaying()
+    })
+  }
+
+  if (downloadBtn) {
+    downloadBtn.addEventListener("click", function () {
+      downloadIncomingPack()
+    })
+  }
+}
+
   
 function applyAccountStateUI() {
   document.body.classList.remove("wm-state-guest", "wm-state-member", "wm-state-premium")
@@ -3186,6 +3237,7 @@ wireVaultButtons();
 wireAuthButtons();
 wireSupportForm();
 wireVocalSearchForm();
+wireVocalSearchButtons();
     
 loadProducts().then(function () {
   renderFeaturedGrid()
