@@ -3057,7 +3057,6 @@ function wireSupportForm() {
     }
   })
 }
-
 function wireVocalSearchForm() {
   const form = document.getElementById("wmVocalSearchForm")
   const nameInput = document.getElementById("wmVocalName")
@@ -3083,6 +3082,22 @@ function wireVocalSearchForm() {
       if (messageBox) messageBox.textContent = "Submission system not available"
       return
     }
+
+    const { data: sessionData, error: sessionError } = await window.wmSupabase.auth.getSession()
+
+    if (
+      sessionError ||
+      !sessionData ||
+      !sessionData.session ||
+      !sessionData.session.user
+    ) {
+      if (messageBox) messageBox.textContent = "Please log in or sign up before submitting"
+      return
+    }
+
+    const user = sessionData.session.user
+    const profileId = user.id
+    const accountEmail = user.email || ""
 
     const name = nameInput ? nameInput.value.trim() : ""
     const email = emailInput ? emailInput.value.trim() : ""
@@ -3114,6 +3129,8 @@ function wireVocalSearchForm() {
       const { error } = await window.wmSupabase
         .from("wamsmash_vocal_submissions")
         .insert({
+          profile_id: profileId,
+          account_email: accountEmail,
           track: "INCOMING",
           vocal_role: "female vocalist",
           name: name,
@@ -3139,7 +3156,7 @@ function wireVocalSearchForm() {
       console.error("vocal submission failed", err)
 
       if (messageBox) {
-        messageBox.textContent = "Submission could not be sent. Check the link and required fields, then try again"
+        messageBox.textContent = "Submission could not be sent. Please check you are logged in and try again"
       }
     } finally {
       if (submitBtn) {
