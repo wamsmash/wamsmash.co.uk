@@ -1610,7 +1610,9 @@ function switchView(view) {
 
   setActiveNav(view === "vault" ? "links" : view)
 
-if ((view === "music" || view === "links" || view === "games" || view === "vocal") && wmAudio && !wmAudio.currentSrc) {
+if (view === "vocal") {
+  ensureIncomingIsPlaying()
+} else if ((view === "music" || view === "links" || view === "games") && wmAudio && !wmAudio.currentSrc) {
   playNext()
 }
 
