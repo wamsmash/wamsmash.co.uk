@@ -2009,3 +2009,16 @@ body.wm-state-premium .mainHeader{
 
 #wmMusicList.wm-music-premium{
 }
+
+.vocalSearchCard p {
+  margin: 0 0 12px;
+  line-height: 1.55;
+  max-width: 760px;
+}
+
+.vocalSearchActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
